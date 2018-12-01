@@ -28,11 +28,11 @@
 <div id = "insert_freelancer" style="display:none">
     id: <input id = "id" type="text" name="id" required/><br>
     password: <input id = "password" type="password" name="password" required/><br>
-    name: <input id = "name" type="text" name="name" placeholder="홍길동" required/><br>
-		phone: <input id = "phone" type="text" name="phone"placeholder="000-0000-0000" required/><br>
+    name: <input id = "name" type="text" name="name" placeholder="Jhon" required/><br>
+		phone: <input id = "phone" type="text" name="phone"placeholder="00000000000" required/><br>
     age: <input id = "age" type="number" name="age" placeholder="20"required/><br>
     career: <input id = "career" type="number" name="career"placeholder="3" required/><br>
-    major: <input id = "major" type="text" name="major"placeholder="컴퓨터" required/><br>
+    major: <input id = "major" type="text" name="major"placeholder="Computer" required/><br>
     skilledAt: <input id = "skilledAt" type="text" name="skilledAt" required/><br>
     level: <input id = "level" type="number" name="level" required/><br>
     outer portfolio <input id="file" type="file" name="file"/>
@@ -42,8 +42,8 @@
 <div id = "insert_projclient" style="display:none">
     id: <input id = "id" type="text" name="id" required/><br>
     password: <input id = "password" type="password" name="password"placeholder="****" required/><br>
-    name: <input id  = "name" type="text" name="name" placeholder="홍길동" required/><br>
-		phone: <input id = "phone" type="tel" name="phone" placeholder="000-0000-0000"required/>
+    name: <input id  = "name" type="text" name="name" placeholder="Jhon" required/><br>
+		phone: <input id = "phone" type="tel" name="phone" placeholder="00000000000"required/>
     <br>
     <input type="submit" value="submit" id = "c_projclient"/>
 </div>
@@ -95,10 +95,10 @@
 	  })
     $('#c_projclient').click(function(){
      var v = {
-     id: $("#insert_freelancer #id").val(),
-     password: $("#insert_freelancer #password").val(),
-     name: $("#insert_freelancer #name").val(),
-     phone: $("#insert_freelancer #phone").val(),
+     id: $("#insert_projclient #id").val(),
+     password: $("#insert_projclient #password").val(),
+     name: $("#insert_projclient #name").val(),
+     phone: $("#insert_projclient #phone").val(),
     }
     $.ajax({
        type: 'post',
