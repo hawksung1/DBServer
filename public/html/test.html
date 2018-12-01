@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="/js/jquery-3.2.1.min.js"></script>
+    <script src="/js/socket.io.slim.js"></script>
+	<style>
+	td {border: solid 1px #000000}
+	#b {font-size:20px; background-color:#ccd0ce;    width: fit-content ;     cursor: -webkit-grab;}
+	#c {font-size:20px; background-color:#ccd0ce;    width: fit-content ;     cursor: -webkit-grab;}
+	</style>
+</head>
+<body>
+<div>
+    <form action="/img" method="post" enctype="multipart/form-data">
+        <input type="file" name="img">
+        <input type="submit">
+    </form>
+</div>
+<div>
+    <img src="/upload/uploaded-img.jpg">
+</div>
+
+<div>
+	<div id = "b">유저 리스트 가져오기</div>
+	<table id = "user_list"><thead><tr><td>이름</td><td>전화번호</td></tr></thead><tbody></tbody></table>
+</div>
+<div id = "insert">
+        <p>name: </p><input id = "name" type="text" name="name">
+		<p>phone: </p><input id = "phone" type="text" name="phone">
+        <div id = "c">Insert</div>
+</div>
+<script>
+    $(function() {
+      var socket = io();
+
+      socket.on('asd', function(msg) {
+        console.log(msg);
+      });
+      $('#b').click(function(){
+		$.ajax({
+        type: 'get',
+        url: '/users',
+        success: function(data) {
+		  $('#user_list tbody').html("")
+		  for(var i = 0 ; i < data.length; i ++) {
+		     var will_be_append = $('<tr><td>'+data[i].name+'</td><td>'+data[i].phone+'</td></tr>')
+             $('#user_list tbody').append(will_be_append)
+		  }
+		},
+        error: function(err) {
+          console.log(err);
+        }
+      });
+	  
+	  })
+	   $('#c').click(function(){
+	    var v = {
+			name: $("#insert #name").val(),
+			phone: $("#insert #phone").val(),
+		}
+		$.ajax({
+        type: 'post',
+        url: '/users/insert',
+		data: v,
+        success: function(data) {
+		  alert("insert 성공")
+		},
+        error: function(err) {
+          console.log(err);
+        }
+      });
+	  
+	  })
+      
+    });
+</script>
+</body>
+</html>
