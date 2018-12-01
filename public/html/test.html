@@ -13,25 +13,60 @@
 </head>
 <body>
 <div>
-    <form action="/img" method="post" enctype="multipart/form-data">
-        <input type="file" name="img">
-        <input type="submit">
-    </form>
-</div>
-<div>
-    <img src="/upload/uploaded-img.jpg">
-</div>
-
-<div>
 	<div id = "b">유저 리스트 가져오기</div>
 	<table id = "user_list"><thead><tr><td>이름</td><td>전화번호</td></tr></thead><tbody></tbody></table>
 </div>
-<div id = "insert">
-        <p>name: </p><input id = "name" type="text" name="name">
-		<p>phone: </p><input id = "phone" type="text" name="phone">
-        <div id = "c">Insert</div>
+
+<div>
+	<div id = "request">의뢰 리스트 가져오기</div>
+	<table id = "req_list"><thead><tr><td>의뢰번호</td><td>의뢰자ID</td><td>급여</td><td>시작날짜</td><td>완료날짜</td><td>최소경력조건</td><td>최소참여</td><td>최대참여</td><td>의뢰자평점</td><td>프리랜서평점</td><td>의뢰상태</td></tr></thead><tbody></tbody></table>
 </div>
+<div>
+  <p>user_type</p>
+  <input type="radio" name="chk_info" id="freelancer" value="Freelancer" onclick="dispList('0')">freelancer
+  <input type="radio" name="chk_info" id="ProjClient" value="ProjClient" onclick="dispList('1')">project_client
+</div>
+<div id = "insert_freelancer" style="display:none">
+    <p>id: </p><input id = "id" type="text" name="id" required/>
+    <p>password: </p><input id = "password" type="password" name="password" required/>
+    <p>name: </p><input id = "name" type="text" name="name" placeholder="홍길동" required/>
+		<p>phone: </p><input id = "phone" type="text" name="phone"placeholder="000-0000-0000" required/>
+    <p>age: </p><input id = "age" type="number" name="age" placeholder="20"required/>
+    <p>career: </p><input id = "career" type="number" name="career"placeholder="3" required/>
+    <p>major: </p><input id = "major" type="text" name="major"placeholder="컴퓨터" required/>
+    <p>skilledAt: </p><input id = "skilledAt" type="text" name="skilledAt" required/>
+    <p>level: </p><input id = "level" type="number" name="level" required/>
+    <p>outer portfolio</p> <input id="file" type="file" name="file"/>
+    <!-- <div>
+      <p>outer portfolio
+        <form action="/img" method="post" enctype="multipart/form-data">
+            <input type="file" name="file">
+            <input type="submit" value="upload">
+        </form>
+    </div> -->
+    <div id = "c_freelancer">Insert</div>
+</div>
+<div id = "insert_projclient" style="display:none">
+    <p>id: </p><input id = "id" type="text" name="id" required/>
+    <p>password: </p><input id = "password" type="password" name="password"placeholder="****" required/>
+    <p>name: </p><input id  = "name" type="text" name="name" placeholder="홍길동" required/>
+		<p>phone: </p><input id = "phone" type="tel" name="phone" placeholder="000-0000-0000"required/>
+    <div id = "c_projclient">Insert</div>
+</div>
+
 <script>
+  function dispList(selectList) {
+    var obj1 = document.getElementById("insert_freelancer");
+    var obj2 = document.getElementById("insert_projclient");
+    if( selectList == "0" ) {
+      obj1.style.display = "block";
+      obj2.style.display = "none";
+      alert(	obj.style.display );
+    } else {
+      obj1.style.display = "none";
+      obj2.style.display = "block";
+    }
+  }
     $(function() {
       var socket = io();
 
@@ -43,37 +78,82 @@
         type: 'get',
         url: '/users',
         success: function(data) {
+			  $('#user_list tbody').html("")
+			  for(var i = 0 ; i < data.length; i ++) {
+
+				 var will_be_append = $('<tr><td>'+data[i].FID+'</td><td>'+data[i].PhoneNumber+'</td></tr>')
+				 $('#user_list tbody').append(will_be_append)
+			  }
+			},
+			error: function(err) {
+			  console.log(err);
+			}
+		});
+
+	  })
+	  $('#request').click(function(){
+		$.ajax({
+        type: 'get',
+        url: '/request',
+        success: function(data) {
 		  $('#user_list tbody').html("")
 		  for(var i = 0 ; i < data.length; i ++) {
-		     var will_be_append = $('<tr><td>'+data[i].name+'</td><td>'+data[i].phone+'</td></tr>')
-             $('#user_list tbody').append(will_be_append)
+		     var will_be_append = $('<tr><td>'+data[i].RID+'</td><td>' + data[i].PID+'</td><td>' + data[i].Pay+'</td><td>' + data[i].StartDate+'</td><td>' + data[i].EndDate+'</td><td>' + data[i].MinCareer+'</td><td>' + data[i].MinNum+'</td><td>' + data[i].MaxNum+'</td><td>' + data[i].CGrade+'</td><td>' + data[i].FGrade+'</td><td>' + data[i].State+'</td></tr>' )
+             $('#req_list tbody').append(will_be_append)
 		  }
 		},
         error: function(err) {
           console.log(err);
         }
       });
-	  
+
 	  })
-	   $('#c').click(function(){
+	   $('#c_freelancer').click(function(){
 	    var v = {
-			name: $("#insert #name").val(),
-			phone: $("#insert #phone").val(),
+      id: $("#insert_freelancer #id").val(),
+  		password: $("#insert_freelancer #password").val(),
+      age: $("#insert_freelancer #age").val(),
+			name: $("#insert_freelancer #name").val(),
+			phone: $("#insert_freelancer #phone").val(),
+      career: $("#insert_freelancer #career").val(),
+			major: $("#insert_freelancer #major").val(),
+      skilledAt: $("#insert_freelancer #skilledAt").val(),
+      level: $("#insert_freelancer #level").val(),
+      file: $("#insert_freelancer #file").val(),
 		}
 		$.ajax({
         type: 'post',
-        url: '/users/insert',
+        url: '/users/insert_freelancer',
 		data: v,
         success: function(data) {
 		  alert("insert 성공")
 		},
         error: function(err) {
+          alert("모든 항목을 정확히 채워주세요")
           console.log(err);
         }
       });
-	  
 	  })
-      
+    $('#c_projclient').click(function(){
+     var v = {
+     id: $("#insert_freelancer #id").val(),
+     password: $("#insert_freelancer #password").val(),
+     name: $("#insert_freelancer #name").val(),
+     phone: $("#insert_freelancer #phone").val(),
+    }
+    $.ajax({
+       type: 'post',
+       url: '/users/insert_projclient',
+    data: v,
+       success: function(data) {
+     alert("insert 성공")
+    },
+       error: function(err) {
+         alert("모든 항목을 정확히 채워주세요")
+         console.log(err);
+       }
+     });
+    })
     });
 </script>
 </body>
