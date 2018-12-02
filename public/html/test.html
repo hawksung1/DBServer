@@ -22,6 +22,9 @@
    <div id="logout">
      <input type="submit" value="logout" id="c_logout"/>
    </div>
+     <button id="c_session_check">session check</button>
+     <p id='get_output'>
+     </p>
 <div>
   <br><br>
   회원가입<br>
@@ -137,7 +140,7 @@
   })
   $('#c_logout').click(function(){
    var v = {
-      
+
   }
   $.ajax({
      type: 'post',
@@ -152,7 +155,20 @@
      }
    });
  })
+ $('#c_session_check').click(function(){
+   var get = 'a ';
+   $.ajax({
+      type: 'get',
+      url: '/users/get_session',
+      dataType: 'json',
+      data: {data:get},
+      success: function(result){
+        // alert(result.result);
+        $('#get_output').html(result.result);
+      }
     });
+  })
+});
 </script>
 </body>
 </html>

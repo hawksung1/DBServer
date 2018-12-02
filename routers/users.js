@@ -109,6 +109,13 @@ router.post('/logout', wrapper.asyncMiddleware(async (req, res, next) =>{
                  });
    }
 }));
+
+router.get('/get_session', wrapper.asyncMiddleware(async (req, res, next) =>{
+  var user_id = req.session.user_id;
+  console.log("session id = " + user_id);
+  var result = user_id;
+  res.send({result:result});
+}));
 // app.listen(3000, () => {
 //   console.log('listening 3000port');
 // });
