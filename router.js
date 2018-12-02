@@ -19,6 +19,7 @@ router.use('/users', users);
 router.use('/img', img);
 router.use('/request', request);
 
+
 //board 사용하도록.
 router.use('/board', board);
 
