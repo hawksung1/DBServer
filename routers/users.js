@@ -80,28 +80,34 @@ router.post('/login', wrapper.asyncMiddleware(async (req, res, next) =>{
   for(var i=0; i<exist_user.length; i++){
     var user_id = exist_user[i].FID;
     var user_pwd = exist_user[i].Pwd;
-    // console.log(user_id);
-    // console.log(user_pwd);
-    // console.log(newId);
-    // console.log(newPassword);
     if(user_id == newId && user_pwd == newPassword){//login success
       pass = true;
       console.log(newId+" login success");
-      // res.redirect('/');
+      req.session.logined = true;
+      req.session.user_id = newId;
       break;
     }
   }
   if(pass){
      res.json({success: true});
    }else{
-     res.send('wrong id or password <a href="/auth/login">login</a>');
+     req.session.destroy()
+     res.json(400, {
+                    error: 1,
+                    msg: "login fail"
+                 });
    }
 }));
 router.post('/logout', wrapper.asyncMiddleware(async (req, res, next) =>{
-   delete req.session.displayName;  // 세션 삭제
-   res.redirect('/');
-   console.log(await db.getQueryResult());
-   res.json({success: true});
+
+   if(delete req.session.destroy()){  // 세션 삭제)
+     res.json({success: true});
+   }else{
+     res.json(400, {
+                    error: 1,
+                    msg: "logout fail"
+                 });
+   }
 }));
 // app.listen(3000, () => {
 //   console.log('listening 3000port');
