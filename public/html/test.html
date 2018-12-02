@@ -12,12 +12,16 @@
 	</style>
 </head>
 <body>
-  <form action="/login" method="post" name="form_login" id="form_login">
-  <p>  login</p>
-   ID <input type="text" name="username"/><br>
-   PW <input type="password" name="password" />
-   <input type="submit" value="login"/>
-   </form>
+  <div id="login">
+     <p>Login</p>
+     ID <input id="id" type="text" name="id" required/><br>
+     PW <input id="password"type="password" name="password" required/>
+     <input type="submit" value="login" id="c_login"/>
+ </div>
+   <br>
+   <div id="logout">
+     <input type="submit" value="logout" id="c_logout"/>
+   </div>
 <div>
   <br><br>
   회원가입<br>
@@ -113,7 +117,42 @@
          console.log(err);
        }
      });
-    })
+   })
+   $('#c_login').click(function(){
+    var v = {
+    id: $("#login #id").val(),
+    password: $("#login #password").val(),
+   }
+   $.ajax({
+      type: 'post',
+      url: '/users/login',
+   data: v,
+      success: function(data) {
+    alert("login 성공")
+   },
+      error: function(err) {
+        alert("모든 항목을 정확히 채워주세요")
+        console.log(err);
+      }
+    });
+  })
+  $('#c_logout').click(function(){
+   var v = {
+      
+  }
+  $.ajax({
+     type: 'post',
+     url: '/users/logout',
+  data: v,
+     success: function(data) {
+   alert("logout 성공")
+  },
+     error: function(err) {
+       alert("logout error")
+       console.log(err);
+     }
+   });
+ })
     });
 </script>
 </body>
