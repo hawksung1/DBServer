@@ -12,19 +12,7 @@
 	</style>
 </head>
 <body>
-<<<<<<< HEAD
   <div id="login" style="display:block">
-=======
-<<<<<<< HEAD
-  <form action="/login" method="post" name="form_login" id="form_login">
-  <p>  login</p>
-   ID <input type="text" name="username"/><br>
-   PW <input type="password" name="password" />
-   <input type="submit" value="login"/>
-   </form>
-=======
-  <div id="login">
->>>>>>> c6aa4261f0bd47432c0d4becee97a7393375e3b4
      <p>Login</p>
      ID <input id="id" type="text" name="id" required/><br>
      PW <input id="password"type="password" name="password" required/>
@@ -33,16 +21,12 @@
    <br>
    <div id="logout" style="display:none">
      <input type="submit" value="logout" id="c_logout"/>
-   </div>
      <button id="c_session_check">session check</button>
      <p id='get_output'>
      </p>
-<<<<<<< HEAD
    </div>
-=======
->>>>>>> 8d1e8aac10a641d764f65e8d08181250d7f78c3e
->>>>>>> c6aa4261f0bd47432c0d4becee97a7393375e3b4
-<div>
+
+  <div>
   <br><br>
   <button id="c_register">회원가입</button>
   <div id="register_user_type" style="display:none">
@@ -93,10 +77,7 @@
       var socket = io();
 
       socket.on('asd', function(msg) {
-<<<<<<< HEAD
 
-=======
->>>>>>> c6aa4261f0bd47432c0d4becee97a7393375e3b4
         console.log(msg);
       });
 	   $('#insert_freelancer').on('submit',function(){
@@ -144,67 +125,7 @@
          console.log(err);
        }
      });
-<<<<<<< HEAD
     })
-=======
-   })
-   $('#c_login').click(function(){
-    var v = {
-    id: $("#login #id").val(),
-    password: $("#login #password").val(),
-   }
-   $.ajax({
-      type: 'post',
-      url: '/users/login',
-   data: v,
-      success: function(data) {
-        var login = document.getElementById("login");
-        var logout = document.getElementById("logout");
-
-        login.style.display = "none";
-        logout.style.display = "block";
-        alert("login Success");
-   },
-      error: function(err) {
-        alert("Wrong ID or password")
-        console.log(err);
-      }
-    });
-  })
-  $('#c_logout').click(function(){
-   var v = {
-
-  }
-  $.ajax({
-     type: 'post',
-     url: '/users/logout',
-  data: v,
-     success: function(data) {
-       alert("logout success");
-       var login = document.getElementById("login");
-       var logout = document.getElementById("logout");
-
-       login.style.display = "block";
-       logout.style.display = "none";
-     },
-     error: function(err) {
-       alert("logout error")
-       console.log(err);
-     }
-   });
- })
- $('#c_session_check').click(function(){
-   var get = 'a ';
-   $.ajax({
-      type: 'get',
-      url: '/users/get_session',
-      dataType: 'json',
-      data: {data:get},
-      success: function(result){
-        // alert(result.result);
-        $('#get_output').html(result.result);
-      }
->>>>>>> 8d1e8aac10a641d764f65e8d08181250d7f78c3e
     });
   })
   $('#c_register').click(function(){
