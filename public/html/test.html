@@ -12,45 +12,66 @@
 	</style>
 </head>
 <body>
+<<<<<<< HEAD
+  <div id="login" style="display:block">
+=======
+<<<<<<< HEAD
+  <form action="/login" method="post" name="form_login" id="form_login">
+  <p>  login</p>
+   ID <input type="text" name="username"/><br>
+   PW <input type="password" name="password" />
+   <input type="submit" value="login"/>
+   </form>
+=======
   <div id="login">
+>>>>>>> c6aa4261f0bd47432c0d4becee97a7393375e3b4
      <p>Login</p>
      ID <input id="id" type="text" name="id" required/><br>
      PW <input id="password"type="password" name="password" required/>
      <input type="submit" value="login" id="c_login"/>
  </div>
    <br>
-   <div id="logout">
+   <div id="logout" style="display:none">
      <input type="submit" value="logout" id="c_logout"/>
    </div>
      <button id="c_session_check">session check</button>
      <p id='get_output'>
      </p>
+<<<<<<< HEAD
+   </div>
+=======
+>>>>>>> 8d1e8aac10a641d764f65e8d08181250d7f78c3e
+>>>>>>> c6aa4261f0bd47432c0d4becee97a7393375e3b4
 <div>
   <br><br>
-  회원가입<br>
-  select user type<br>
-  <input type="radio" name="chk_info" id="freelancer" value="Freelancer" onclick="dispList('0')">freelancer
-  <input type="radio" name="chk_info" id="ProjClient" value="ProjClient" onclick="dispList('1')">project_client
+  <button id="c_register">회원가입</button>
+  <div id="register_user_type" style="display:none">
+    <br>
+    select user type
+    <br>
+    <input type="radio" name="chk_info" id="freelancer" value="Freelancer" onclick="dispList('0')">freelancer
+    <input type="radio" name="chk_info" id="ProjClient" value="ProjClient" onclick="dispList('1')">project_client
+  </div>
 </div>
 <form id = "insert_freelancer" style="display:none">
-    id: <input id = "id" type="text" name="id" required><br>
-    password: <input id = "password" type="password" name="password" required><br>
-    name: <input id = "name" type="text" name="name" placeholder="Enter your name" required><br>
-		phone: <input id = "phone" type="text" name="phone"placeholder="01012345678" required><br>
-    age: <input id = "age" type="number" name="age" placeholder="20"required><br>
-    career: <input id = "career" type="number" name="career"placeholder="3" required><br>
-    major: <input id = "major" type="text" name="major"placeholder="Computer" required><br>
-    skilledAt: <input id = "skilledAt" type="text" name="skilledAt" required><br>
-    level: <input id = "level" type="number" name="level" required><br>
+    id: <input id = "id" type="text" name="id" required/><br>
+    password: <input id = "password" type="password" name="password" required/><br>
+    name: <input id = "name" type="text" name="name" placeholder="Enter your name" required/><br>
+		phone: <input id = "phone" type="text" name="phone"placeholder="01012345678" required/><br>
+    age: <input id = "age" type="number" name="age" placeholder="20"required/><br>
+    career: <input id = "career" type="number" name="career"placeholder="3" required/><br>
+    major: <input id = "major" type="text" name="major"placeholder="Computer" required/><br>
+    skilledAt: <input id = "skilledAt" type="text" name="skilledAt" required/><br>
+    level: <input id = "level" type="number" name="level" required/><br>
     outer portfolio <input id="file" type="file" name="file"/>
     <br>
     <input type="submit" value="submit" id = "c_freelancer"/>
 </form>
 <div id = "insert_projclient" style="display:none">
-    id: <input id = "id" type="text" name="id" required><br>
-    password: <input id = "password" type="password" name="password"placeholder="****" required><br>
-    name: <input id  = "name" type="text" name="name" placeholder="Jhon" required><br>
-		phone: <input id = "phone" type="tel" name="phone" placeholder="00000000000"required>
+    id: <input id = "id" type="text" name="id" required/><br>
+    password: <input id = "password" type="password" name="password"placeholder="****" required/><br>
+    name: <input id  = "name" type="text" name="name" placeholder="Jhon" required/><br>
+		phone: <input id = "phone" type="tel" name="phone" placeholder="00000000000"required/>
     <br>
     <input type="submit" value="submit" id = "c_projclient"/>
 </div>
@@ -72,7 +93,10 @@
       var socket = io();
 
       socket.on('asd', function(msg) {
-      
+<<<<<<< HEAD
+
+=======
+>>>>>>> c6aa4261f0bd47432c0d4becee97a7393375e3b4
         console.log(msg);
       });
 	   $('#insert_freelancer').on('submit',function(){
@@ -93,7 +117,7 @@
         url: '/users/insert_freelancer',
 		data: v,
         success: function(data) {
-		  alert("insert 성공")
+		  alert("register success");
 		},
         error: function(err) {
           alert("모든 항목을 정확히 채워주세요")
@@ -113,13 +137,16 @@
        url: '/users/insert_projclient',
     data: v,
        success: function(data) {
-     alert("insert 성공")
+     alert("register success");
     },
        error: function(err) {
          alert("모든 항목을 정확히 채워주세요")
          console.log(err);
        }
      });
+<<<<<<< HEAD
+    })
+=======
    })
    $('#c_login').click(function(){
     var v = {
@@ -131,10 +158,15 @@
       url: '/users/login',
    data: v,
       success: function(data) {
-    alert("login 성공")
+        var login = document.getElementById("login");
+        var logout = document.getElementById("logout");
+
+        login.style.display = "none";
+        logout.style.display = "block";
+        alert("login Success");
    },
       error: function(err) {
-        alert("모든 항목을 정확히 채워주세요")
+        alert("Wrong ID or password")
         console.log(err);
       }
     });
@@ -148,8 +180,13 @@
      url: '/users/logout',
   data: v,
      success: function(data) {
-   alert("logout 성공")
-  },
+       alert("logout success");
+       var login = document.getElementById("login");
+       var logout = document.getElementById("logout");
+
+       login.style.display = "block";
+       logout.style.display = "none";
+     },
      error: function(err) {
        alert("logout error")
        console.log(err);
@@ -167,8 +204,13 @@
         // alert(result.result);
         $('#get_output').html(result.result);
       }
+>>>>>>> 8d1e8aac10a641d764f65e8d08181250d7f78c3e
     });
   })
+  $('#c_register').click(function(){
+    var register = document.getElementById("register_user_type");
+    register.style.display = "block";
+   })
 });
 </script>
 </body>
