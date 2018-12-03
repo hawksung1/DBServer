@@ -37,7 +37,5 @@ const io = require('socket.io')(server);
 
 io.on('connect', socket.connect);
 
-
-
 server.listen(config.port);
 console.log(`server start on port ${config.port}`);

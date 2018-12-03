@@ -106,7 +106,7 @@ router.post('/logout', wrapper.asyncMiddleware(async (req, res, next) =>{
      res.json(400, {
                     error: 1,
                     msg: "logout fail"
-                 });
+    });
    }
 }));
 
