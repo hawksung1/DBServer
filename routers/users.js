@@ -17,16 +17,9 @@ router.use(session({
   saveUninitialized: true,
   store: new FileStore()
 }));
-router.get('/count', function(req, res){
-  if(req.session.count) {
-    req.session.count++;
-  } else {
-    req.session.count = 1;
-  }
-  res.send('count : '+req.session.count);
-});
 
 router.post('/insert_freelancer', wrapper.asyncMiddleware(async (req, res, next) =>{
+  const user_id = req.session.user_id;
   const newId = req.body.id;
   const newPassword = req.body.password;
   const newAge = req.body.age;
@@ -43,21 +36,15 @@ router.post('/insert_freelancer', wrapper.asyncMiddleware(async (req, res, next)
       cb(null, 'public/upload/')
     },
     filename: (req, file, cb) => {
-      cb(null, new Date().valueOf() + path.extname(file.originalname));
+      cb(null, user_id);
     }
   });
   const upload = multer({
     storage: storage,
   });
   const up = upload.fields([{name: 'file', maxCount: 1}]);
-
   console.log(await db.getQueryResult(`INSERT INTO Freelancer (FID,FName,Age,PhoneNumber,Career,Major,Pwd) values ('${newId}','${newName}','${newAge}','${newPhone}','${newCareer}','${newMajor}','${newPassword}')`));
-
   res.json({success:true});
-  router.post('/', up, (req, res, next) => {
-    console.log("file uploaded");
-    res.redirect('/');
-  });
 }));
 
 router.post('/insert_projclient', wrapper.asyncMiddleware(async (req, res, next) =>{

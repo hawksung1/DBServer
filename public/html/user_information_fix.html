@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+      <meta charset="UTF-8">
+      <title>information_fix</title>
+      <script src="/js/jquery-3.2.1.min.js"></script>
+      <script src="/js/socket.io.slim.js"></script>
+  	<style>
+  	td {border: solid 1px #000000}
+  	#request {font-size:20px; background-color:#ccd0ce;    width: fit-content ;     cursor: -webkit-grab;}
+    #orderbydate {font-size:20px; background-color:#ccd0ce;    width: fit-content ;     cursor: -webkit-grab;}
+    #orderbypay {font-size:20px; background-color:#ccd0ce;    width: fit-content ;     cursor: -webkit-grab;}
+    </style>
+  </head>
+  <body>
+    <button id="c_fix_information">fix my information</button>
+    <button id="c_my_information">show my information</button>
+    <p id='get_my_information'>
+    </p>
+    <form id = "fix_freelancer" style="display:none">
+        password: <input id = "password" type="password" name="password"/><br>
+        name: <input id = "name" type="text" name="name" placeholder="Enter your name"/><br>
+        phone: <input id = "phone" type="text" name="phone"placeholder="01012345678"/><br>
+        age: <input id = "age" type="number" name="age" placeholder="20"/><br>
+        career: <input id = "career" type="number" name="career"placeholder="3"/><br>
+        major: <input id = "major" type="text" name="major"placeholder="Computer"/><br>
+        <!-- skilledAt: <input id = "skilledAt" type="text" name="skilledAt"/><br> -->
+        <!-- level: <input id = "level" type="number" name="level"/><br> -->
+        <!-- outer portfolio <input id="file" type="file" name="file"/> -->
+        <br>
+        <input type="submit" value="submit" id="c_freelancer"/>
+    </form>
+    <form id = "fix_projclient" style="display:none">
+        password: <input id = "password" type="password" name="password"placeholder="****"/><br>
+        name: <input id  = "name" type="text" name="name" placeholder="Jhon"/><br>
+    		phone: <input id = "phone" type="text" name="phone" placeholder="00000000000"/><br>
+        <input type="submit" value="submit" id="c_projclient"/>
+    </form>
+
+      <script>
+        function dispList(selectList) {
+          var obj1 = document.getElementById("insert_freelancer");
+          var obj2 = document.getElementById("insert_projclient");
+          if( selectList == "0" ) {
+            obj1.style.display = "block";
+            obj2.style.display = "none";
+            alert(	obj.style.display );
+          } else {
+            obj1.style.display = "none";
+            obj2.style.display = "block";
+          }
+        }
+        $(function() {
+          var user_id;
+          var socket = io();
+          socket.on('asd', function(msg) {
+            console.log(msg);
+          });
+          $('#c_fix_information').click(function(){
+            var get = 'a ';
+          $.ajax({
+               type: 'get',
+               url: '/users/get_session',
+               data: {data:get},
+               success: function(result){
+                 user_id = result.result;
+               }
+             });
+           })
+        $('#fix_freelancer').on('submit',function(){
+          $.ajax({
+            type: 'post',
+            url: '/user_information_fix/insert_freelancer',
+    		    data: v,
+            // datatype: 'html',//json
+            success: function(data) {
+    		        alert("register success");
+    		    },
+            error: function(err) {
+              // alert("모든 항목을 정확히 채워주세요");
+              // console.log(err);
+            }
+          });
+        })
+        $('#fix_projclient').on('submit',function(){
+          $.ajax({
+              type: 'post',
+              url: '/user_information_fix/insert_projclient',
+      		    data: v,
+              // datatype: 'html',//json
+              success: function(data) {
+      		        alert("register success");
+      		    },
+              error: function(err) {
+                // alert("모든 항목을 정확히 채워주세요");
+                // console.log(err);
+              }
+          });
+        })
+        $('#c_my_information').click(function(){
+          var get = 'a ';
+          $.ajax({
+             type: 'get',
+             url: '/user_information_fix/get_my_information',
+             data: {data:get},
+             success: function(result){
+               // alert(JSON.stringify(result));
+               $('#get_my_information').html(JSON.stringify(result.result));
+             },
+             error: function(err){
+               alert(err);
+             }
+           });
+         })
+      });
+    </script>
+  </body>
+</html>

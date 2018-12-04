@@ -4,6 +4,7 @@ const router = express.Router();
 
 const index = require('./routers/index');
 const users = require('./routers/users');
+const user_information_fix = require('./routers/user_information_fix');
 const img = require('./routers/img');
 const upload = require('./routers/upload');
 const request = require('./routers/request');
@@ -18,6 +19,7 @@ router.use('/', index);
 router.use('/users', users);
 router.use('/img', img);
 router.use('/request', request);
+router.use('/user_information_fix', user_information_fix);
 
 
 //board 사용하도록.

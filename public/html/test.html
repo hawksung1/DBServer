@@ -12,6 +12,7 @@
 	</style>
 </head>
 <body>
+  <button id="c_userInfoFix"> user information fix</button>
   <div id="login" style="display:block">
      <p>Login</p>
      ID <input id="id" type="text" name="id" required/><br>
@@ -138,12 +139,11 @@
 
         login.style.display = "none";
         logout.style.display = "block";
-        alert(result.result);
 
         if(result.result=="freelancer"){
           location.href="/board";
         } else if(result.result == "projclient"){
-          location.href="/";
+          // location.href="/";
         }
    },
       error: function(err) {
@@ -171,13 +171,12 @@
    });
  })
  $('#c_session_check').click(function(){
-   // var get = 'a ';
+   var get = 'a ';
    $.ajax({
       type: 'get',
       url: '/users/get_session',
       data: {data:get},
       success: function(result){
-        // alert(result.result);
         $('#get_output').html(result.result);
       }
     });
@@ -186,6 +185,9 @@
     var register = document.getElementById("register_user_type");
     register.style.display = "block";
    })
+ $('#c_userInfoFix').click(function(){
+     location.href="/user_information_fix";
+  })
 });
 </script>
 </body>
