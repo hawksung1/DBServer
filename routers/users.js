@@ -53,7 +53,7 @@ router.post('/insert_freelancer', wrapper.asyncMiddleware(async (req, res, next)
 
   console.log(await db.getQueryResult(`INSERT INTO Freelancer (FID,FName,Age,PhoneNumber,Career,Major,Pwd) values ('${newId}','${newName}','${newAge}','${newPhone}','${newCareer}','${newMajor}','${newPassword}')`));
 
-  res.json({success: true});
+  res.json({success:true});
   router.post('/', up, (req, res, next) => {
     console.log("file uploaded");
     res.redirect('/');
@@ -65,34 +65,55 @@ router.post('/insert_projclient', wrapper.asyncMiddleware(async (req, res, next)
   const newPassword = req.body.password;
   const newName = req.body.name;
   const newPhone = req.body.phone;
-
+  // console.log(newId + newPassword + newName + newPhone);
   console.log(await db.getQueryResult(`INSERT INTO ProjClient (PID,CName,PhoneNumber,Pwd) values('${newId}','${newName}', '${newPhone}','${newPassword}')`));
-  res.json({success: true});
+  var result =JSON.stringify({success:true});
+  console.log("router done");
+  res.send(result);
 }));
 
 router.post('/login', wrapper.asyncMiddleware(async (req, res, next) =>{
   var newId = req.body.id;
   var newPassword = req.body.password;
-  var sql = 'SELECT FID, Pwd FROM Freelancer UNION SELECT PID, Pwd FROM ProjClient';
-  var pass = false;
-  const exist_user = await db.getQueryResult(sql);
+  var freelancer_sql = 'SELECT FID, Pwd FROM Freelancer';
+  var projClient_sql = 'SELECT PID, Pwd FROM ProjClient';
+  var freelancer_pass = false;
+  var projClient_pass = false;
+  var result;
+  const exist_freelancer_user = await db.getQueryResult(freelancer_sql);
+  const exist_projClient_user = await db.getQueryResult(projClient_sql);
 
-  for(var i=0; i<exist_user.length; i++){
-    var user_id = exist_user[i].FID;
-    var user_pwd = exist_user[i].Pwd;
+  for(var i=0; i<exist_freelancer_user.length; i++){
+    var user_id = exist_freelancer_user[i].FID;
+    var user_pwd = exist_freelancer_user[i].Pwd;
     if(user_id == newId && user_pwd == newPassword){//login success
-      pass = true;
-      console.log(newId+" login success");
+      freelancer_pass = true;
+      console.log(newId+"freelancer login success");
+      result = "freelancer";
       req.session.logined = true;
       req.session.user_id = newId;
       break;
     }
   }
-  if(pass){
-     res.json({success: true});
+  for(var i=0; i<exist_projClient_user.length; i++){
+    var user_id = exist_projClient_user[i].PID;
+    var user_pwd = exist_projClient_user[i].Pwd;
+    if(user_id == newId && user_pwd == newPassword){//login success
+      projClient_pass = true;
+      console.log(newId+"projClient login success");
+      result = "projclient";
+      req.session.logined = true;
+      req.session.user_id = newId;
+      break;
+    }
+  }
+  console.log(freelancer_pass);
+  console.log(projClient_pass);
+  if(freelancer_pass || projClient_pass){
+     res.status(200).json({result:result});
    }else{
      req.session.destroy()
-     res.json(400, {
+     res.status(400).json({
                     error: 1,
                     msg: "login fail"
                  });
