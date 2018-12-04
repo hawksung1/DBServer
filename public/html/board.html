@@ -14,7 +14,10 @@
   </style>
 </head>
 <body>
-
+  <div> 현재 사용자</div>
+  <input id="cur_log" type="text" readonly>
+  <br>
+  <br>
   <div> 진행중인 의뢰 </div>
   <div>
   	<!--
@@ -117,11 +120,30 @@
         });
     $(function() {
       var socket = io();
+      var get = 'a';
       //asd는 모르겟고... 그냥 통신 시작될때 작동하는 함수.
       socket.on('asd', function(msg) {
         $.ajax({
             type: 'get',
+            url: '/request/cur_log',
+            data: {data:get},
+            //data: getid,
+            success: function(data) {
+          //$('#cur_log').html("")
+          //$('#user_list tbody').empty();
+          //$('#cur_log').html(result.result);
+          $('#cur_log').val(data);
+
+        },
+            error: function(err) {
+              console.log(err);
+            }
+        });
+
+        $.ajax({
+            type: 'get',
             url: '/request',
+            //data: getid,
             success: function(data) {
           $('#req_list tbody').html("")
           //$('#user_list tbody').empty();
@@ -229,11 +251,14 @@
         $.ajax({
             type: 'post',
             url: '/request/apply',
+            //dataType: "json",
             data: v,
             success: function(data) {
+              //alert("성공");
 
-        },
+            },
             error: function(err) {
+              //alert(err.status);
               console.log(err);
             }
         });
