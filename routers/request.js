@@ -71,17 +71,29 @@ router.get('/apply_request', wrapper.asyncMiddleware(async (req, res, next) => {
 }));
 
 router.post('/apply', wrapper.asyncMiddleware(async (req, res, next) =>{
-  const newId = req.body.id;
-  const request = await db.getQueryResult('Select count(*)'
+  var user_id = req.session.user_id;
+  var newId = req.body.id;
+  var client = req.body.cli_id;
+  const request = await db.getQueryResult('Select count(*) AS count'
  + ' from SkilledAt as s, RequireLang as r'
-+' where FID = "hjwook" and RID = "1" '
++' where FID = "'+ user_id + '" and RID = "' + newId + '"'
 + ' and s.LangName = r.LangName and s.Skill>= r.Skill');
-  /*
-  if(request = "2"){
-    console.log("비교성공");
-  }
-  */
-  console.log(await db.getQueryResult(`select * from Request where RID = '${newId}'`));
+  //var teamName;
+  //var client;
+  var langcount;
+  const required = await db.getQueryResult('Select count(*) AS count from RequireLang where RID = "1"');
+  required.forEach(function(v){langcount = v.count; });
+  //const test = await db.getQueryResult(`select * from Request where RID = '${newId}'`);
+
+  //팀이나 개인지원 ㅅㅂ...
+  request.forEach(async function(v){
+    if(langcount == v.count) {
+      console.log("성공");
+      await db.getQueryResult('Insert INTO Apply (TName, PID, RID) values ("Single_1", "' + client +'" , "' + newId + '")');
+    }
+  });
+  //console.log(request.count);
+  //console.log(await db.getQueryResult(`select * from Request where RID = '${newId}'`));
   res.json({success : "Updated Successfully", status : 200});
   //res.json("{\"msg\":\"success\"}");
   //res.json({success: true, error: false});

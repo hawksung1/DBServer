@@ -108,6 +108,7 @@
 
 <form id="apply">
       <input id="applyRID" placeholder="지원할 의뢰번호 입력" type="text">
+      <input id="clientId" placeholder="의뢰자ID 입력" type="text">
       <input type="submit" value="지원하기"/>
 </form>
 
@@ -247,6 +248,7 @@
       $('#apply').on('submit', function(){
         var v = {
         id: $("#apply #applyRID").val(),
+        cli_id: $("#apply #clientId").val(),
         }
         $.ajax({
             type: 'post',
