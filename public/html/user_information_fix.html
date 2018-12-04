@@ -17,6 +17,8 @@
     <button id="c_my_information">show my information</button>
     <p id='get_my_information'>
     </p>
+    <input type="radio" name="chk_info" id="freelancer" value="Freelancer" onclick="dispList('0')"/>freelancer
+    <input type="radio" name="chk_info" id="ProjClient" value="ProjClient" onclick="dispList('1')"/>project_client
     <form id = "fix_freelancer" style="display:none">
         password: <input id = "password" type="password" name="password"/><br>
         name: <input id = "name" type="text" name="name" placeholder="Enter your name"/><br>
@@ -24,9 +26,9 @@
         age: <input id = "age" type="number" name="age" placeholder="20"/><br>
         career: <input id = "career" type="number" name="career"placeholder="3"/><br>
         major: <input id = "major" type="text" name="major"placeholder="Computer"/><br>
-        <!-- skilledAt: <input id = "skilledAt" type="text" name="skilledAt"/><br> -->
-        <!-- level: <input id = "level" type="number" name="level"/><br> -->
-        <!-- outer portfolio <input id="file" type="file" name="file"/> -->
+        skilledAt: <input id = "skilledAt" type="text" name="skilledAt"/><br>
+        level: <input id = "level" type="number" name="level"/><br>
+        outer portfolio <input id="file" type="file" name="file"/>
         <br>
         <input type="submit" value="submit" id="c_freelancer"/>
     </form>
@@ -39,12 +41,11 @@
 
       <script>
         function dispList(selectList) {
-          var obj1 = document.getElementById("insert_freelancer");
-          var obj2 = document.getElementById("insert_projclient");
+          var obj1 = document.getElementById("fix_freelancer");
+          var obj2 = document.getElementById("fix_projclient");
           if( selectList == "0" ) {
             obj1.style.display = "block";
             obj2.style.display = "none";
-            alert(	obj.style.display );
           } else {
             obj1.style.display = "none";
             obj2.style.display = "block";
@@ -68,9 +69,20 @@
              });
            })
         $('#fix_freelancer').on('submit',function(){
+          var v = {
+        		password: $("#fix_freelancer #password").val(),
+            age: $("#fix_freelancer #age").val(),
+      			name: $("#fix_freelancer #name").val(),
+      			phone: $("#fix_freelancer #phone").val(),
+            career: $("#fix_freelancer #career").val(),
+      			major: $("#fix_freelancer #major").val(),
+            skilledAt: $("#fix_freelancer #skilledAt").val(),
+            level: $("#fix_freelancer #level").val(),
+            file: $("#fix_freelancer #file").val(),
+          }
           $.ajax({
             type: 'post',
-            url: '/user_information_fix/insert_freelancer',
+            url: '/user_information_fix/fix_freelancer',
     		    data: v,
             // datatype: 'html',//json
             success: function(data) {
@@ -85,7 +97,7 @@
         $('#fix_projclient').on('submit',function(){
           $.ajax({
               type: 'post',
-              url: '/user_information_fix/insert_projclient',
+              url: '/user_information_fix/fix_projclient',
       		    data: v,
               // datatype: 'html',//json
               success: function(data) {

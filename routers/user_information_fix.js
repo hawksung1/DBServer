@@ -30,10 +30,10 @@ router.post('/fix_freelancer', wrapper.asyncMiddleware(async (req, res, next) =>
   const newPhone = req.body.phone;
   const newCareer = req.body.career;
   const newMajor = req.body.major;
-  // const newSkilledAt = req.body.skilledAt;
-  // const newLevel = req.body.level;
-  // const newFile = req.body.file;
-  // console.log(newId);
+  const newSkilledAt = req.body.skilledAt;
+  const newLevel = req.body.level;
+  const newFile = req.body.file;
+  console.log("fix = " + user_id);
   const storage = multer.diskStorage({
     destination: (req, file, cb) => {
       cb(null, 'public/upload/')
@@ -47,8 +47,12 @@ router.post('/fix_freelancer', wrapper.asyncMiddleware(async (req, res, next) =>
   });
   const up = upload.fields([{name: 'file', maxCount: 1}]);
 
-  // console.log(await db.getQueryResult(`INSERT INTO Freelancer (FID,FName,Age,PhoneNumber,Career,Major,Pwd) values ('${newId}','${newName}','${newAge}','${newPhone}','${newCareer}','${newMajor}','${newPassword}')`));
-//UPDATE Freelancer SET A=B WHERE FID=user.id
+  if(newPassword) await db.getQueryResult(`UPDATE Freelancer SET Pwd='${newPassword}' WHERE FID='${user_id}'`);
+  if(newAge) await db.getQueryResult(`UPDATE Freelancer SET Age='${newAge}' WHERE FID='${user_id}'`);
+  if(newName) await db.getQueryResult(`UPDATE Freelancer SET FName='${newName}' WHERE FID='${user_id}'`);
+  if(newPhone) await db.getQueryResult(`UPDATE Freelancer SET PhoneNumber='${newPhone}' WHERE FID='${user_id}'`);
+  if(newCareer) await db.getQueryResult(`UPDATE Freelancer SET Career='${newCareer}' WHERE FID='${user_id}'`);
+  if(newMajor) await db.getQueryResult(`UPDATE Freelancer SET Major='${newMajor}' WHERE FID='${user_id}'`);
   res.json({success:true});
 }));
 
@@ -57,10 +61,10 @@ router.post('/fix_projclient', wrapper.asyncMiddleware(async (req, res, next) =>
   const newName = req.body.name;
   const newPhone = req.body.phone;
   // console.log(newId + newPassword + newName + newPhone);
-  // console.log(await db.getQueryResult(`INSERT INTO ProjClient (PID,CName,PhoneNumber,Pwd) values('${newId}','${newName}', '${newPhone}','${newPassword}')`));
-  var result =JSON.stringify({success:true});
-  // console.log("router done");
-  res.send(result);
+  if(newPassword) await db.getQueryResult(`UPDATE ProjClient SET Pwd='${newPassword}' WHERE PID='${user_id}'`);
+  if(newName) await db.getQueryResult(`UPDATE ProjClient SET CName='${newName}' WHERE PID='${user_id}'`);
+  if(newPhone) await db.getQueryResult(`UPDATE ProjClient SET PhoneNumber='${newPhone}' WHERE PID='${user_id}'`);
+  res.json({success:true});
 }));
 
 router.get('/get_my_information', wrapper.asyncMiddleware(async (req, res, next) =>{
