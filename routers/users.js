@@ -107,8 +107,7 @@ router.post('/login', wrapper.asyncMiddleware(async (req, res, next) =>{
       break;
     }
   }
-  console.log(freelancer_pass);
-  console.log(projClient_pass);
+  console.log(result);
   if(freelancer_pass || projClient_pass){
      res.status(200).json({result:result});
    }else{
