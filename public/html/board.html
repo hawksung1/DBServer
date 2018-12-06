@@ -18,6 +18,32 @@
   <input id="cur_log" type="text" readonly>
   <br>
   <br>
+  <div> 완료된 의뢰 - 평점을 지정해주세요! </div>
+  <div>
+  	<!--
+  	<div id = "request">의뢰 리스트 가져오기</div>
+  	-->
+  	<table id = "comple_request">
+      <thead>
+        <tr>
+          <td>의뢰번호</td>
+          <td>의뢰자ID</td>
+          <td>급여</td>
+          <td>시작날짜</td>
+          <td>완료날짜</td>
+          <td>최소경력조건</td>
+          <td>최소참여</td>
+          <td>최대참여</td>
+          <td>의뢰자평점</td>
+          <td>프리랜서평점</td>
+          <td>의뢰상태</td>
+        </tr>
+      </thead>
+      <tbody>
+      </tbody>
+    </table>
+  </div>
+<br>
   <div> 진행중인 의뢰 </div>
   <div>
   	<!--
@@ -43,6 +69,15 @@
       </tbody>
     </table>
   </div>
+<br>
+
+<br>
+
+<form id="complete">
+      <input id="compleRID" placeholder="완료요청 의뢰번호 입력" type="text">
+      <input type="submit" value="완료요청"/>
+</form>
+
 <br>
   <div> 지원한 의뢰 </div>
   <div>
@@ -206,6 +241,27 @@
               console.log(err);
             }
         });
+        $.ajax({
+            type: 'get',
+            url: '/request/comple_request',
+            success: function(data) {
+          $('#comple_request tbody').html("")
+          //$('#user_list tbody').empty();
+          for(var i = 0 ; i < data.length; i ++) {
+             var will_be_append = $('<tr><td>'+data[i].RID+'</td><td>' + data[i].PID+'</td><td>' +
+               data[i].Pay+'</td><td>' + data[i].StartDate+'</td><td>' +
+                 data[i].EndDate+'</td><td>' + data[i].MinCareer+'</td><td>' +
+                   data[i].MinNum+'</td><td>' + data[i].MaxNum+'</td><td>' +
+                     data[i].CGrade+'</td><td>' + data[i].FGrade+'</td><td>' +
+                       data[i].State+'</td></tr>' )
+
+            $('#comple_request tbody').append(will_be_append)
+          }
+        },
+            error: function(err) {
+              console.log(err);
+            }
+        });
 
       })
 
@@ -253,6 +309,26 @@
         $.ajax({
             type: 'post',
             url: '/request/apply',
+            //dataType: "json",
+            data: v,
+            success: function(data) {
+              //alert("성공");
+
+            },
+            error: function(err) {
+              //alert(err.status);
+              console.log(err);
+            }
+        });
+
+      })
+      $('#complete').on('submit', function(){
+        var v = {
+        id: $("#complete #compleRID").val(),
+        }
+        $.ajax({
+            type: 'post',
+            url: '/request/complete',
             //dataType: "json",
             data: v,
             success: function(data) {

@@ -45,6 +45,22 @@ router.get('/doing', wrapper.asyncMiddleware(async (req, res, next) => {
 +' order by RID');
   res.json(request);
 }));
+router.get('/comple_request', wrapper.asyncMiddleware(async (req, res, next) => {
+  var user_id = req.session.user_id;
+  //var result = user_id;
+  //res.send({result:result});
+  const request = await db.getQueryResult('Select * '
++'from Request'
++' where RID IN ('
+	+' Select RID'
+	+' from Attend'
+	+' where TName IN ('
+		+' Select TeamName'
+		+' from TeamMember'
+		+' where MemberID = ' +'"'+ user_id +'"'+ ' ))'
++' order by RID');
+  res.json(request);
+}));
 
 router.get('/orderbydate', wrapper.asyncMiddleware(async (req, res, next) => {
   const request = await db.getQueryResult('SELECT * FROM Request where State = 0 ORDER BY StartDate');
@@ -97,6 +113,16 @@ router.post('/apply', wrapper.asyncMiddleware(async (req, res, next) =>{
   res.json({success : "Updated Successfully", status : 200});
   //res.json("{\"msg\":\"success\"}");
   //res.json({success: true, error: false});
+}));
+router.post('/complete', wrapper.asyncMiddleware(async (req, res, next) =>{
+  //var user_id = req.session.user_id;
+  var RID = req.body.id;
+  var user_id = req.session.user_id;
+
+  //const required = await db.getQueryResult('select * from ');
+  const request = await db.getQueryResult('UPDATE Request Set State = 2 where RID = "'+RID+'"');
+  res.json({success : "Updated Successfully", status : 200});
+
 }));
 /*
 router.post('/insert', wrapper.asyncMiddleware(async (req, res, next) =>{
