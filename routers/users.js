@@ -29,24 +29,16 @@ router.post('/insert_freelancer', wrapper.asyncMiddleware(async (req, res, next)
   const newMajor = req.body.major;
   const newSkilledAt = req.body.skilledAt;
   const newLevel = req.body.level;
-  const newFile = req.body.file;
   // console.log(newId);
-  const storage = multer.diskStorage({
-    destination: (req, file, cb) => {
-      cb(null, 'public/upload/')
-    },
-    filename: (req, file, cb) => {
-      cb(null, user_id);
-    }
-  });
-  const upload = multer({
-    storage: storage,
-  });
-  const up = upload.fields([{name: 'file', maxCount: 1}]);
+  // let result = {
+  //   originalName : newFile.oiriginalname,
+  //   size : newFile.size,
+  // }
+
   console.log(await db.getQueryResult(`INSERT INTO Freelancer (FID,FName,Age,PhoneNumber,Career,Major,Pwd) values ('${newId}','${newName}','${newAge}','${newPhone}','${newCareer}','${newMajor}','${newPassword}')`));
+  // console.log(await db.getQueryResult(`INSERT INTO OuterPortfolio (FID, FilePath, DocName) values('${newId}', '${newId}', '${newId}')`));
   res.json({success:true});
 }));
-
 router.post('/insert_projclient', wrapper.asyncMiddleware(async (req, res, next) =>{
   const newId = req.body.id;
   const newPassword = req.body.password;

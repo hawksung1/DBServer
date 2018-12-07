@@ -19,6 +19,7 @@ router.use('/', index);
 router.use('/users', users);
 router.use('/img', img);
 router.use('/request', request);
+router.use('/upload', upload);
 router.use('/user_information_fix', user_information_fix);
 
 

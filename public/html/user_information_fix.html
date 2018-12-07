@@ -15,8 +15,12 @@
   <body>
     <button id="c_fix_information">fix my information</button>
     <button id="c_my_information">show my information</button>
-    <p id='get_my_information'>
-    </p>
+    <p id='get_my_information'></p>
+    <button id="c_show_file">show my file</button>
+    <p id='show_my_file'></p>
+    <button id="c_download_file">download my outer potopolio</button>
+    <button id="c_delete_file">delete my outer potopolio</button>
+
     <input type="radio" name="chk_info" id="freelancer" value="Freelancer" onclick="dispList('0')"/>freelancer
     <input type="radio" name="chk_info" id="ProjClient" value="ProjClient" onclick="dispList('1')"/>project_client
     <form id = "fix_freelancer" style="display:none">
@@ -124,6 +128,48 @@
              }
            });
          })
+         $('#c_download_file').click(function(){
+           var get = 'a ';
+           $.ajax({
+              type: 'get',
+              url: '/user_information_fix/c_download_file',
+              data: {data:get},
+              success: function(result){
+
+              },
+              error: function(err){
+                alert(err);
+              }
+            });
+          })
+          $('#c_show_file').click(function(){
+            var get = 'a ';
+            $.ajax({
+               type: 'get',
+               url: '/user_information_fix/c_show_file',
+               data: {data:get},
+               success: function(result){
+                 $('#show_my_file').html(JSON.stringify(result.result));
+               },
+               error: function(err){
+                 alert(err);
+               }
+             });
+           })
+           $('#c_delete_file').click(function(){
+             var get = 'a ';
+             $.ajax({
+                type: 'get',
+                url: '/user_information_fix/c_delete_file',
+                data: {data:get},
+                success: function(result){
+
+                },
+                error: function(err){
+                  alert(err);
+                }
+              });
+            })
       });
     </script>
   </body>

@@ -9,6 +9,8 @@ const multer = require('multer');
 var app = express();
 var FileStore = require('session-file-store')(session);
 var bodyParser = require('body-parser');
+var fs = require('fs');
+var download = require('download-file');
 
 router.use(bodyParser.urlencoded({extended:false}));
 router.use(session({
@@ -33,19 +35,6 @@ router.post('/fix_freelancer', wrapper.asyncMiddleware(async (req, res, next) =>
   const newSkilledAt = req.body.skilledAt;
   const newLevel = req.body.level;
   const newFile = req.body.file;
-  console.log("fix = " + user_id);
-  const storage = multer.diskStorage({
-    destination: (req, file, cb) => {
-      cb(null, 'public/upload/')
-    },
-    filename: (req, file, cb) => {
-      cb(null, user_id);
-    }
-  });
-  const upload = multer({
-    storage: storage,
-  });
-  const up = upload.fields([{name: 'file', maxCount: 1}]);
 
   if(newPassword) await db.getQueryResult(`UPDATE Freelancer SET Pwd='${newPassword}' WHERE FID='${user_id}'`);
   if(newAge) await db.getQueryResult(`UPDATE Freelancer SET Age='${newAge}' WHERE FID='${user_id}'`);
@@ -79,6 +68,44 @@ router.get('/get_my_information', wrapper.asyncMiddleware(async (req, res, next)
   }
   console.log(result);
   res.send({result:result});
+}));
+
+router.get('/c_download_file', wrapper.asyncMiddleware(async (req, res, next)
+//working on
+  const user_id = req.session.user_id;
+  var sql = `SELECT DocName FROM OuterPortfolio WHERE FID = '${user_id}'`;
+  var fileName =await db.getQueryResult(sql);
+  fileName = fileName[0].DocName.toString();
+  var file_path = __dirname + '/upload/' + fileName[0].DocName;
+  console.log(fileName);
+  var options = {
+    directory: __dirname + "/download/",
+    filename: fileName
+  }
+  res.download(file_path,options, function(err){
+    if (err){
+      console.log(err);
+    } else {
+      console.log('downloading successful');
+    }
+  });
+}));
+router.get('/c_show_file', wrapper.asyncMiddleware(async (req, res, next) =>{
+  const user_id = req.session.user_id;
+  var result = await db.getQueryResult(`SELECT * FROM OuterPortfolio WHERE FID = '${user_id}'`);
+  res.send({result:result});
+}));
+router.get('/c_delete_file', wrapper.asyncMiddleware(async (req, res, next) =>{
+  const user_id = req.session.user_id;
+  var sql = `DELETE FROM OuterPortfolio WHERE FID  = '${user_id}'`;
+  if(await db.getQueryResult(sql)){//success
+    res.redirect('http://localhost:3000/user_information_fix');
+  }else{//fail
+    res.json(400, {
+                   error: 1,
+                   msg: "already exist file"
+   });
+  }
 }));
 
 module.exports = router;
