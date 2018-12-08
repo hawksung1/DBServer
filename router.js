@@ -8,6 +8,7 @@ const user_information_fix = require('./routers/user_information_fix');
 const img = require('./routers/img');
 const upload = require('./routers/upload');
 const request = require('./routers/request');
+const admin = require('./routers/admin');
 
 
 //게시판에 연결하게 하기위해 router에 변수 등록
@@ -21,6 +22,7 @@ router.use('/img', img);
 router.use('/request', request);
 router.use('/upload', upload);
 router.use('/user_information_fix', user_information_fix);
+router.use('/admin', admin);
 
 
 //board 사용하도록.
