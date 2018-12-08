@@ -8,8 +8,12 @@
 	<style>
 	td {border: solid 1px #000000}
 	#request {font-size:20px; background-color:#ccd0ce;    width: fit-content ;     cursor: -webkit-grab;}
-  #orderbydate {font-size:20px; background-color:#ccd0ce;    width: fit-content ;     cursor: -webkit-grab;}
-  #orderbypay {font-size:20px; background-color:#ccd0ce;    width: fit-content ;     cursor: -webkit-grab;}
+  #viewallreq  {font-size:15px; background-color:#ccd0ce;  border:1px solid blue;  width: 110px;     cursor: -webkit-grab;}
+  #orderbydate {font-size:15px; background-color:#ccd0ce;  border:1px solid blue;  width: 110px;     cursor: -webkit-grab;}
+  #orderbypay {font-size:15px; background-color:#ccd0ce;  border:1px solid blue;  width: 110px;     cursor: -webkit-grab;}
+  #viewallreq {font-size:15px; background-color:#ccd0ce;  border:1px solid blue;  width: 110px;     cursor: -webkit-grab;}
+  #viewreq_s_0 {font-size:15px; background-color:#ccd0ce;  border:1px solid blue;  width: 150px;     cursor: -webkit-grab;}
+  #viewreq_applyable {font-size:15px; background-color:#ccd0ce;  border:1px solid blue;  width: 150px;     cursor: -webkit-grab;}
 
   </style>
 </head>
@@ -108,9 +112,13 @@
 <br>
 <br>
 <br>
-<div id = "orderbydate"> 날짜순 정렬 </div>
-<br>
-<div id = "orderbypay"> 임금순 정렬 </div>
+<div id = 'container'>
+  <div id = "viewallreq" style="float:left"> 전체 의뢰 보기 </div>
+  <div id = "viewreq_s_0" style="float:left"> 구인중 의뢰 보기 </div>
+  <div id = "viewreq_applyable" style="float:left"> 지원가능 의뢰 보기 </div>
+  <div id = "orderbydate" style="float:left"> 날짜순 정렬 </div>
+  <div id = "orderbypay" style="float:left"> 임금순 정렬 </div>
+</div>
 
 <br>
 <div> 의뢰 목록 </div>
@@ -264,7 +272,60 @@
         });
 
       })
+      $('#viewallreq').click('viewallreq', function(){
+        $.ajax({
+            type: 'get',
+            url: '/request/viewallreq',
+            success: function(data) {
+          $('#req_list tbody').html("")
+          //$('#user_list tbody').empty();
+          for(var i = 0 ; i < data.length; i ++) {
+             var will_be_append = $('<tr><td>'+data[i].RID+'</td><td>' + data[i].PID+'</td><td>' + data[i].Pay+'</td><td>' + data[i].StartDate+'</td><td>' + data[i].EndDate+'</td><td>' + data[i].MinCareer+'</td><td>' + data[i].MinNum+'</td><td>' + data[i].MaxNum+'</td><td>' + data[i].CGrade+'</td><td>' + data[i].FGrade+'</td><td>' + data[i].State+'</td></tr>' )
+                 $('#req_list tbody').append(will_be_append)
+          }
+        },
+            error: function(err) {
+              console.log(err);
+            }
+        });
 
+      })
+      $('#viewreq_s_0').click('viewreq_s_0', function(){
+        $.ajax({
+            type: 'get',
+            url: '/request/viewreq_s_0',
+            success: function(data) {
+          $('#req_list tbody').html("")
+          //$('#user_list tbody').empty();
+          for(var i = 0 ; i < data.length; i ++) {
+             var will_be_append = $('<tr><td>'+data[i].RID+'</td><td>' + data[i].PID+'</td><td>' + data[i].Pay+'</td><td>' + data[i].StartDate+'</td><td>' + data[i].EndDate+'</td><td>' + data[i].MinCareer+'</td><td>' + data[i].MinNum+'</td><td>' + data[i].MaxNum+'</td><td>' + data[i].CGrade+'</td><td>' + data[i].FGrade+'</td><td>' + data[i].State+'</td></tr>' )
+                 $('#req_list tbody').append(will_be_append)
+          }
+        },
+            error: function(err) {
+              console.log(err);
+            }
+        });
+
+      })
+      $('#viewreq_applyable').click('viewreq_applyable', function(){
+        $.ajax({
+            type: 'get',
+            url: '/request/viewreq_applyable',
+            success: function(data) {
+          $('#req_list tbody').html("")
+          //$('#user_list tbody').empty();
+          for(var i = 0 ; i < data.length; i ++) {
+             var will_be_append = $('<tr><td>'+data[i].RID+'</td><td>' + data[i].PID+'</td><td>' + data[i].Pay+'</td><td>' + data[i].StartDate+'</td><td>' + data[i].EndDate+'</td><td>' + data[i].MinCareer+'</td><td>' + data[i].MinNum+'</td><td>' + data[i].MaxNum+'</td><td>' + data[i].CGrade+'</td><td>' + data[i].FGrade+'</td><td>' + data[i].State+'</td></tr>' )
+                 $('#req_list tbody').append(will_be_append)
+          }
+        },
+            error: function(err) {
+              console.log(err);
+            }
+        });
+
+      })
       $('#orderbydate').click('orderbydate', function(){
         $.ajax({
             type: 'get',

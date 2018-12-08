@@ -62,6 +62,60 @@ router.get('/comple_request', wrapper.asyncMiddleware(async (req, res, next) => 
   res.json(request);
 }));
 
+router.get('/viewallreq', wrapper.asyncMiddleware(async (req, res, next) => {
+  const request = await db.getQueryResult('SELECT * FROM Request ');
+  res.json(request);
+}));
+router.get('/viewreq_s_0', wrapper.asyncMiddleware(async (req, res, next) => {
+  const request = await db.getQueryResult('SELECT * FROM Request where State = 0');
+  res.json(request);
+}));
+
+/*쿼리가 ㅅㅂ..
+Create view langcount as
+Select RID, count(RID) as re
+from SkilledAt as s, RequireLang as r
+where FID = "moon" and s.LangName = r.LangName and s.Skill>= r.Skill
+group by r.RID;
+
+
+Create view Reqcount as
+Select RID, count(RID) as al
+from RequireLang
+group by RID;
+
+Select *
+from Request
+where RID IN(
+	Select l.RID
+	from langcount as l,Reqcount as r
+	where l.RID = r.RID and l.re = r.al);
+drop view langcount;
+drop view Reqcount;
+*/
+router.get('/viewreq_applyable', wrapper.asyncMiddleware(async (req, res, next) => {
+  //const request = await db.getQueryResult('SELECT * FROM Request where State = 0 ORDER BY StartDate');
+  var user_id = req.session.user_id;
+  await db.getQueryResult('Create view langcount as '
++'Select RID, count(RID) as re '
++'from SkilledAt as s, RequireLang as r '
++'where FID = "'+user_id+'" and s.LangName = r.LangName and s.Skill>= r.Skill '
++'group by r.RID; ');
+  await db.getQueryResult('Create view Reqcount as '
++'Select RID, count(RID) as al '
++'from RequireLang '
++'group by RID; ');
+  const request = await db.getQueryResult('Select * '
++'from Request '
++'where RID IN( '
++'Select l.RID ' 
++'from langcount as l,Reqcount as r '
++'where l.RID = r.RID and l.re = r.al and State = 0 ); ');
+  await db.getQueryResult('drop view langcount; ');
+  await db.getQueryResult('drop view Reqcount;');
+
+  res.json(request);
+}));
 router.get('/orderbydate', wrapper.asyncMiddleware(async (req, res, next) => {
   const request = await db.getQueryResult('SELECT * FROM Request where State = 0 ORDER BY StartDate');
   res.json(request);
