@@ -30,11 +30,18 @@
         age: <input id = "age" type="number" name="age" placeholder="20"/><br>
         career: <input id = "career" type="number" name="career"placeholder="3"/><br>
         major: <input id = "major" type="text" name="major"placeholder="Computer"/><br>
-        skilledAt: <input id = "skilledAt" type="text" name="skilledAt"/><br>
-        level: <input id = "level" type="number" name="level"/><br>
-        outer portfolio <input id="file" type="file" name="file"/>
+        <!-- skilledAt: <input id = "skilledAt" type="text" name="skilledAt"/><br>
+        level: <input id = "level" type="number" name="level"/><br> -->
+        <!-- outer portfolio <input id="file" type="file" name="file" -->
+        />
         <br>
         <input type="submit" value="submit" id="c_freelancer"/>
+    </form>
+    <form id = "insert_freelancer_skill">
+      <p> insert your programming language skills </p>
+      language: <input id = "language" type="text" name="language" required/><br>
+      level: <input id = "level" type="number" name="level" required/><br>
+      <input type="submit" value="submit"/>
     </form>
     <form id = "fix_projclient" style="display:none">
         password: <input id = "password" type="password" name="password"placeholder="****"/><br>
@@ -44,6 +51,7 @@
     </form>
 
       <script>
+
         function dispList(selectList) {
           var obj1 = document.getElementById("fix_freelancer");
           var obj2 = document.getElementById("fix_projclient");
@@ -110,8 +118,8 @@
       			phone: $("#fix_freelancer #phone").val(),
             career: $("#fix_freelancer #career").val(),
       			major: $("#fix_freelancer #major").val(),
-            skilledAt: $("#fix_freelancer #skilledAt").val(),
-            level: $("#fix_freelancer #level").val(),
+            // skilledAt: $("#fix_freelancer #skilledAt").val(),
+            // level: $("#fix_freelancer #level").val(),
             file: $("#fix_freelancer #file").val(),
           }
           $.ajax({
@@ -121,6 +129,24 @@
             // datatype: 'html',//json
             success: function(data) {
     		        alert("register success");
+    		    },
+            error: function(err) {
+              // alert("모든 항목을 정확히 채워주세요");
+              // console.log(err);
+            }
+          });
+        })
+        $('#insert_freelancer_skill').on('submit', function(){
+          var v = {
+            language: $("#insert_freelancer_skill #language").val(),
+            level: $("#insert_freelancer_skill #level").val(),
+          }
+          $.ajax({
+            type: 'post',
+            url: '/user_information_fix/insert_freelancer_skill',
+    		    data: v,
+            success: function(data) {
+    		        alert("insert success");
     		    },
             error: function(err) {
               // alert("모든 항목을 정확히 채워주세요");
