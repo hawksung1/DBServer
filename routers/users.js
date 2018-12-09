@@ -28,12 +28,6 @@ router.post('/insert_freelancer', wrapper.asyncMiddleware(async (req, res, next)
   const newCareer = req.body.career;
   const newMajor = req.body.major;
 
-  // console.log(newId);
-  // let result = {
-  //   originalName : newFile.oiriginalname,
-  //   size : newFile.size,
-  // }
-
   console.log(await db.getQueryResult(`INSERT INTO Freelancer (FID,FName,Age,PhoneNumber,Career,Major,Pwd) values ('${newId}','${newName}','${newAge}','${newPhone}','${newCareer}','${newMajor}',password('${newPassword}'))`));
   // console.log(await db.getQueryResult(`INSERT INTO OuterPortfolio (FID, FilePath, DocName) values('${newId}', '${newId}', '${newId}')`));
   res.json({success:true});
