@@ -27,8 +27,7 @@ router.post('/insert_freelancer', wrapper.asyncMiddleware(async (req, res, next)
   const newPhone = req.body.phone;
   const newCareer = req.body.career;
   const newMajor = req.body.major;
-  const newSkilledAt = req.body.skilledAt;
-  const newLevel = req.body.level;
+
   // console.log(newId);
   // let result = {
   //   originalName : newFile.oiriginalname,

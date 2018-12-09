@@ -36,6 +36,12 @@
         <br>
         <input type="submit" value="submit" id="c_freelancer"/>
     </form>
+    <form id = "insert_freelancer_skill">
+      <p> insert your programming language skills </p>
+      language: <input id = "language" type="text" name="language" required/><br>
+      level: <input id = "level" type="number" name="level" required/><br>
+      <input type="submit" value="submit"/>
+    </form>
     <form id = "fix_projclient" style="display:none">
         password: <input id = "password" type="password" name="password"placeholder="****"/><br>
         name: <input id  = "name" type="text" name="name" placeholder="Jhon"/><br>
@@ -44,7 +50,7 @@
     </form>
 
       <script>
-      
+
         function dispList(selectList) {
           var obj1 = document.getElementById("fix_freelancer");
           var obj2 = document.getElementById("fix_projclient");
@@ -122,6 +128,24 @@
             // datatype: 'html',//json
             success: function(data) {
     		        alert("register success");
+    		    },
+            error: function(err) {
+              // alert("모든 항목을 정확히 채워주세요");
+              // console.log(err);
+            }
+          });
+        })
+        $('#insert_freelancer_skill').on('submit', function(){
+          var v = {
+            language: $("#insert_freelancer_skill #language").val(),
+            level: $("#insert_freelancer_skill #level").val(),
+          }
+          $.ajax({
+            type: 'post',
+            url: '/user_information_fix/insert_freelancer_skill',
+    		    data: v,
+            success: function(data) {
+    		        alert("insert success");
     		    },
             error: function(err) {
               // alert("모든 항목을 정확히 채워주세요");

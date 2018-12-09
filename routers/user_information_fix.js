@@ -60,7 +60,14 @@ router.use(session({
 router.get('/', (req, res, next) => {
 	res.type('html').sendFile(path.join(__dirname, '../public/html/user_information_fix.html'));
 });
-
+router.post('/insert_freelancer_skill', wrapper.asyncMiddleware(async(req, res, next) =>{
+  const user_id = req.session.user_id;
+  const newLanguage = req.body.language;
+  const newLevel = req.body.level;
+  const sql = `INSERT INTO SkilledAt (FID, LangName, Skill) VALUES ('${user_id}', '${newLanguage}', '${newLevel}')`;
+  console.log(await db.getQueryResult(sql));
+  res.json({success:true});
+}));
 router.post('/fix_freelancer', wrapper.asyncMiddleware(async (req, res, next) =>{
   const user_id = req.session.user_id;
   const newPassword = req.body.password;

@@ -45,9 +45,6 @@
     age: <input id = "age" type="number" name="age" placeholder="20"required/><br>
     career: <input id = "career" type="number" name="career"placeholder="3" required/><br>
     major: <input id = "major" type="text" name="major"placeholder="Computer" required/><br>
-    skilledAt: <input id = "skilledAt" type="text" name="skilledAt" required/><br>
-    level: <input id = "level" type="number" name="level" required/><br>
-    <br>
     <input type="submit" value="submit" id="c_freelancer"/>
 </form>
 <form action="/upload" method = "post" id = "outerPortofolio"  enctype="multipart/form-data">
@@ -89,14 +86,12 @@
 			phone: $("#insert_freelancer #phone").val(),
       career: $("#insert_freelancer #career").val(),
 			major: $("#insert_freelancer #major").val(),
-      skilledAt: $("#insert_freelancer #skilledAt").val(),
-      level: $("#insert_freelancer #level").val(),
 		}
 		$.ajax({
         type: 'post',
         url: '/users/insert_freelancer',
 		    data: v,
-        // datatype: 'html',//json
+        // datatype: 'html',//jsons
         success: function(data) {
 		        alert("register success");
 		    },
