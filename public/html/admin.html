@@ -2,7 +2,7 @@
 <html lang="en">
   <head>
       <meta charset="UTF-8">
-      <title>admin+page</title>
+      <title>admin page</title>
       <script src="/js/jquery-3.2.1.min.js"></script>
       <script src="/js/socket.io.slim.js"></script>
   	<style>
@@ -14,8 +14,371 @@
   </head>
   <body>
     <p> admin page </p>
+    <button id="c_admin_Freelancer_manage"> ADMIN Freelancer Manage</button>
+      <table id = "freelancer_information_table">
+        <thead>
+          <tr>
+            <td>FID</td>
+            <td>FName</td>
+            <td>Age</td>
+            <td>PhoneNumber</td>
+            <td>Career</td>
+            <td>Major</td>
+            <td>GradAver</td>
+            <td>Language</td>
+            <td>Level</td>
+            <td>DocName</td>
+          </tr>
+        </thead>
+        <tbody>
+        </tbody>
+      </table>
+      <form id = "c_admin_Freelancer_delete">
+          freelancer id to delete: <input id = "delete_freelancer_id" type="text" name="insert_freelancer_id" required/><br>
+          <input type="submit" value="delete"/>
+      </form>
+      <form id = "c_admin_Freelancer_update">
+          freelancer id to update: <input id = "update_freelancer_id" type="text" name="update_freelancer_id" required/><br>
+          name: <input id = "update_freelancer_name" type="text" name="update_freelancer_name"/><br>
+          phone: <input id = "update_freelancer_phone" type="text" name="update_freelancer_phone"/><br>
+          age: <input id = "update_freelancer_age" type="number" name="update_freelancer_age"/><br>
+          major: <input id = "update_freelancer_major" type="text" name="update_freelancer_major"/><br>
+          career: <input id = "update_freelancer_career" type="number" name="update_freelancer_career"/><br>
+          language: <input id = "update_freelancer_skilledAt" type="update_freelancer_text"/><br>
+          level: <input id = "update_freelancer_level" type="number"/><br>
+          <input type="submit" value="update"/>
+      </form>
+      <form action="/upload/update" method = "post" id = "outerPortofolio"  enctype="multipart/form-data">
+        freelancer id <input id="upload_id" type="text" name="upload_id"/>
+        outer portfolio (English File Only) <input id="file" type="file" name="file"/>
+      <input type="submit" value="submit"/>
+    </form>
+    <br>
+    <button id="c_admin_ProjClient_manage"> ADMIN Projclient Manage</button>
+      <table id = "projclient_information_table">
+        <thead>
+          <tr>
+            <td>PID</td>
+            <td>CName</td>
+            <td>PhoneNumber</td>
+            <td>GradAver</td>
+          </tr>
+        </thead>
+        <tbody>
+        </tbody>
+      </table>
+      <form id = "c_admin_ProjClient_delete">
+          projclient id to delete: <input id = "delete_projclient_id" type="text" name="delete_projclient_id" required/><br>
+          <input type="submit" value="delete"/>
+      </form>
+      <form id = "c_admin_ProjClient_update">
+          projclient id to update: <input id = "update_projclient_id" type="text" name="update_projclient_id" required/><br>
+          name: <input id = "update_projclient_name" type="text" name="update_projclient_name"/><br>
+          phone: <input id = "update_projclient_phone" type="text" name="update_projclient_phone"/><br>
+          <input type="submit" value="update"/>
+      </form>
+    <br>
+    <button id="c_admin_request_manage"> ADMIN Request Manage</button>
+      <table id = "request_information_table">
+        <thead>
+          <tr>
+            <td>의뢰번호</td>
+            <td>의뢰자ID</td>
+            <td>급여</td>
+            <td>시작날짜</td>
+            <td>완료날짜</td>
+            <td>최소경력조건</td>
+            <td>최소참여</td>
+            <td>최대참여</td>
+            <td>의뢰자평점</td>
+            <td>프리랜서평점</td>
+            <td>의뢰상태</td>
+          </tr>
+        </thead>
+        <tbody>
+        </tbody>
+      </table>
+      <form id = "c_admin_request_delete">
+          request id to delete: <input id = "delete_request_rid" type="text" name="delete_request_rid" required/><br>
+          projclient id to delete: <input id = "delete_request_pid" type="text" name="delete_request_pid" required/><br>
+          <input type="submit" value="delete"/>
+      </form>
+      <form id = "c_admin_request_update">
+          request id to update: <input id = "update_request_rid" type="text" name="update_request_rid" required/><br>
+          projclint id to update: <input id = "update_request_pid" type="text" name="update_request_pid" required/><br>
+          pay: <input id = "update_request_pay" type="number" name="update_request_pay"/><br>
+          startdate: <input id = "update_request_startdate" type="number" name="update_request_startdate"/><br>
+          enddate: <input id = "update_request_enddate" type="number" name="update_request_enddate"/><br>
+          mincareer: <input id = "update_request_mincareer" type="number" name="update_request_mincareer"/><br>
+          minnum: <input id = "update_request_minnum" type="number" name="update_request_minnum"/><br>
+          maxnum: <input id = "update_request_maxnum" type="number" name="update_request_maxnum"/><br>
+          cgrade: <input id = "update_request_cgrade" type="number" name="update_request_cgrade"/><br>
+          fgrade: <input id = "update_request_fgrade" type="number" name="update_request_fgrade"/><br>
+          <input type="submit" value="update"/>
+      </form>
+    <br>
+    <button id="c_admin_Team_manage"> ADMIN Team Manage</button>
+      <table id = "team_information_table">
+        <thead>
+          <tr>
+            <td>TeamName</td>
+            <td>ProjLeaderID</td>
+            <td>MemberID</td>
+          </tr>
+        </thead>
+        <tbody>
+        </tbody>
+      </table>
+      <form id = "c_admin_team_delete">
+          team name to delete: <input id = "delete_team_name" type="text" name="delete_team_name" required/><br>
+          <input type="submit" value="delete"/>
+      </form>
+      <form id = "c_admin_team_update">
+          team name to update: <input id = "update_team_name" type="text" name="update_team_name" required/><br>
+          MemberID: <input id = "update_team_memberid" type="text" name="update_team_memberid" /><br>
+          ProjLeaderID: <input id = "update_team_projleaderid" type="text" name="update_team_projleaderid" /><br>
+          <input type="submit" value="update"/>
+      </form>
     <script type="text/javascript">
+      $(function() {
+        var socket = io();
+        socket.on('asd', function(msg) {
+          console.log(msg);
+        });
+        $('#c_admin_Freelancer_manage').click(function(){
+          $.ajax({
+             type: 'get',
+             url: '/admin/c_admin_Freelancer_manage',
+             success: function(data){
+               $('#freelancer_information_table tbody').html("")
+               //$('#user_list tbody').empty();
+               for(var i = 0 ; i < data.length; i ++) {
+                  var will_be_append = $('<tr><td>'+data[i].FID+'</td><td>' + data[i].FName+'</td><td>' +
+                    data[i].Age+'</td><td>' + data[i].PhoneNumber+'</td><td>' +
+                      data[i].Career+'</td><td>' + data[i].Major+'</td><td>' +
+                        data[i].GradAver+'</td><td>' + data[i].LangName+'</td><td>' +
+                          data[i].Skill+'</td><td>' + data[i].DocName+'</td></tr>')
 
+                 $('#freelancer_information_table tbody').append(will_be_append)
+               }
+             },
+             error: function(err) {
+               console.log(err);
+             }
+         });
+        })
+        $('#c_admin_Freelancer_delete').on('submit', function(){
+          var v = {
+            id: $("#c_admin_Freelancer_delete #delete_projclient_id").val(),
+          }
+          $.ajax({
+            type: 'post',
+            url: '/admin/c_admin_Freelancer_delete',
+            data: v,
+            success: function(data){
+
+            },
+            error:  function(err){
+              console.log(err);
+            }
+          });
+        })
+        $('#c_admin_Freelancer_update').on('submit', function(){
+          var v = {
+            id: $("#c_admin_Freelancer_update #update_freelancer_id").val(),
+            age: $("#c_admin_Freelancer_update #update_freelancer_age").val(),
+      			phone: $("#c_admin_Freelancer_update #update_freelancer_phone").val(),
+            name: $("#c_admin_Freelancer_update #update_freelancer_name").val(),
+      			major: $("#c_admin_Freelancer_update #update_freelancer_major").val(),
+            career: $("#c_admin_Freelancer_update #update_freelancer_career").val(),
+            language: $("#c_admin_Freelancer_update #update_freelancer_skilledAt").val(),
+            level: $("#c_admin_Freelancer_update #update_freelancer_level").val(),
+            // file: $("#c_admin_Freelancer_update #update_freelancer_file").val(),
+          }
+          $.ajax({
+            type: 'post',
+            url: '/admin/c_admin_Freelancer_update',
+            data: v,
+            success: function(data){
+
+            },
+            error:  function(err){
+              console.log(err);
+            }
+          });
+        })
+        $('#c_admin_ProjClient_manage').click(function(){
+          $.ajax({
+             type: 'get',
+             url: '/admin/c_admin_ProjClient_manage',
+             success: function(data){
+               $('#projclient_information_table tbody').html("")
+               //$('#user_list tbody').empty();
+               for(var i = 0 ; i < data.length; i ++) {
+                  var will_be_append = $('<tr><td>'+data[i].PID+'</td><td>' + data[i].CName+'</td><td>' +
+                    data[i].PhoneNumber+'</td><td>' + data[i].GradAver+'</td></tr>')
+
+                 $('#projclient_information_table tbody').append(will_be_append)
+               }
+             },
+             error: function(err) {
+               console.log(err);
+             }
+           });
+        })
+        $('#c_admin_ProjClient_delete').on('submit', function(){
+          var v = {
+            id: $("#c_admin_ProjClient_delete #insert_freelancer_id").val(),
+          }
+          $.ajax({
+            type: 'post',
+            url: '/admin/c_admin_ProjClient_delete',
+            data: v,
+            success: function(data){
+
+            },
+            error:  function(err){
+              console.log(err);
+            }
+          });
+        })
+        $('#c_admin_ProjClient_update').on('submit', function(){
+          var v = {
+            id: $("#c_admin_ProjClient_update #update_projclient_id").val(),
+      			phone: $("#c_admin_ProjClient_update #update_projclient_phone").val(),
+            name: $("#c_admin_ProjClient_update #update_projclient_name").val(),
+          }
+          $.ajax({
+            type: 'post',
+            url: '/admin/c_admin_ProjClient_update',
+            data: v,
+            success: function(data){
+
+            },
+            error:  function(err){
+              console.log(err);
+            }
+          });
+        })
+        $('#c_admin_request_manage').click(function(){
+          $.ajax({
+             type: 'get',
+             url: '/admin/c_admin_request_manage',
+             success: function(data){
+               $('#request_information_table tbody').html("")
+               //$('#user_list tbody').empty();
+               for(var i = 0 ; i < data.length; i ++) {
+                 var will_be_append = $('<tr><td>'+data[i].RID+'</td><td>' + data[i].PID+'</td><td>' +
+                   data[i].Pay+'</td><td>' + data[i].StartDate+'</td><td>' +
+                     data[i].EndDate+'</td><td>' + data[i].MinCareer+'</td><td>' +
+                       data[i].MinNum+'</td><td>' + data[i].MaxNum+'</td><td>' +
+                         data[i].CGrade+'</td><td>' + data[i].FGrade+'</td><td>' +
+                           data[i].State+'</td></tr>' )
+
+                 $('#request_information_table tbody').append(will_be_append)
+               }
+             },
+             error: function(err) {
+               console.log(err);
+             }
+           });
+        })
+        $('#c_admin_request_delete').on('submit', function(){
+          var v = {
+            rid: $("#c_admin_request_delete #delete_request_rid").val(),
+            pid: $("#c_admin_request_delete #delete_request_pid").val(),
+          }
+          $.ajax({
+            type: 'post',
+            url: '/admin/c_admin_request_delete',
+            data: v,
+            success: function(data){
+
+            },
+            error:  function(err){
+              console.log(err);
+            }
+          });
+        })
+        $('#c_admin_request_update').on('submit', function(){
+          var v = {
+            rid: $("#c_admin_request_update #update_request_rid").val(),
+      			pid: $("#c_admin_request_update #update_request_pid").val(),
+            pay: $("#c_admin_request_update #update_request_pay").val(),
+            startdate: $("#c_admin_request_update #update_request_startdate").val(),
+            enddate: $("#c_admin_request_update #update_request_enddate").val(),
+            mincareer: $("#c_admin_request_update #update_request_mincareer").val(),
+            minnum: $("#c_admin_request_update #update_request_minnum").val(),
+            maxnum: $("#c_admin_request_update #update_request_maxnum").val(),
+            cgrade: $("#c_admin_request_update #update_request_cgrade").val(),
+            fgrade: $("#c_admin_request_update #update_request_fgrade").val(),
+          }
+          $.ajax({
+            type: 'post',
+            url: '/admin/c_admin_request_update',
+            data: v,
+            success: function(data){
+
+            },
+            error:  function(err){
+              console.log(err);
+            }
+          });
+        })
+        $('#c_admin_Team_manage').click(function(){
+          $.ajax({
+             type: 'get',
+             url: '/admin/c_admin_Team_manage',
+             success: function(data){
+               $('#team_information_table tbody').html("")
+               //$('#user_list tbody').empty();
+               for(var i = 0 ; i < data.length; i ++) {
+                  var will_be_append = $('<tr><td>'+data[i].TeamName+'</td><td>' + data[i].ProjLeaderID+'</td><td>' +
+                    data[i].MemberID+'</td></tr>')
+
+                 $('#team_information_table tbody').append(will_be_append)
+               }
+             },
+             error: function(err) {
+               console.log(err);
+             }
+          });
+        })
+        $('#c_admin_team_delete').on('submit', function(){
+          var v = {
+            teamname: $("#c_admin_team_delete #delete_team_name").val(),
+          }
+          $.ajax({
+            type: 'post',
+            url: '/admin/c_admin_team_delete',
+            data: v,
+            success: function(data){
+
+            },
+            error:  function(err){
+              console.log(err);
+            }
+          });
+        })
+        $('#c_admin_team_update').on('submit', function(){
+          var v = {
+            teamname: $("#c_admin_team_update #update_team_name").val(),
+      			memberid: $("#c_admin_team_update #update_team_memberid").val(),
+            projleaderid: $("#c_admin_team_update #update_team_projleaderid").val(),
+          }
+          $.ajax({
+            type: 'post',
+            url: '/admin/c_admin_team_update',
+            data: v,
+            success: function(data){
+
+            },
+            error:  function(err){
+              console.log(err);
+            }
+          });
+        })
+     })
     </script>
   </body>
 </html>

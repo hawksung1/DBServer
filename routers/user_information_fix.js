@@ -76,9 +76,9 @@ router.post('/fix_freelancer', wrapper.asyncMiddleware(async (req, res, next) =>
   const newPhone = req.body.phone;
   const newCareer = req.body.career;
   const newMajor = req.body.major;
-  const newSkilledAt = req.body.skilledAt;
-  const newLevel = req.body.level;
-  const newFile = req.body.file;
+  // const newSkilledAt = req.body.skilledAt;
+  // const newLevel = req.body.level;
+  // const newFile = req.body.file;
 
   if(newPassword) await db.getQueryResult(`UPDATE Freelancer SET Pwd=password('${newPassword}') WHERE FID='${user_id}'`);
   if(newAge) await db.getQueryResult(`UPDATE Freelancer SET Age='${newAge}' WHERE FID='${user_id}'`);
