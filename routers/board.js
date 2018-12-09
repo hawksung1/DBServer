@@ -6,11 +6,17 @@ const router = express.Router();
 const path = require('path');
 
 router.get('/', (req, res, next) => {
-	//console.log(__dirname, '../public/html/board.html');
 	res.type('html').sendFile(path.join(__dirname, '../public/html/board.html'));
-	//res.sendFile(__dirname+"/../public/html/board.html");
+	//var url = req.url;
+	//url = url.split('/');
+	//console.log("url은.."+ url);
 });
-
+router.get('/info', (req, res, next) => {
+	res.type('html').sendFile(path.join(__dirname, '../public/html/req_info.html'));
+	//var url = req.url;
+	//url = url.split('/');
+	//console.log("url은.."+ url);
+});
 module.exports = router;
 
 

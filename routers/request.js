@@ -15,19 +15,46 @@ router.use(session({
   store: new FileStore()
 }));
 
+router.post('/info', wrapper.asyncMiddleware(async (req, res, next) => {
+  var obj = req.body.curl;
+  obj = obj.split("?");
+  obj = obj[1];
+  //console.log("url은.."+obj);
+  const request = await db.getQueryResult('SELECT * FROM Request where RID = "'+obj+'"');
+
+  res.json(request);
+}));
+
+router.post('/infolang', wrapper.asyncMiddleware(async (req, res, next) => {
+  var obj = req.body.curl;
+  obj = obj.split("?");
+  obj = obj[1];
+  //console.log("url은.."+obj);
+  const request = await db.getQueryResult('SELECT * FROM RequireLang where RID = "'+obj+'"');
+
+  res.json(request);
+}));
+
 router.get('/', wrapper.asyncMiddleware(async (req, res, next) => {
   const request = await db.getQueryResult('SELECT * FROM Request where State = 0');
   res.json(request);
 }));
-
 router.get('/cur_log', wrapper.asyncMiddleware(async (req, res, next) => {
   var user_id = req.session.user_id;
-  //console.log("session id = " + user_id);
   var result = user_id;
   res.json(result);
   //res.send({result:result});
 }));
 
+router.post('/onclick', wrapper.asyncMiddleware(async (req, res, next) => {
+  var user_id = req.session.user_id;
+  const newId = req.body.id;
+
+  //console.log(req.url);
+  var result = user_id;
+
+  res.json(result);
+}));
 router.get('/doing', wrapper.asyncMiddleware(async (req, res, next) => {
   var user_id = req.session.user_id;
   console.log("session id = " + user_id);
@@ -108,7 +135,7 @@ router.get('/viewreq_applyable', wrapper.asyncMiddleware(async (req, res, next) 
   const request = await db.getQueryResult('Select * '
 +'from Request '
 +'where RID IN( '
-+'Select l.RID ' 
++'Select l.RID '
 +'from langcount as l,Reqcount as r '
 +'where l.RID = r.RID and l.re = r.al and State = 0 ); ');
   await db.getQueryResult('drop view langcount; ');

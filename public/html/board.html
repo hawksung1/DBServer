@@ -121,6 +121,7 @@
 </div>
 
 <br>
+<br>
 <div> 의뢰 목록 </div>
 <div>
 	<!--
@@ -128,7 +129,7 @@
 	-->
 	<table id = "req_list">
     <thead>
-      <tr>
+      <tr id = "aa">
         <td>의뢰번호</td>
         <td>의뢰자ID</td>
         <td>급여</td>
@@ -156,29 +157,55 @@
 </form>
 
 <script>
+  /*
+  function gotoR(e){
+    console.log(e);
+  //alert($(this).attr("id"));
+    alert(e);
+  }
+  */
+  /*
   $('#req_list tr').each(function(){
     console.log("gsdg");
         var tr = $(this);
         var td = tr.children();
         var text = td.eq(2).text();
-        });
+    });
+    */
     $(function() {
       var socket = io();
       var get = 'a';
+
+      $.fn.reqonclick = function(rid){
+        var v = {
+        id: rid,
+  		}
+        $.ajax({
+            type: 'post',
+            url: '/request/onclick',
+            data: v,
+            success: function(data) {
+              console.log(rid);
+              location.href="/board/info?"+rid;
+              //console.log(msg2);
+          },
+            error: function(err) {
+              console.log(err);
+            }
+        });
+      }
       //asd는 모르겟고... 그냥 통신 시작될때 작동하는 함수.
       socket.on('asd', function(msg) {
+        //현재 사용자 출력
         $.ajax({
             type: 'get',
             url: '/request/cur_log',
             data: {data:get},
             //data: getid,
             success: function(data) {
-          //$('#cur_log').html("")
-          //$('#user_list tbody').empty();
-          //$('#cur_log').html(result.result);
           $('#cur_log').val(data);
 
-        },
+          },
             error: function(err) {
               console.log(err);
             }
@@ -192,7 +219,7 @@
           $('#req_list tbody').html("")
           //$('#user_list tbody').empty();
           for(var i = 0 ; i < data.length; i ++) {
-             var will_be_append = $('<tr><td>'+data[i].RID+'</td><td>' + data[i].PID+'</td><td>' +
+             var will_be_append = $( '<tr onclick = $(this).reqonclick('+ data[i].RID+')><td>' +data[i].RID+'</td><td>' + data[i].PID+'</td><td>' +
                data[i].Pay+'</td><td>' + data[i].StartDate+'</td><td>' +
                  data[i].EndDate+'</td><td>' + data[i].MinCareer+'</td><td>' +
                    data[i].MinNum+'</td><td>' + data[i].MaxNum+'</td><td>' +
@@ -213,8 +240,8 @@
             success: function(data) {
           $('#doing_request tbody').html("")
           //$('#user_list tbody').empty();
-          for(var i = 0 ; i < data.length; i ++) {
-             var will_be_append = $('<tr><td>'+data[i].RID+'</td><td>' + data[i].PID+'</td><td>' +
+          for(var i = 0 ; i < data.length; i++) {
+             var will_be_append = $( '<tr onclick = $(this).reqonclick('+ data[i].RID+')><td>' +data[i].RID+'</td><td>' + data[i].PID+'</td><td>' +
                data[i].Pay+'</td><td>' + data[i].StartDate+'</td><td>' +
                  data[i].EndDate+'</td><td>' + data[i].MinCareer+'</td><td>' +
                    data[i].MinNum+'</td><td>' + data[i].MaxNum+'</td><td>' +
@@ -235,7 +262,7 @@
           $('#apply_request tbody').html("")
           //$('#user_list tbody').empty();
           for(var i = 0 ; i < data.length; i ++) {
-             var will_be_append = $('<tr><td>'+data[i].RID+'</td><td>' + data[i].PID+'</td><td>' +
+             var will_be_append = $('<tr onclick = $(this).reqonclick('+ data[i].RID+')><td>'+data[i].RID+'</td><td>' + data[i].PID+'</td><td>' +
                data[i].Pay+'</td><td>' + data[i].StartDate+'</td><td>' +
                  data[i].EndDate+'</td><td>' + data[i].MinCareer+'</td><td>' +
                    data[i].MinNum+'</td><td>' + data[i].MaxNum+'</td><td>' +
@@ -256,7 +283,7 @@
           $('#comple_request tbody').html("")
           //$('#user_list tbody').empty();
           for(var i = 0 ; i < data.length; i ++) {
-             var will_be_append = $('<tr><td>'+data[i].RID+'</td><td>' + data[i].PID+'</td><td>' +
+             var will_be_append = $('<tr onclick = $(this).reqonclick('+ data[i].RID+')><td>'+data[i].RID+'</td><td>' + data[i].PID+'</td><td>' +
                data[i].Pay+'</td><td>' + data[i].StartDate+'</td><td>' +
                  data[i].EndDate+'</td><td>' + data[i].MinCareer+'</td><td>' +
                    data[i].MinNum+'</td><td>' + data[i].MaxNum+'</td><td>' +
@@ -272,6 +299,15 @@
         });
 
       })
+
+      /*
+      $('#req_list').delegate( '#bb_0', 'click', function() {
+        alert(document.getElementById('bb_0').cells[1].innerHTML);
+      });
+      $('#req_list').delegate('#aa', 'click', function() {
+        alert("aa눌렀다아");
+      });
+      */
       $('#viewallreq').click('viewallreq', function(){
         $.ajax({
             type: 'get',
@@ -280,7 +316,7 @@
           $('#req_list tbody').html("")
           //$('#user_list tbody').empty();
           for(var i = 0 ; i < data.length; i ++) {
-             var will_be_append = $('<tr><td>'+data[i].RID+'</td><td>' + data[i].PID+'</td><td>' + data[i].Pay+'</td><td>' + data[i].StartDate+'</td><td>' + data[i].EndDate+'</td><td>' + data[i].MinCareer+'</td><td>' + data[i].MinNum+'</td><td>' + data[i].MaxNum+'</td><td>' + data[i].CGrade+'</td><td>' + data[i].FGrade+'</td><td>' + data[i].State+'</td></tr>' )
+             var will_be_append = $('<tr onclick = $(this).reqonclick('+ data[i].RID+')><td>'+data[i].RID+'</td><td>' + data[i].PID+'</td><td>' + data[i].Pay+'</td><td>' + data[i].StartDate+'</td><td>' + data[i].EndDate+'</td><td>' + data[i].MinCareer+'</td><td>' + data[i].MinNum+'</td><td>' + data[i].MaxNum+'</td><td>' + data[i].CGrade+'</td><td>' + data[i].FGrade+'</td><td>' + data[i].State+'</td></tr>' )
                  $('#req_list tbody').append(will_be_append)
           }
         },
@@ -298,7 +334,7 @@
           $('#req_list tbody').html("")
           //$('#user_list tbody').empty();
           for(var i = 0 ; i < data.length; i ++) {
-             var will_be_append = $('<tr><td>'+data[i].RID+'</td><td>' + data[i].PID+'</td><td>' + data[i].Pay+'</td><td>' + data[i].StartDate+'</td><td>' + data[i].EndDate+'</td><td>' + data[i].MinCareer+'</td><td>' + data[i].MinNum+'</td><td>' + data[i].MaxNum+'</td><td>' + data[i].CGrade+'</td><td>' + data[i].FGrade+'</td><td>' + data[i].State+'</td></tr>' )
+             var will_be_append = $('<tr onclick = $(this).reqonclick('+ data[i].RID+')><td>'+data[i].RID+'</td><td>' + data[i].PID+'</td><td>' + data[i].Pay+'</td><td>' + data[i].StartDate+'</td><td>' + data[i].EndDate+'</td><td>' + data[i].MinCareer+'</td><td>' + data[i].MinNum+'</td><td>' + data[i].MaxNum+'</td><td>' + data[i].CGrade+'</td><td>' + data[i].FGrade+'</td><td>' + data[i].State+'</td></tr>' )
                  $('#req_list tbody').append(will_be_append)
           }
         },
@@ -316,7 +352,7 @@
           $('#req_list tbody').html("")
           //$('#user_list tbody').empty();
           for(var i = 0 ; i < data.length; i ++) {
-             var will_be_append = $('<tr><td>'+data[i].RID+'</td><td>' + data[i].PID+'</td><td>' + data[i].Pay+'</td><td>' + data[i].StartDate+'</td><td>' + data[i].EndDate+'</td><td>' + data[i].MinCareer+'</td><td>' + data[i].MinNum+'</td><td>' + data[i].MaxNum+'</td><td>' + data[i].CGrade+'</td><td>' + data[i].FGrade+'</td><td>' + data[i].State+'</td></tr>' )
+             var will_be_append = $('<tr onclick = $(this).reqonclick('+ data[i].RID+')><td>'+data[i].RID+'</td><td>' + data[i].PID+'</td><td>' + data[i].Pay+'</td><td>' + data[i].StartDate+'</td><td>' + data[i].EndDate+'</td><td>' + data[i].MinCareer+'</td><td>' + data[i].MinNum+'</td><td>' + data[i].MaxNum+'</td><td>' + data[i].CGrade+'</td><td>' + data[i].FGrade+'</td><td>' + data[i].State+'</td></tr>' )
                  $('#req_list tbody').append(will_be_append)
           }
         },
@@ -334,7 +370,7 @@
           $('#req_list tbody').html("")
           //$('#user_list tbody').empty();
           for(var i = 0 ; i < data.length; i ++) {
-             var will_be_append = $('<tr><td>'+data[i].RID+'</td><td>' + data[i].PID+'</td><td>' + data[i].Pay+'</td><td>' + data[i].StartDate+'</td><td>' + data[i].EndDate+'</td><td>' + data[i].MinCareer+'</td><td>' + data[i].MinNum+'</td><td>' + data[i].MaxNum+'</td><td>' + data[i].CGrade+'</td><td>' + data[i].FGrade+'</td><td>' + data[i].State+'</td></tr>' )
+             var will_be_append = $('<tr onclick = $(this).reqonclick('+ data[i].RID+')><td>'+data[i].RID+'</td><td>' + data[i].PID+'</td><td>' + data[i].Pay+'</td><td>' + data[i].StartDate+'</td><td>' + data[i].EndDate+'</td><td>' + data[i].MinCareer+'</td><td>' + data[i].MinNum+'</td><td>' + data[i].MaxNum+'</td><td>' + data[i].CGrade+'</td><td>' + data[i].FGrade+'</td><td>' + data[i].State+'</td></tr>' )
                  $('#req_list tbody').append(will_be_append)
           }
         },
@@ -352,7 +388,7 @@
           $('#req_list tbody').html("")
           //$('#user_list tbody').empty();
           for(var i = 0 ; i < data.length; i ++) {
-             var will_be_append = $('<tr><td>'+data[i].RID+'</td><td>' + data[i].PID+'</td><td>' + data[i].Pay+'</td><td>' + data[i].StartDate+'</td><td>' + data[i].EndDate+'</td><td>' + data[i].MinCareer+'</td><td>' + data[i].MinNum+'</td><td>' + data[i].MaxNum+'</td><td>' + data[i].CGrade+'</td><td>' + data[i].FGrade+'</td><td>' + data[i].State+'</td></tr>' )
+             var will_be_append = $('<tr onclick = $(this).reqonclick('+ data[i].RID+')><td>'+data[i].RID+'</td><td>' + data[i].PID+'</td><td>' + data[i].Pay+'</td><td>' + data[i].StartDate+'</td><td>' + data[i].EndDate+'</td><td>' + data[i].MinCareer+'</td><td>' + data[i].MinNum+'</td><td>' + data[i].MaxNum+'</td><td>' + data[i].CGrade+'</td><td>' + data[i].FGrade+'</td><td>' + data[i].State+'</td></tr>' )
                  $('#req_list tbody').append(will_be_append)
           }
         },
