@@ -60,7 +60,7 @@
 
 
 
-<div>
+<div id='team_list_div'>
 <div >팀 목록가져오기</div>
 <table id = "team_list">
 <thead>
@@ -143,13 +143,15 @@
 
 
 	  <!-- 함수3. 선택된 의뢰를 신청한팀 목록에서 팀을 눌러 신청완료 후 의뢰 진행 상태 변경 -->
-	$.fn.selectTeam = function(teamN){
+	$.fn.selectTeam = function(team, rid){
 
-		console.log("넘어온 팀 이름: "+teamN);
-
+		console.log("넘어온 팀 이름: "+team);
+    console.log("넘어온 팀 이름: "+rid);
+    rid = Number(rid);
 
 		var v = {
-			teamName: teamN,
+			teamName: team,
+      rID: rid,
 
 		}
 
@@ -190,10 +192,15 @@
 		  for(var i = 0 ; i < data.length; i ++) {
 			 var tr_num = i+1;
 			 var teamN = data[i].TName;
+       var rID = data[i].RID;
+       rID +="";
+
 			 console.log(teamN);
+       console.log(rID);
+
 		     var will_be_append = $( '<tr ><td>'+tr_num+'</td>'
 			 +'<td>'+data[i].RID+'</td>'
-			 +'<td onclick=$(this).selectTeam("'+data[i].TName+'")>'+data[i].TName+'</td></tr>')
+			 +'<td onclick=$(this).selectTeam("'+teamN+'","'+rID+'")>'+data[i].TName+'</td></tr>')
              $('#team_list tbody').append(will_be_append)
 		  }
 		 console.log("신청한 팀목록 불러오기 성공");
