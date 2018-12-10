@@ -2,8 +2,23 @@
 const express = require('express');
 const router = express.Router();
 const wrapper = require('../modules/wrapper');
+const session = require('express-session');
 const db = require('../modules/db');
+const multer = require('multer');
 const path = require('path');
+
+var FileStore = require('session-file-store')(session);
+var bodyParser = require('body-parser');
+
+router.use(bodyParser.urlencoded({extended:false}));
+router.use(session({
+  secret: 'fqiwofqewmf!@#$fqf',
+  resave: false,
+  saveUninitialized: true,
+  store: new FileStore()
+}));
+
+
 
 router.get('/', (req, res, next) => {
 	//console.log(__dirname, '../public/html/board.html');
@@ -12,6 +27,9 @@ router.get('/', (req, res, next) => {
 });
 
 router.get('/request', wrapper.asyncMiddleware(async (req, res, next) => {
+  var user_id = req.session.user_id;
+  console.log("session id = " + user_id);
+
   const request = await db.getQueryResult('SELECT * FROM Request ');
   res.json(request);
 }));
