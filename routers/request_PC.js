@@ -2,8 +2,23 @@
 const express = require('express');
 const router = express.Router();
 const wrapper = require('../modules/wrapper');
+const session = require('express-session');
 const db = require('../modules/db');
+const multer = require('multer');
 const path = require('path');
+
+var FileStore = require('session-file-store')(session);
+var bodyParser = require('body-parser');
+
+router.use(bodyParser.urlencoded({extended:false}));
+router.use(session({
+  secret: 'fqiwofqewmf!@#$fqf',
+  resave: false,
+  saveUninitialized: true,
+  store: new FileStore()
+}));
+
+
 
 router.get('/', (req, res, next) => {
 	//console.log(__dirname, '../public/html/board.html');
@@ -12,7 +27,10 @@ router.get('/', (req, res, next) => {
 });
 
 router.get('/request', wrapper.asyncMiddleware(async (req, res, next) => {
-  const request = await db.getQueryResult('SELECT * FROM Request ');
+  var user_id = req.session.user_id;
+  console.log("session id = " + user_id);
+
+  const request = await db.getQueryResult('SELECT * FROM Request WHERE PID =  "'+user_id+'" ');
   res.json(request);
 }));
 
@@ -28,16 +46,22 @@ router.get('/requestPay', wrapper.asyncMiddleware(async (req, res, next) => {
 
 
 router.post('/insert', wrapper.asyncMiddleware(async (req, res, next) =>{
-  const newRnum = req.body.rnum;
-  const newName = req.body.name;
+  const newRID = req.body.rnum;
+  const newPID = req.session.user_id;
   const newPay = req.body.pay;
   const newMinNum = req.body.minNum;
   const newMaxNum = req.body.maxNum;
   const newCyear = req.body.cyear;
+
+  //const newPID = req.session.user_id;
+  //console.log("session id = " + user_id);
+console.log("의뢰 생성 session id = " + newPID);
+//  { newPID: req.session.user_id }
+
   //var newStartDate = 'SELECT NOW()';
 
 
-  console.log(await db.getQueryResult(`INSERT INTO Request ( RID, PAY, MinCareer, MinNum, MaxNum) values ('${newRnum}','${newPay}','${newCyear}','${newMinNum}','${newMaxNum}' )`));
+  console.log(await db.getQueryResult(`INSERT INTO Request (PID, RID, PAY, MinCareer, MinNum, MaxNum) values ('${newPID}', '${newRID}','${newPay}','${newCyear}','${newMinNum}','${newMaxNum}' )`));
 
   //console.log(await db.getQueryResult(`INSERT INTO Freelancer (FID,FName,Age,PhoneNumber,Career,Major,Pwd) values ('${newId}','${newName}','${newAge}','${newPhone}','${newCareer}','${newMajor}','${newPassword}')`));
   res.json({success: true});

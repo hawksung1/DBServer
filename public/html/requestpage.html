@@ -18,6 +18,8 @@
 </head>
 <body>
 <div>
+  <button id="c_session_check">session check</button>
+  <p id='get_output'>  </p>
 <input type='button' value ='페이지 이동' onclick="movepage()"/>
 <script> function movepage(){ location.href="/request_create.js"}</script>
 </div>
@@ -58,7 +60,7 @@
 
 
 
-<div>
+<div id='team_list_div'>
 <div >팀 목록가져오기</div>
 <table id = "team_list">
 <thead>
@@ -78,7 +80,7 @@
 
 <div id='insert'>
 <div>의뢰번호 : <input type='text' id ='Rnum' name ='Rnum'></div>
-<div>의뢰자 : <input type='text' id='Name' name='Name'></div>
+<!--  <div>의뢰자 : <input type='text' id='Name' name='Name'></div> -->
 <div>의뢰금액 : <input type='text' id ='Pay' name ='Pay'></div>
 <div>최소 경력 년수 : <input type='text' id ='Cyear' name ='Cyear'></div>
 <div>최소 인원수 : <input type='text' id ='MinNum' name ='MinNum'></div>
@@ -91,7 +93,7 @@
 <hr color="red" width=100%>
 <div>
 	<div id = "refresh">새로고침</div>
-	<div id = "request_PC">의뢰 리스트 가져오기 일반</div>
+	<div id = "request_PC">나의 의뢰 리스트 가져오기 일반</div>
 	<div id = "requestDate">의뢰 리스트 가져오기 날짜</div>
 	<div id = "requestPay">의뢰 리스트 가져오기 금액</div>
 	<table id = "req_list"><thead><tr><td>번호</td><td>의뢰번호</td><td>의뢰자ID</td><td>급여</td><td>시작날짜</td><td>완료날짜</td><td>최소경력조건</td><td>최소참여</td><td>최대참여</td><td>의뢰자평점</td><td>프리랜서평점</td><td>의뢰상태</td></tr></thead><tbody></tbody></table>
@@ -123,15 +125,33 @@
 	})
 	  <!-- 여기까지-->
 
+    <!-- 세션 체크 -->
+    $('#c_session_check').click(function(){
+      var get = 'a ';
+      $.ajax({
+         type: 'get',
+         url: '/users/get_session',
+         data: {data:get},
+         success: function(result){
+           $('#get_output').html(result.result);
+         }
+       });
+     })
+     <!-- 세션 체크 끝 -->
+
+
+
+
 	  <!-- 함수3. 선택된 의뢰를 신청한팀 목록에서 팀을 눌러 신청완료 후 의뢰 진행 상태 변경 -->
-	$.fn.selectTeam = function(teamN){
+	$.fn.selectTeam = function(team, rid){
 
-		console.log("시발");
-		console.log(teamN);
-
+		console.log("넘어온 팀 이름: "+team);
+    console.log("넘어온 팀 이름: "+rid);
+    rid = Number(rid);
 
 		var v = {
-			teamName: TeamName,
+			teamName: team,
+      rID: rid,
 
 		}
 
@@ -139,7 +159,7 @@
         $.ajax({
         type: 'post',
         url: '/teamList/selectTeam',
-		data: v,
+		    data: v,
         success: function(data) {
 
           console.log("팀 선택 완료, 의뢰를 진행합니다.");
@@ -172,10 +192,15 @@
 		  for(var i = 0 ; i < data.length; i ++) {
 			 var tr_num = i+1;
 			 var teamN = data[i].TName;
+       var rID = data[i].RID;
+       rID +="";
+
 			 console.log(teamN);
-		     var will_be_append = $( '<tr onclick=$(this).selectTeam('+teamN+')><td>'+tr_num+'</td>'
+       console.log(rID);
+
+		     var will_be_append = $( '<tr ><td>'+tr_num+'</td>'
 			 +'<td>'+data[i].RID+'</td>'
-			 +'<td>'+data[i].TName+'</td></tr>')
+			 +'<td onclick=$(this).selectTeam("'+teamN+'","'+rID+'")>'+data[i].TName+'</td></tr>')
              $('#team_list tbody').append(will_be_append)
 		  }
 		 console.log("신청한 팀목록 불러오기 성공");
@@ -324,9 +349,11 @@
 
 
 	   $('#createR').click(function(){
-	    var v = {
+
+
+      var v = {
 			rnum: $("#insert #Rnum").val(),
-			name: $("#insert #Name").val(),
+			//pID: $("").val(),
 			pay: $("#insert #Pay").val(),
 			minNum: $("#insert #MinNum").val(),
 			maxNum: $("#insert #MaxNum").val(),
