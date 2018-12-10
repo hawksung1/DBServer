@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Board</title>
+    <script src="/js/jquery-3.2.1.min.js"></script>
+    <script src="/js/socket.io.slim.js"></script>
+	<style>
+	td {border: solid 1px #000000}
+  </style>
+</head>
+<body>
+
+<div>
+	<!--
+	<div id = "request">의뢰 리스트 가져오기</div>
+	-->
+  <div> 프리랜서 능숙 언어</div>
+	<table id = "skill_list">
+    <thead>
+      <tr>
+        <td>언어 이름</td>
+        <td>능숙도</td>
+      </tr>
+    </thead>
+    <tbody>
+    </tbody>
+  </table>
+</div>
+<br>
+<script>
+
+    $(function() {
+      var socket = io();
+      //console.log(f[1]);
+      socket.on('asd', function(msg) {
+        var v = {
+          curl : document.location.href,
+        };
+        $.ajax({
+            type: 'post',
+            url: '/free/f_info',
+            data: v,
+            success: function(data) {
+          $('#skill_list tbody').html("")
+          //$('#user_list tbody').empty();
+          for(var i = 0 ; i < data.length; i ++) {
+             var will_be_append = $( '<tr><td>' +data[i].LangName+'</td><td>' + data[i].Skill+'</td></tr>' )
+
+            $('#skill_list tbody').append(will_be_append)
+            }
+          }
+        });
+
+      })
+
+    });
+</script>
+</body>
+</html>

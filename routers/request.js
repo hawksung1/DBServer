@@ -59,7 +59,7 @@ router.get('/cur_log', wrapper.asyncMiddleware(async (req, res, next) => {
 
 router.post('/onclick', wrapper.asyncMiddleware(async (req, res, next) => {
   var user_id = req.session.user_id;
-  const newId = req.body.id;
+  const rid = req.body.id;
 
   //console.log(req.url);
   var result = user_id;
@@ -180,16 +180,20 @@ router.get('/apply_request', wrapper.asyncMiddleware(async (req, res, next) => {
 
 router.post('/apply', wrapper.asyncMiddleware(async (req, res, next) =>{//의뢰 지원시 작동
   var user_id = req.session.user_id;
-  var newId = req.body.id;
-  var client = req.body.cli_id;
+  var rid = req.body.id;
+  //var client = req.body.cli_id;
+
+  const getcli_id = await db.getQueryResult('select PID from Request where RID = "'+rid+'"');
+  var cli = getcli_id[0].PID;//의뢰자 id 획득
+  //console.log(cli);
   //프리랜서의 skill 중 해당 의뢰의 require 들에서 level 만족하는 언어 수
   const request = await db.getQueryResult('Select count(*) AS count'
  + ' from SkilledAt as s, RequireLang as r'
-+' where FID = "'+ user_id + '" and RID = "' + newId + '"'
++' where FID = "'+ user_id + '" and RID = "' + rid + '"'
 + ' and s.LangName = r.LangName and s.Skill>= r.Skill');
 
   //의뢰에 필요한 언어 수
-  const required = await db.getQueryResult('Select count(*) AS count from RequireLang where RID = "'+newId+'"');
+  const required = await db.getQueryResult('Select count(*) AS count from RequireLang where RID = "'+rid+'"');
 
   //single 팀 없으면 single 팀 만들어서 지원시키게해야함.
   //프리랜서가 속한 개인팀 이름 있는지 확인
@@ -219,13 +223,18 @@ router.post('/apply', wrapper.asyncMiddleware(async (req, res, next) =>{//의뢰
       name = "Single"+teamnum;
       //console.log(name);
       //없을시 새로 만든 팀네임으로 지원
-      await db.getQueryResult('Insert INTO Apply (TName, PID, RID) values ("'+name+'", "' + client +'" , "' + newId + '")');
+      //먼저 팀리스트에 새 팀 추가
+      await db.getQueryResult('Insert INTO TeamList (TeamName, ProjLeaderID) values ("'+name+'" , "'+user_id+'")');
+      //TeamMember에 추가
+      await db.getQueryResult('Insert INTO TeamMember (MemberID, TeamName) values ("'+user_id+'" , "'+name+'")');
+      //apply 테이블에 이제 추가.
+      await db.getQueryResult('Insert INTO Apply (TName, PID, RID) values ("'+name+'", "' + cli +'" , "' + rid + '")');
     }
     else{
-      console.log(is_in[0].TeamName);
-      await db.getQueryResult('Insert INTO Apply (TName, PID, RID) values ("'+is_in[0].TeamName+'", "' + client +'" , "' + newId + '")');
+      //console.log(is_in[0].TeamName);
+      await db.getQueryResult('Insert INTO Apply (TName, PID, RID) values ("'+is_in[0].TeamName+'", "' + cli +'" , "' + rid + '")');
       //있을시 있던이름으로 지원
-      //console.log("있다 있어");
+      console.log("있다 있어");
     }
   }
 

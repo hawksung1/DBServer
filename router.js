@@ -18,7 +18,8 @@ const admin = require('./routers/admin');
 //게시판에 연결하게 하기위해 router에 변수 등록
 const board = require('./routers/board');
 //
-
+//프리랜서용
+const freelan = require('./routers/freelan');
 
 router.use('/', index);
 router.use('/users', users);
@@ -27,7 +28,8 @@ router.use('/request', request);
 router.use('/upload', upload);
 router.use('/user_information_fix', user_information_fix);
 router.use('/admin', admin);
-
+//프리랜서 팀용 추가
+router.use('/free', freelan);
 //이문규 파일들
 router.use('/request_PC', request_PC);
 router.use('/sendM', sendM);

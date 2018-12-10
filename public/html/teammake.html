@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>teammake</title>
+    <script src="/js/jquery-3.2.1.min.js"></script>
+    <script src="/js/socket.io.slim.js"></script>
+	<style>
+	td {border: solid 1px #000000}
+  </style>
+</head>
+<body>
+
+  <div> 현재 사용자</div>
+  <input id="cur_log" type="text" readonly>
+  <br>
+
+<div>
+	<!--
+	<div id = "request">의뢰 리스트 가져오기</div>
+	-->
+  <div> 프리랜서 정보 </div>
+  <div> 아이디 클릭시 능숙한 언어 볼수 있다. </div>
+  <div>추가 누를시 팀원에 추가. 다시 한번 누르면 뺀다.</div>
+	<table id = "free_list">
+    <thead>
+      <tr>
+        <td>프리랜서 아이디</td>
+        <td>프리랜서 이름</td>
+        <td>나이</td>
+        <td>핸드폰번호</td>
+        <td>경력</td>
+        <td>전공</td>
+        <td>평점</td>
+      </tr>
+    </thead>
+    <tbody>
+    </tbody>
+  </table>
+  <br>
+  <br>
+
+  <div> 현재 담은 팀원</div>
+  <form id = "maketeam">
+    <input id="plus_tmem" placeholder = "팀원이름" type="text" readonly>
+    <input id="teamname" placeholder = "팀 이름 정하자" type="text">
+    <input type="submit" value="팀만들기"/>
+  </form>
+
+
+</div>
+
+<br>
+<br>
+
+<script>
+
+    $(function() {
+      var socket = io();
+      var tmember = "";
+      $.fn.freeonclick = function(fid){
+          location.href="/free/info?"+fid;
+
+      }
+      $.fn.free1onclick = function(fid){
+          //console.log(tmember.length);
+          if (!tmember.includes(fid)){ //console.log("있는놈인데");
+            if(tmember.length ==0 ) tmember += fid;
+            else tmember += ","+fid;
+          }
+          //tmember+=fid;
+          $('#plus_tmem').val(tmember);
+          console.log(tmember);
+      }
+      //console.log(f[1]);
+      socket.on('asd', function(msg) {
+        $.ajax({
+            type: 'get',
+            url: '/request/cur_log',
+            //data: getid,
+            success: function(data) {
+          $('#cur_log').val(data);
+
+          },
+            error: function(err) {
+              console.log(err);
+            }
+        });
+        $.ajax({
+            type: 'post',
+            url: '/free/getfree',
+            success: function(data) {
+          $('#free_list tbody').html("")
+          //$('#user_list tbody').empty();
+          for(var i = 0 ; i < data.length; i ++) {
+             var will_be_append = $('<tr><td onclick = $(this).freeonclick("'+data[i].FID+'")>' +data[i].FID+'</td><td>' + data[i].FName+'</td><td>' +
+               data[i].Age+'</td><td>' + data[i].PhoneNumber+'</td><td>' +
+                 data[i].Career+'</td><td>' + data[i].Major+'</td><td>' +
+                   data[i].GradeAver+'</td><td id = "1" onclick = $(this).free1onclick("'+data[i].FID+'") >추가</td></tr>' )
+
+            $('#free_list tbody').append(will_be_append)
+            }
+          }
+        });
+      })
+      $('#maketeam').on('submit', function(){
+        var v = {
+        member: $("#maketeam #plus_tmem").val(),
+        tname: $("#maketeam #teamname").val(),
+        }
+        $.ajax({
+            type: 'post',
+            url: '/free/maketeam',
+            //dataType: "json",
+            data: v,
+            success: function(data) {
+              //alert("성공");
+
+            },
+            error: function(err) {
+              //alert(err.status);
+              console.log(err);
+            }
+        });
+
+      })
+
+
+
+    });
+</script>
+</body>
+</html>

@@ -17,6 +17,18 @@ router.get('/info', (req, res, next) => {
 	//url = url.split('/');
 	//console.log("url은.."+ url);
 });
+router.get('/teammake', (req, res, next) => {
+	res.type('html').sendFile(path.join(__dirname, '../public/html/teammake.html'));
+	//var url = req.url;
+	//url = url.split('/');
+	//console.log("url은.."+ url);
+});
+router.get('/team', (req, res, next) => {
+	res.type('html').sendFile(path.join(__dirname, '../public/html/board_team.html'));
+	//var url = req.url;
+	//url = url.split('/');
+	//console.log("url은.."+ url);
+});
 module.exports = router;
 
 

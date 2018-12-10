@@ -14,13 +14,29 @@
   #viewallreq {font-size:15px; background-color:#ccd0ce;  border:1px solid blue;  width: 110px;     cursor: -webkit-grab;}
   #viewreq_s_0 {font-size:15px; background-color:#ccd0ce;  border:1px solid blue;  width: 150px;     cursor: -webkit-grab;}
   #viewreq_applyable {font-size:15px; background-color:#ccd0ce;  border:1px solid blue;  width: 150px;     cursor: -webkit-grab;}
-
+  #teammake {font-size:15px; background-color:#ccd0ce;  border:1px solid blue;  width: 110px;     cursor: -webkit-grab;}
   </style>
 </head>
 <body>
   <div> 현재 사용자</div>
   <input id="cur_log" type="text" readonly>
   <br>
+  <br>
+  <div onclick = $(this).teamonclick() id = "teammake">팀 만들러 가기</div>
+  <br>
+  <div>소속된 팀</div>
+  <div>
+  	<table id = "belong">
+      <thead>
+        <tr>
+          <td>팀 이름</td>
+          <td>팀장 아이디</td>
+        </tr>
+      </thead>
+      <tbody>
+      </tbody>
+    </table>
+  </div>
   <br>
   <div> 완료된 의뢰 - 평점을 지정해주세요! </div>
     <div>
@@ -160,7 +176,6 @@
 
 <form id="apply">
       <input id="applyRID" placeholder="지원할 의뢰번호 입력" type="text">
-      <input id="clientId" placeholder="의뢰자ID 입력" type="text">
       <input type="submit" value="지원하기"/>
 </form>
 
@@ -202,6 +217,22 @@
             }
         });
       }
+      $.fn.teamonclick = function(){
+        //console.log($('#cur_log').val());
+        //console.log(fid.val());
+        var v = {
+        id: $('#cur_log').val(),
+  		}
+        location.href = "/board/teammake";
+
+      }
+      $.fn.tonclick = function(tname){
+        //console.log($('#cur_log').val());
+        console.log(tname);
+        location.href="/board/team?"+tname;
+
+
+      }
       //asd는 모르겟고... 그냥 통신 시작될때 작동하는 함수.
       socket.on('asd', function(msg) {
         //현재 사용자 출력
@@ -242,6 +273,22 @@
             }
         });
 
+        $.ajax({
+            type: 'get',
+            url: '/free/belong',
+            success: function(data) {
+          $('#belong tbody').html("")
+          //$('#user_list tbody').empty();
+          for(var i = 0 ; i < data.length; i++) {
+             var will_be_append = $( '<tr onclick = $(this).tonclick("'+ data[i].TeamName+'")><td>' +data[i].TeamName+'</td><td>' +data[i].ProjLeaderID+'</td></tr>' )
+
+            $('#belong tbody').append(will_be_append)
+          }
+        },
+            error: function(err) {
+              console.log(err);
+            }
+        });
         $.ajax({
             type: 'get',
             url: '/request/doing',
@@ -409,7 +456,7 @@
       $('#apply').on('submit', function(){
         var v = {
         id: $("#apply #applyRID").val(),
-        cli_id: $("#apply #clientId").val(),
+
         }
         $.ajax({
             type: 'post',

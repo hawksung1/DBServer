@@ -18,7 +18,7 @@
   </style>
 </head>
 <body>
-  <div> 현재 사용자</div>
+  <div> 현재 팀</div>
   <input id="cur_log" type="text" readonly>
   <br>
   <br>
@@ -204,11 +204,14 @@
       }
       //asd는 모르겟고... 그냥 통신 시작될때 작동하는 함수.
       socket.on('asd', function(msg) {
+        var v1 = {
+          curl : document.location.href,
+        };
         //현재 사용자 출력
         $.ajax({
-            type: 'get',
-            url: '/request/cur_log',
-            data: {data:get},
+            type: 'post',
+            url: '/free/cur_log',
+            data: v1,
             //data: getid,
             success: function(data) {
           $('#cur_log').val(data);
