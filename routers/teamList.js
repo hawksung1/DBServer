@@ -2,8 +2,21 @@
 const express = require('express');
 const router = express.Router();
 const wrapper = require('../modules/wrapper');
+const session = require('express-session');
 const db = require('../modules/db');
-var bodyParser = require('body-parser')
+const multer = require('multer');
+const path = require('path');
+
+var FileStore = require('session-file-store')(session);
+var bodyParser = require('body-parser');
+
+router.use(bodyParser.urlencoded({extended:false}));
+router.use(session({
+  secret: 'fqiwofqewmf!@#$fqf',
+  resave: false,
+  saveUninitialized: true,
+  store: new FileStore()
+}));
 
 
 router.post('/', wrapper.asyncMiddleware(async (req, res, next) => {
