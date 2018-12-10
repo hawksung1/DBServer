@@ -3,6 +3,7 @@ const express = require('express');
 const router = express.Router();
 const wrapper = require('../modules/wrapper');
 const db = require('../modules/db');
+const path = require('path');
 
 router.get('/', (req, res, next) => {
 	//console.log(__dirname, '../public/html/board.html');
