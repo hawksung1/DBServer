@@ -8,9 +8,9 @@ const user_information_fix = require('./routers/user_information_fix');
 const img = require('./routers/img');
 const upload = require('./routers/upload');
 const request = require('./routers/request');
-const request = require('./routers/request_PC'); // requestpage.html js 의뢰 목록 보기 및 선택
-const request = require('./routers/sendM'); // requestpage.html js 거절 메세지 보내기
-const request = require('./routers/teamList'); // requestpage.html js 팀 목록 보기 및 선택
+const request_PC = require('./routers/request_PC'); // requestpage.html js 의뢰 목록 보기 및 선택
+const sendM = require('./routers/sendM'); // requestpage.html js 거절 메세지 보내기
+const teamList = require('./routers/teamList'); // requestpage.html js 팀 목록 보기 및 선택
 
 const admin = require('./routers/admin');
 
