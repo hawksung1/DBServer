@@ -101,7 +101,7 @@
 
 <script>
 
-	
+
 
     $(function() {
       var socket = io();
@@ -109,7 +109,7 @@
       socket.on('asd', function(msg) {
         console.log(msg);
       });
-	  
+
 	<!--goto 클릭하면 board 라는 html로 가게 만듦 -->
 	 $('#goto').click(function(){
 		$.ajax({
@@ -122,47 +122,47 @@
 		});
 	})
 	  <!-- 여기까지-->
-	  
-	  <!-- 함수3. 선택된 의뢰를 신청한팀 목록에서 팀을 눌러 신청완료 후 의뢰 진행 상태 변경 --> 
+
+	  <!-- 함수3. 선택된 의뢰를 신청한팀 목록에서 팀을 눌러 신청완료 후 의뢰 진행 상태 변경 -->
 	$.fn.selectTeam = function(teamN){
-		
+
 		console.log("시발");
 		console.log(teamN);
-		
-		
+
+
 		var v = {
 			teamName: TeamName,
-		
+
 		}
-		
-		
+
+
         $.ajax({
         type: 'post',
         url: '/teamList/selectTeam',
 		data: v,
         success: function(data) {
-		
+
           console.log("팀 선택 완료, 의뢰를 진행합니다.");
 
 		},
         error: function(err) {
-		  console.log("팀 선택 실패, 에러");	
+		  console.log("팀 선택 실패, 에러");
           console.log(err);
         }
       });
-      }  
+      }
 	  <!-- 함수3 끝 -->
-	  
-	  <!-- 함수2.의뢰 목록 중 하나를 선택, 선택된 의뢰를 신청한팀 목록을 보여주는 함수 --> 
+
+	  <!-- 함수2.의뢰 목록 중 하나를 선택, 선택된 의뢰를 신청한팀 목록을 보여주는 함수 -->
 	$.fn.gotoR = function(RID){
-	
+
 		console.log(RID);
-		
+
 		var v = {
 			rID: RID,
 		}
-		
-		
+
+
         $.ajax({
         type: 'post',
         url: '/teamList/getTeam',
@@ -184,13 +184,13 @@
           console.log(err);
         }
       });
-      }  
+      }
 	  <!-- 함수2 끝 -->
-	  
-	  
-	  
-	  
-	  
+
+
+
+
+
 	  $('#sendRejectM').click(function(){
 	    var v = {
 			mID: $("#rejectM #mID").val(),
@@ -198,8 +198,8 @@
 			mPID: $("#rejectM #mPID").val(),
 			mFID: $("#rejectM #mFID").val(),
 			mContent: $("#rejectM #mContent").val(),
-			
-			
+
+
 		}
 		$.ajax({
         type: 'post',
@@ -212,14 +212,14 @@
           console.log(err);
         }
       });
-	  
+
 	  });
-	  
-	  
-	  
-	  
-	  
-	  /* 
+
+
+
+
+
+	  /*
 	  $('#getTeam').click(function(){
 		$.ajax({
         type: 'get',
@@ -238,24 +238,24 @@
       });
 	  });
 	  */
-	  
-	  
-	  
+
+
+
 	  $('#refresh').click(function() {
 			location.reload();
 		});
-	  
-	  
-	  
-	  
+
+
+
+
 	  $('#request_PC').click(function(){
 		$.ajax({
         type: 'get',
-        url: '/request_PC',
+        url: '/request_PC/request',
         success: function(data) {
 		  $('#user_list tbody').html("")
 		  for(var i = 0 ; i < data.length; i ++) {
-			 var tr_num = i+1;  
+			 var tr_num = i+1;
 		     var will_be_append = $('<tr onclick=$(this).gotoR('+data[i].RID+')><td>'+tr_num+'</td>'
 			 +'<td>'+data[i].RID+'</td><td>' + data[i].PID+'</td>'
 			 +'<td>' + data[i].Pay+'</td><td>' + data[i].StartDate+'</td>'
@@ -271,7 +271,7 @@
         }
       });
 	  });
-	  
+
 	 $('#requestDate').click(function(){
 		$.ajax({
         type: 'get',
@@ -279,7 +279,7 @@
         success: function(data) {
 		  $('#user_list tbody').html("")
 		  for(var i = 0 ; i < data.length; i ++) {
-			 var tr_num = i+1;  
+			 var tr_num = i+1;
 		     var will_be_append = $('<tr onclick=$(this).gotoR('+data[i].RID+')><td>'+tr_num+'</td>'
 			 +'<td>'+data[i].RID+'</td><td>' + data[i].PID+'</td>'
 			 +'<td>' + data[i].Pay+'</td><td>' + data[i].StartDate+'</td>'
@@ -295,8 +295,8 @@
         }
       });
 	  });
-	  
-	  
+
+
 	  $('#requestPay').click(function(){
 		$.ajax({
         type: 'get',
@@ -304,7 +304,7 @@
         success: function(data) {
 		  $('#user_list tbody').html("")
 		  for(var i = 0 ; i < data.length; i ++) {
-			 var tr_num = i+1;  
+			 var tr_num = i+1;
 		     var will_be_append = $('<tr onclick=$(this).gotoR('+data[i].RID+')><td>'+tr_num+'</td>'
 			 +'<td>'+data[i].RID+'</td><td>' + data[i].PID+'</td>'
 			 +'<td>' + data[i].Pay+'</td><td>' + data[i].StartDate+'</td>'
@@ -320,9 +320,9 @@
         }
       });
 	  });
-	  
-	  
-	  
+
+
+
 	   $('#createR').click(function(){
 	    var v = {
 			rnum: $("#insert #Rnum").val(),
@@ -333,8 +333,8 @@
 			cyear: $("#insert #Cyear").val(),
 			//Prog: $("#insert #Prog").val(),
 			//Rdoc: $("#insert #Rdoc").val(),
-			
-			
+
+
 		}
 		$.ajax({
         type: 'post',
@@ -347,11 +347,11 @@
           console.log(err);
         }
       });
-	  
+
 	  });
-	  
-	  
-      
+
+
+
     });
 </script>
 </body>
