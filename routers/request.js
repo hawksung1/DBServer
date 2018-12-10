@@ -34,6 +34,17 @@ router.post('/infolang', wrapper.asyncMiddleware(async (req, res, next) => {
 
   res.json(request);
 }));
+router.post('/message', wrapper.asyncMiddleware(async (req, res, next) => {
+  var obj = req.body.curl;
+  obj = obj.split("?");
+  obj = obj[1];//RID
+  //console.log("url은.."+obj);
+  const request = await db.getQueryResult('Select Contents '
+  +'from Sended as s, Message as m '
+  +'where s.MesID = m.MesID and RID = "'+obj+'"');
+  //console.log(request);
+  res.json(request);
+}));
 
 router.get('/', wrapper.asyncMiddleware(async (req, res, next) => {
   const request = await db.getQueryResult('SELECT * FROM Request where State = 0');
@@ -62,7 +73,7 @@ router.get('/doing', wrapper.asyncMiddleware(async (req, res, next) => {
   //res.send({result:result});
   const request = await db.getQueryResult('Select * '
 +'from Request'
-+' where RID IN ('
++' where State != 4 and RID IN ('
 	+' Select RID'
 	+' from Attend'
 	+' where TName IN ('
@@ -78,7 +89,7 @@ router.get('/comple_request', wrapper.asyncMiddleware(async (req, res, next) => 
   //res.send({result:result});
   const request = await db.getQueryResult('Select * '
 +'from Request'
-+' where RID IN ('
++' where State = 4 and RID IN ('
 	+' Select RID'
 	+' from Attend'
 	+' where TName IN ('
@@ -167,33 +178,73 @@ router.get('/apply_request', wrapper.asyncMiddleware(async (req, res, next) => {
   res.json(request);
 }));
 
-router.post('/apply', wrapper.asyncMiddleware(async (req, res, next) =>{
+router.post('/apply', wrapper.asyncMiddleware(async (req, res, next) =>{//의뢰 지원시 작동
   var user_id = req.session.user_id;
   var newId = req.body.id;
   var client = req.body.cli_id;
+  //프리랜서의 skill 중 해당 의뢰의 require 들에서 level 만족하는 언어 수
   const request = await db.getQueryResult('Select count(*) AS count'
  + ' from SkilledAt as s, RequireLang as r'
 +' where FID = "'+ user_id + '" and RID = "' + newId + '"'
 + ' and s.LangName = r.LangName and s.Skill>= r.Skill');
-  //var teamName;
-  //var client;
-  var langcount;
-  const required = await db.getQueryResult('Select count(*) AS count from RequireLang where RID = "1"');
-  required.forEach(function(v){langcount = v.count; });
-  //const test = await db.getQueryResult(`select * from Request where RID = '${newId}'`);
 
-  //팀이나 개인지원 ㅅㅂ...
-  request.forEach(async function(v){
-    if(langcount == v.count) {
-      console.log("성공");
-      await db.getQueryResult('Insert INTO Apply (TName, PID, RID) values ("Single_1", "' + client +'" , "' + newId + '")');
+  //의뢰에 필요한 언어 수
+  const required = await db.getQueryResult('Select count(*) AS count from RequireLang where RID = "'+newId+'"');
+
+  //single 팀 없으면 single 팀 만들어서 지원시키게해야함.
+  //프리랜서가 속한 개인팀 이름 있는지 확인
+  const is_in = await db.getQueryResult('Select TeamName '
+          +'from TeamList '
+          +'where ProjLeaderID = "'+user_id+'" and TeamName Like "Single%";');
+  //조건 만족 한다
+  if(request[0].count == required[0].count){
+    //console.log("이야 만족한다");
+    //개인팀 없을시 팀이름 새로 만들어서 넣어야함.
+    if(is_in.length ==0){
+      //console.log("없는데?");
+    //TeamList 테이블에서 Single~ 로 시작하는 팀이름(개인팀) 중 가장 팀번호 높은애 뽑아옴 (근데 이거 text 정렬이라 26이 9보다 작음)
+      const teamname = await db.getQueryResult('Select TeamName '
+              +'from TeamList '
+              +'where TeamName Like "Single%"'
+              +'order by TeamName DESC '
+              +'Limit 1;');
+      //그 팀 이름을 일단 name에 저장하고
+      var name = teamname[0].TeamName;
+      //parsing해서 숫자부분만 뽑음
+      name = name.split("Single");
+      //얘는 숫자부분 저장. Single2 이런식이니 Single로 split 하면 1번째 배열 요소에 숫자 들어가있음
+      var teamnum = name[1];
+      //var 통합자료형이라 string에 곱셈하면 숫자로 변함 이제 거기다 1 더하면 Single2 -> Single3 를 만들수있다.
+      teamnum = teamnum*1+1;
+      name = "Single"+teamnum;
+      //console.log(name);
+      //없을시 새로 만든 팀네임으로 지원
+      await db.getQueryResult('Insert INTO Apply (TName, PID, RID) values ("'+name+'", "' + client +'" , "' + newId + '")');
     }
-  });
-  //console.log(request.count);
-  //console.log(await db.getQueryResult(`select * from Request where RID = '${newId}'`));
+    else{
+      console.log(is_in[0].TeamName);
+      await db.getQueryResult('Insert INTO Apply (TName, PID, RID) values ("'+is_in[0].TeamName+'", "' + client +'" , "' + newId + '")');
+      //있을시 있던이름으로 지원
+      //console.log("있다 있어");
+    }
+  }
+
   res.json({success : "Updated Successfully", status : 200});
   //res.json("{\"msg\":\"success\"}");
-  //res.json({success: true, error: false});
+  //res.json({success: "true", error: false});
+}));
+
+
+router.post('/eval', wrapper.asyncMiddleware(async (req, res, next) =>{
+  var user_id = req.session.user_id;
+  var rid = req.body.id;
+  var point = req.body.point;
+
+  const request = await db.getQueryResult('UPDATE Request Set FGrade = "'+point+'" where RID = "'+rid+'"');
+  await db.getQueryResult('UPDATE Request Set State = 5 where RID = "'+rid+'"');
+  await db.getQueryResult('Insert into InnerPortfolio (FID,RID) Values ("'+user_id+'" ,"'+rid+'")');
+  res.json({success : "Updated Successfully", status : 200});
+
 }));
 router.post('/complete', wrapper.asyncMiddleware(async (req, res, next) =>{
   //var user_id = req.session.user_id;

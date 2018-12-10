@@ -416,15 +416,13 @@
             url: '/request/apply',
             //dataType: "json",
             data: v,
-            //datatype: "json",
             success: function(data) {
               //alert("성공");
-              //console.log("apply성공");
 
             },
             error: function(err) {
-              //alert("안된다~");
-              //console.log("apply불가~");
+              //alert(err.status);
+              console.log(err);
             }
         });
 

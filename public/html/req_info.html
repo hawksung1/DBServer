@@ -15,7 +15,7 @@
 	<!--
 	<div id = "request">의뢰 리스트 가져오기</div>
 	-->
-  <div> 의뢰 목록 </div>
+  <div> 의뢰 정보 </div>
 	<table id = "req_list">
     <thead>
       <tr>
@@ -51,6 +51,16 @@
     </tbody>
   </table>
 </div>
+<br>
+<br>
+
+<div id = "message_area" style ="display:none">
+  <div> 거절 메세지</div>
+  <div>
+        <textarea id="message" class="message" readonly>
+        </textarea>
+  </div>
+</div>
 <script>
 
     $(function() {
@@ -78,6 +88,23 @@
             $('#req_list tbody').append(will_be_append)
             }
           }
+        });
+
+        $.ajax({
+            type: 'post',
+            url: '/request/message',
+            data: v,
+            success: function(data) {
+          //$('#req_list tbody').html("")
+          //$('#user_list tbody').empty();
+              var will_be_append = data[0].Contents;
+              $('#message').append(will_be_append);
+              $('#message_area').show();
+            },
+            error: function(err) {
+              console.log("안대영");
+            }
+
         });
 
         $.ajax({
