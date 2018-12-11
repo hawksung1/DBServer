@@ -13,7 +13,8 @@
 	#request_PC {font-size:20px; background-color:#ccd0ce;    width: fit-content ;     cursor: -webkit-grab;}
 	#requestDate {font-size:20px; background-color:#ccd0ce;    width: fit-content ;     cursor: -webkit-grab;}
 	#requestPay {font-size:20px; background-color:#ccd0ce;    width: fit-content ;     cursor: -webkit-grab;}
-	#createR {font-size:20px; background-color:#ccd0ce;    width: fit-content ;     cursor: -webkit-grab;}
+  #createRequestB{font-size:20px; background-color:#ccd0ce;    width: fit-content ;     cursor: -webkit-grab;}
+  #createR {font-size:20px; background-color:#ccd0ce;    width: fit-content ;     cursor: -webkit-grab;}
 	</style>
 </head>
 <body>
@@ -59,8 +60,9 @@
 
 <hr color="red" width=100%>
 
+<div id="createRequestB">의뢰 생성 버튼입니다</div>
 
-<div id='insert'>
+<div id='insert' style="display:none">
 <!-- <div>의뢰번호 : <input type='text' id ='Rnum' name ='Rnum'></div> -->
 <!--  <div>의뢰자 : <input type='text' id='Name' name='Name'></div> -->
 <div>의뢰금액 : <input type='text' id ='Pay' name ='Pay'></div>
@@ -69,6 +71,10 @@
 <div>최대 인원수 : <input type='text' id ='MaxNum' name ='MaxNum'></div>
 <!--<div>언어 별 능숙도 : <input type='text' name ='Prog' value=''></div>-->
 <!--<div>의뢰 문서 : <input type='text' name ='Rdoc' value=''></div>-->
+<form action="/upload/pc_request" method = "post" id = "request_doc"  enctype="multipart/form-data">
+    request id to update file<input id="request_upload_id" type="text" name="request_upload_id"/><br>
+    request doc (English File Only) <input id="request_file" type="file" name="request_file"/><br>
+  <input type="submit" value="submit"/>
 <div id='createR'>의뢰 생성</div>
 </div>
 
@@ -76,8 +82,8 @@
 <div>
 	<div id = "refresh">새로고침</div>
 	<div id = "request_PC">나의 의뢰 리스트 가져오기 일반</div>
-	<div id = "requestDate">의뢰 리스트 가져오기 날짜</div>
-	<div id = "requestPay">의뢰 리스트 가져오기 금액</div>
+<!--	<div id = "requestDate">의뢰 리스트 가져오기 날짜</div>
+	<div id = "requestPay">의뢰 리스트 가져오기 금액</div> -->
 	<table id = "req_list"><thead><tr><td>번호</td><td>의뢰번호</td><td>의뢰자ID</td><td>급여</td><td>시작날짜</td><td>완료날짜</td><td>최소경력조건</td><td>최소참여</td><td>최대참여</td><td>의뢰자평점</td><td>프리랜서평점</td><td>의뢰상태</td></tr></thead><tbody></tbody></table>
 </div>
 
@@ -105,6 +111,50 @@
          });
        })
        <!-- 세션 체크 끝 -->
+
+       //의뢰 생성 버튼 누르기 및 의뢰 번호 생성
+        $('#createRequestB').click(function(){
+            $("#insert").show();
+
+            $.ajax({
+                type: 'get',
+                url: '/request_PC/createRID',
+
+                success: function(data) {
+              alert("RID 생성 성공")
+            },
+                error: function(err) {
+                  console.log(err);
+                }
+              });
+
+        });
+        var createdRID = ;
+        //의뢰 만들기
+         $('#createR').click(function(){
+          var v = {
+
+          pay: $("#insert #Pay").val(),
+          minNum: $("#insert #MinNum").val(),
+          maxNum: $("#insert #MaxNum").val(),
+          cyear: $("#insert #Cyear").val(),
+
+        }
+        $.ajax({
+            type: 'post',
+            url: '/request_PC/insert',
+        data: v,
+            success: function(data) {
+          alert("insert 성공")
+        },
+            error: function(err) {
+              console.log(err);
+            }
+          });
+
+        });
+
+
 
 
            //나의 의뢰 목록 보이기
@@ -345,33 +395,7 @@
 
 
 
-    //의뢰 만들기
-	   $('#createR').click(function(){
-      var v = {
-			//rnum: $("#insert #Rnum").val(),
-			//pID: $("").val(),
-			pay: $("#insert #Pay").val(),
-			minNum: $("#insert #MinNum").val(),
-			maxNum: $("#insert #MaxNum").val(),
-			cyear: $("#insert #Cyear").val(),
-			//Prog: $("#insert #Prog").val(),
-			//Rdoc: $("#insert #Rdoc").val(),
 
-
-		}
-		$.ajax({
-        type: 'post',
-        url: '/request_PC/insert',
-		data: v,
-        success: function(data) {
-		  alert("insert 성공")
-		},
-        error: function(err) {
-          console.log(err);
-        }
-      });
-
-	  });
 
 /*
     //거절메세지 보내기
