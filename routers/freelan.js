@@ -46,12 +46,23 @@ router.get('/belong', wrapper.asyncMiddleware(async (req, res, next) => {
 
 router.post('/getfree', wrapper.asyncMiddleware(async (req, res, next) => {
   var user_id = req.session.user_id;
-
-<<<<<<< HEAD
+//평점 업뎃..
+  const free_list = await db.getQueryResult('select FID from Freelancer');
+  for(var i=0; i<free_list.length; i++){
+    const aver_g = await db.getQueryResult('Select AVG(FGrade) as a '
++'from Request '
++'where RID IN( '
++'select RID '
++'from InnerPortfolio '
++'where FID = "'+free_list[i].FID+'") ');
+  //console.log(free_list[i]);
+    //console.log(aver_g[0].a);
+    if(aver_g[0].a != null) {
+      await db.getQueryResult('Update Freelancer '
+      +'set GradeAver = "'+aver_g[0].a+'" where FID = "'+free_list[i].FID+'"');
+    }
+  }
   //const gradeupdate =
-=======
-  //const gradeupdate = 
->>>>>>> 84595d542e6d63905006c84b9b9ebb6d40852c50
 
   const request = await db.getQueryResult('SELECT * FROM Freelancer where FID != "'+user_id+'"');
   res.json(request);
@@ -63,6 +74,23 @@ router.post('/getfreeteam', wrapper.asyncMiddleware(async (req, res, next) => {
   obj = obj.split("?");
   obj = obj[1];
   var tname = obj;
+
+  //평점 업뎃..
+    const free_list = await db.getQueryResult('select FID from Freelancer');
+    for(var i=0; i<free_list.length; i++){
+      const aver_g = await db.getQueryResult('Select AVG(FGrade) as a '
+  +'from Request '
+  +'where RID IN( '
+  +'select RID '
+  +'from InnerPortfolio '
+  +'where FID = "'+free_list[i].FID+'") ');
+    //console.log(free_list[i]);
+      //console.log(aver_g[0].a);
+      if(aver_g[0].a != null) {
+        await db.getQueryResult('Update Freelancer '
+        +'set GradeAver = "'+aver_g[0].a+'" where FID = "'+free_list[i].FID+'"');
+      }
+    }
 
   const request = await db.getQueryResult('Select * '
 +'from Freelancer '
