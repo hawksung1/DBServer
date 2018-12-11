@@ -47,7 +47,11 @@ router.get('/belong', wrapper.asyncMiddleware(async (req, res, next) => {
 router.post('/getfree', wrapper.asyncMiddleware(async (req, res, next) => {
   var user_id = req.session.user_id;
 
+<<<<<<< HEAD
   //const gradeupdate =
+=======
+  //const gradeupdate = 
+>>>>>>> 84595d542e6d63905006c84b9b9ebb6d40852c50
 
   const request = await db.getQueryResult('SELECT * FROM Freelancer where FID != "'+user_id+'"');
   res.json(request);
