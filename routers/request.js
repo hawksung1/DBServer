@@ -344,7 +344,8 @@ router.post('/doingbyteam', wrapper.asyncMiddleware(async (req, res, next) => {
   var obj = req.body.curl;
   obj = obj.split("?");
   obj = obj[1];//TName
-  var tname = obj
+  var tname = obj;
+  tname = req.session.tname;
 
   //console.log(tname);
   //var result = user_id;
@@ -363,7 +364,8 @@ router.post('/apply_request_byteam', wrapper.asyncMiddleware(async (req, res, ne
   var obj = req.body.curl;
   obj = obj.split("?");
   obj = obj[1];//TName
-  var tname = obj
+  var tname = obj;
+  tname = req.session.tname;
 
   const request = await db.getQueryResult('Select * '
 +'from Request'
@@ -380,6 +382,7 @@ router.post('/comple_request_byteam', wrapper.asyncMiddleware(async (req, res, n
   obj = obj.split("?");
   obj = obj[1];//TName
   var tname = obj;
+  tname = req.session.tname;
 
   //var result = user_id;
   //res.send({result:result});
@@ -483,7 +486,7 @@ for(var i=0; i<tmem.length; i++){
 }));
 
 router.post('/apply_byteam', wrapper.asyncMiddleware(async (req, res, next) =>{//의뢰 지원시 작동
-  //var user_id = req.session.user_id;
+  var user_id = req.session.user_id;
   var rid = req.body.id;
   var obj = req.body.curl;
   obj = obj.split("?");
@@ -492,6 +495,8 @@ router.post('/apply_byteam', wrapper.asyncMiddleware(async (req, res, next) =>{/
   tname = req.session.tname;
   //var client = req.body.cli_id;
 
+  const is_leader = await db.getQueryResult('select * from TeamList'
++' where TeamName = "'+tname+'" and ProjLeaderID = "'+user_id+'"');
   const getcli_id = await db.getQueryResult('select PID from Request where RID = "'+rid+'"');
   var cli = getcli_id[0].PID;//의뢰자 id 획득
 
@@ -551,7 +556,7 @@ for(var i=0; i<tmem.length; i++){
   }
   //rids 에는 팀원이 지원가능한 의뢰번호 들었다.
   //console.log(rids);
-  if(rids.includes(rid) && career_y.length == 1 && maxnum_y.length == 1 ) {
+  if(rids.includes(rid) && career_y.length == 1 && maxnum_y.length == 1 && is_leader.length == 1) {
     const request = await db.getQueryResult('Insert INTO Apply (TName, PID, RID) values ("'+tname+'", "' + cli +'" , "' + rid + '")');
   }
   //location.href="/board/info?"+tname;
