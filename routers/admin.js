@@ -12,8 +12,9 @@ router.get('/', (req, res, next) => {
 });
 
 router.get('/c_admin_Freelancer_manage', wrapper.asyncMiddleware(async (req, res, next) =>{
-	var sql = `SELECT * FROM Freelancer a LEFT JOIN SkilledAt b ON a.FID=b.FID LEFT JOIN OuterPortfolio c ON b.FID = c.FID `;
+	var sql = `SELECT * FROM Freelancer a LEFT JOIN OuterPortfolio b ON a.FID=b.FID LEFT JOIN SkilledAt c ON a.FID=c.FID  `;
 	const result = await db.getQueryResult(sql);
+	// console.log(result);
 	res.json(result);
 }));
 router.post('/c_admin_Freelancer_delete', wrapper.asyncMiddleware(async (req, res, next) =>{
