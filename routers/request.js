@@ -237,8 +237,8 @@ router.post('/apply', wrapper.asyncMiddleware(async (req, res, next) =>{//의뢰
 +'where FID = "'+user_id+'" )');
 
   //minnum_y가 비면 해당 의뢰 최소참여자 만족 안하는것.
-  const minnum_y = await db.getQueryResult('select RID'
-  +'from Request'
+  const minnum_y = await db.getQueryResult('select RID '
+  +'from Request '
   +'where MinNum =1 and RID = "'+rid+'"'
   );
   //프리랜서의 skill 중 해당 의뢰의 require 들에서 level 만족하는 언어 수
@@ -256,6 +256,10 @@ router.post('/apply', wrapper.asyncMiddleware(async (req, res, next) =>{//의뢰
           +'from TeamList '
           +'where ProjLeaderID = "'+user_id+'" and TeamName Like "Single%";');
   //조건 만족 한다
+/*
+  console.log("최소수?" +minnum_y.length);
+  console.log("경력만족?" + career_y.length);
+*/
   if(request[0].count == required[0].count && career_y.length == 1 && minnum_y.length == 1){
     //console.log("이야 만족한다");
     //개인팀 없을시 팀이름 새로 만들어서 넣어야함.
