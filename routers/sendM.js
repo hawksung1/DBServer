@@ -25,12 +25,32 @@ router.get('/', wrapper.asyncMiddleware(async (req, res, next) => {
 }));
 
 router.post('/sendRejectM', wrapper.asyncMiddleware(async (req, res, next) =>{
-  const newMesID = req.body.mID; //메세지ID
+  //const newMesID = req.body.mID; //메세지ID
   const newMContent = req.body.mContent; //거절 내용
   console.log("메세지 내용: "+newMContent);
 
   const getRID = req.body.mRID; // 의뢰ID
   const getPID = req.session.user_id; //의뢰자 ID
+
+  var newMesID ="0";
+
+  const getMesID = await db.getQueryResult(' SELECT * FROM Message order by cast(MesID as unsigned) DESC; ');
+  console.log("메세지 ID: "+getMesID[0].MesID);
+
+  if( getMesID.length == 0 ){
+
+    newMesID = "0";
+  }
+  else{
+
+    newMesID = getMesID[0].MesID;
+    newMesID = newMesID*1+1;
+    newMesID = newMesID+"";
+
+    console.log("변경된 의뢰 ID: "+newMesID);
+  }
+
+
 
 //  const newMFID = req.body.mFID; //프리랜서 ID
   console.log("의뢰 ID: "+getRID);
