@@ -69,6 +69,11 @@
 <div>최대 인원수 : <input type='text' id ='MaxNum' name ='MaxNum'></div>
 <!--<div>언어 별 능숙도 : <input type='text' name ='Prog' value=''></div>-->
 <!--<div>의뢰 문서 : <input type='text' name ='Rdoc' value=''></div>-->
+<form action="/upload/pc_request" method = "post" id = "request_doc"  enctype="multipart/form-data">
+    projclient id to update file<input id="projclient_upload_id" type="text" name="projclient_upload_id"/><br>
+    request id to update file<input id="request_upload_id" type="text" name="request_upload_id"/><br>
+    request doc (English File Only) <input id="request_file" type="file" name="request_file"/><br>
+  <input type="submit" value="submit"/>
 <div id='createR'>의뢰 생성</div>
 </div>
 
@@ -76,8 +81,8 @@
 <div>
 	<div id = "refresh">새로고침</div>
 	<div id = "request_PC">나의 의뢰 리스트 가져오기 일반</div>
-	<div id = "requestDate">의뢰 리스트 가져오기 날짜</div>
-	<div id = "requestPay">의뢰 리스트 가져오기 금액</div>
+<!--	<div id = "requestDate">의뢰 리스트 가져오기 날짜</div>
+	<div id = "requestPay">의뢰 리스트 가져오기 금액</div> -->
 	<table id = "req_list"><thead><tr><td>번호</td><td>의뢰번호</td><td>의뢰자ID</td><td>급여</td><td>시작날짜</td><td>완료날짜</td><td>최소경력조건</td><td>최소참여</td><td>최대참여</td><td>의뢰자평점</td><td>프리랜서평점</td><td>의뢰상태</td></tr></thead><tbody></tbody></table>
 </div>
 
