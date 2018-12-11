@@ -26,6 +26,14 @@ router.get('/', (req, res, next) => {
 	//res.sendFile(__dirname+"/../public/html/board.html");
 });
 
+router.get('/createRID', wrapper.asyncMiddleware(async (req, res, next) => {
+  var user_id = req.session.user_id;
+  console.log("session id = " + user_id);
+
+  const request = await db.getQueryResult('SELECT * FROM Request WHERE PID =  "'+user_id+'" ');
+  res.json(request);
+}));
+
 router.get('/request', wrapper.asyncMiddleware(async (req, res, next) => {
   var user_id = req.session.user_id;
   console.log("session id = " + user_id);
@@ -92,14 +100,22 @@ console.log("의뢰 생성 session id = " + newPID);
   res.json({success: true});
 }));
 
+
+
+
 router.post('/changeStateFinish', wrapper.asyncMiddleware(async (req, res, next) =>{
 const getRID = req.body.rID;
 const getPID = req.session.user_id;
+const getPoint = req.body.point;
+
 console.log("의뢰 ID: "+getRID);
 console.log("의뢰자: "+getRID);
+console.log("의뢰자: "+getPoint);
 console.log("의뢰 완료 수락 진행중");
 
-  console.log(await db.getQueryResult('UPDATE  Request SET State = "4" WHERE RID = "'+getRID+'" AND PID = "'+getPID+'" '));
+  console.log(await db.getQueryResult('UPDATE  Request SET CGrade="'+getPoint
+
+  +'", EndDate=curdate(), State = "4" WHERE RID = "'+getRID+'" AND PID = "'+getPID+'" '));
 
   //console.log(await db.getQueryResult(`INSERT INTO Freelancer (FID,FName,Age,PhoneNumber,Career,Major,Pwd) values ('${newId}','${newName}','${newAge}','${newPhone}','${newCareer}','${newMajor}','${newPassword}')`));
   res.json({success: true});

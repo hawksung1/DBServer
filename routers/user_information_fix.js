@@ -68,6 +68,17 @@ router.post('/insert_freelancer_skill', wrapper.asyncMiddleware(async(req, res, 
   console.log(await db.getQueryResult(sql));
   res.json({success:true});
 }));
+
+router.post('/insert_request_skill', wrapper.asyncMiddleware(async(req, res, next) =>{
+  const user_id = req.session.user_id;
+  const newLanguage = req.body.language;
+  const newLevel = req.body.level;
+  const sql = `INSERT INTO SkilledAt (FID, LangName, Skill) VALUES ('${user_id}', '${newLanguage}', '${newLevel}')`;
+  console.log(await db.getQueryResult(sql));
+  res.json({success:true});
+}));
+
+
 router.post('/fix_freelancer', wrapper.asyncMiddleware(async (req, res, next) =>{
   const user_id = req.session.user_id;
   const newPassword = req.body.password;
