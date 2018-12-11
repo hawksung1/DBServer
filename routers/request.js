@@ -110,10 +110,18 @@ router.get('/viewreq_s_0', wrapper.asyncMiddleware(async (req, res, next) => {
 }));
 
 /*쿼리가 ㅅㅂ..
+Create view career_y as
+select RID
+from Request
+where MinCareer <= (
+select Career
+from Freelancer
+where FID = "wook" );
+
 Create view langcount as
 Select RID, count(RID) as re
 from SkilledAt as s, RequireLang as r
-where FID = "moon" and s.LangName = r.LangName and s.Skill>= r.Skill
+where FID = "wook" and s.LangName = r.LangName and s.Skill>= r.Skill
 group by r.RID;
 
 
@@ -127,13 +135,35 @@ from Request
 where RID IN(
 	Select l.RID
 	from langcount as l,Reqcount as r
-	where l.RID = r.RID and l.re = r.al);
+	where l.RID = r.RID and l.re = r.al)
+
+	and
+
+	RID IN (
+	Select RID
+	from career_y
+	);
+
 drop view langcount;
 drop view Reqcount;
+drop view career_y;
 */
 router.get('/viewreq_applyable', wrapper.asyncMiddleware(async (req, res, next) => {
   //const request = await db.getQueryResult('SELECT * FROM Request where State = 0 ORDER BY StartDate');
   var user_id = req.session.user_id;
+
+  const minnum_y = await db.getQueryResult('Create view minnum_y as '
++'select RID '
++'from Request '
++'where MinNum = 1 ');
+  const career_y = await db.getQueryResult('Create view career_y as '
++'select RID '
++'from Request '
++'where MinCareer <= ( '
++'select Career '
++'from Freelancer '
++'where FID = "'+user_id+'" )');
+
   await db.getQueryResult('Create view langcount as '
 +'Select RID, count(RID) as re '
 +'from SkilledAt as s, RequireLang as r '
@@ -148,10 +178,21 @@ router.get('/viewreq_applyable', wrapper.asyncMiddleware(async (req, res, next) 
 +'where RID IN( '
 +'Select l.RID '
 +'from langcount as l,Reqcount as r '
-+'where l.RID = r.RID and l.re = r.al and State = 0 ); ');
++'where l.RID = r.RID and l.re = r.al and State = 0 )'
++'and '
++'RID IN ( '
++'Select RID '
++'from career_y ) '
++'and '
++'RID IN ( '
++'select RID '
++'from minnum_y) '
+);
+
   await db.getQueryResult('drop view langcount; ');
   await db.getQueryResult('drop view Reqcount;');
-
+  await db.getQueryResult('drop view career_y;');
+  await db.getQueryResult('drop view minnum_y');
   res.json(request);
 }));
 router.get('/orderbydate', wrapper.asyncMiddleware(async (req, res, next) => {
@@ -178,6 +219,7 @@ router.get('/apply_request', wrapper.asyncMiddleware(async (req, res, next) => {
   res.json(request);
 }));
 
+//개인으로서 의뢰지원만 허용.
 router.post('/apply', wrapper.asyncMiddleware(async (req, res, next) =>{//의뢰 지원시 작동
   var user_id = req.session.user_id;
   var rid = req.body.id;
@@ -185,7 +227,20 @@ router.post('/apply', wrapper.asyncMiddleware(async (req, res, next) =>{//의뢰
 
   const getcli_id = await db.getQueryResult('select PID from Request where RID = "'+rid+'"');
   var cli = getcli_id[0].PID;//의뢰자 id 획득
-  //console.log(cli);
+
+  //지원자의 경력이 해당 의뢰의 최소필요경력 이상인지.
+  const career_y = await db.getQueryResult('select * '
++'from Request '
++'where RID = "'+ rid+'" and MinCareer <= ( '
++'select Career '
++'from Freelancer '
++'where FID = "'+user_id+'" )');
+
+  //minnum_y가 비면 해당 의뢰 최소참여자 만족 안하는것.
+  const minnum_y = await db.getQueryResult('select RID'
+  +'from Request'
+  +'where MinNum =1 and RID = "'+rid+'"'
+  );
   //프리랜서의 skill 중 해당 의뢰의 require 들에서 level 만족하는 언어 수
   const request = await db.getQueryResult('Select count(*) AS count'
  + ' from SkilledAt as s, RequireLang as r'
@@ -201,7 +256,7 @@ router.post('/apply', wrapper.asyncMiddleware(async (req, res, next) =>{//의뢰
           +'from TeamList '
           +'where ProjLeaderID = "'+user_id+'" and TeamName Like "Single%";');
   //조건 만족 한다
-  if(request[0].count == required[0].count){
+  if(request[0].count == required[0].count && career_y.length == 1 && minnum_y.length == 1){
     //console.log("이야 만족한다");
     //개인팀 없을시 팀이름 새로 만들어서 넣어야함.
     if(is_in.length ==0){
@@ -234,7 +289,7 @@ router.post('/apply', wrapper.asyncMiddleware(async (req, res, next) =>{//의뢰
       //console.log(is_in[0].TeamName);
       await db.getQueryResult('Insert INTO Apply (TName, PID, RID) values ("'+is_in[0].TeamName+'", "' + cli +'" , "' + rid + '")');
       //있을시 있던이름으로 지원
-      console.log("있다 있어");
+      //console.log("있다 있어");
     }
   }
 
@@ -255,13 +310,26 @@ router.post('/eval', wrapper.asyncMiddleware(async (req, res, next) =>{
   res.json({success : "Updated Successfully", status : 200});
 
 }));
+//의뢰 완료요청용. TeamList 에서 팀장이 현재 userid인 팀이 입력된 의뢰번호의 의뢰를 수행한다면 완료요청
 router.post('/complete', wrapper.asyncMiddleware(async (req, res, next) =>{
   //var user_id = req.session.user_id;
   var RID = req.body.id;
   var user_id = req.session.user_id;
 
-  //const required = await db.getQueryResult('select * from ');
-  const request = await db.getQueryResult('UPDATE Request Set State = 2 where RID = "'+RID+'"');
+  const is_attend = await db.getQueryResult('Select RID '
++'from Attend '
++'where TName IN ( '
++'Select TeamName '
++'from TeamList '
++'where ProjLeaderID = "'+user_id+'") ');
+
+  var find_attend = false;
+  //console.log(is_attend.length);
+  for(var i=0; i<is_attend.length; i++){
+    if(is_attend[i].RID == RID) find_attend = true;
+  }
+  if(find_attend) await db.getQueryResult('UPDATE Request Set State = 2 where RID = "'+RID+'"');
+  //const request = await db.getQueryResult('UPDATE Request Set State = 2 where RID = "'+RID+'"');
   res.json({success : "Updated Successfully", status : 200});
 
 }));
