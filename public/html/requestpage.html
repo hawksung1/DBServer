@@ -14,7 +14,11 @@
 	#requestDate {font-size:20px; background-color:#ccd0ce;    width: fit-content ;     cursor: -webkit-grab;}
 	#requestPay {font-size:20px; background-color:#ccd0ce;    width: fit-content ;     cursor: -webkit-grab;}
   #createRequestB{font-size:20px; background-color:#ccd0ce;    width: fit-content ;     cursor: -webkit-grab;}
-  #createR {font-size:20px; background-color:#ccd0ce;    width: fit-content ;     cursor: -webkit-grab;}
+#createR_RL{font-size:20px; background-color:#ccd0ce;    width: fit-content ;     cursor: -webkit-grab;}
+#createR_RD {font-size:20px; background-color:#ccd0ce;    width: fit-content ;     cursor: -webkit-grab;}
+#createR_F {font-size:20px; background-color:#ccd0ce;    width: fit-content ;     cursor: -webkit-grab;}
+#createR {font-size:20px; background-color:#ccd0ce;    width: fit-content ;     cursor: -webkit-grab;}
+
 	</style>
 </head>
 <body>
@@ -45,6 +49,14 @@
 
 </div>
 
+
+<div id='givePoint'style="display:none">
+<div>프리랜서에게 줄 평점 :
+  <input id = "pointOfFL" type="number" name="pointOfFL" min="0" max="5" required/><br></div>
+<input type="button" value="프리랜서에게 평점을 줍니다" id='sendPoint'>
+
+</div>
+
 <!-- ======의뢰 완료 및 거절 관련 div 모음 ===================== -->
 
 <hr color="red" width=100%>
@@ -63,20 +75,34 @@
 <div id="createRequestB">의뢰 생성 버튼입니다</div>
 
 <div id='insert' style="display:none">
+  의뢰 생성 1단계:<br/>
 <!-- <div>의뢰번호 : <input type='text' id ='Rnum' name ='Rnum'></div> -->
 <!--  <div>의뢰자 : <input type='text' id='Name' name='Name'></div> -->
 <div>의뢰금액 : <input type='text' id ='Pay' name ='Pay' required></div>
 <div>최소 경력 년수 : <input type='text' id ='Cyear' name ='Cyear'></div>
 <div>최소 인원수 : <input type='text' id ='MinNum' name ='MinNum'></div>
 <div>최대 인원수 : <input type='text' id ='MaxNum' name ='MaxNum'></div>
-<!--<div>언어 별 능숙도 : <input type='text' name ='Prog' value=''></div>-->
-<!--<div>의뢰 문서 : <input type='text' name ='Rdoc' value=''></div>-->
+<div id='createR_RL'>기초 의뢰 생성</div>
+</div>
+
+<div id = "insert_request_skill" style="display:none">
+    의뢰 생성 2단계:<br/>
+  <p> insert your programming language skills </p>
+  language: <input id = "language" type="text" name="language" required/><br>
+  level: <input id = "level" type="number" name="level" min="0" max="5" required/><br>
+  <input type="submit" value="submit"/>
+  <div id='createR_RD'>언어 입력 완료</div>
+</div>
+
+<div id = "insert_request_doc" style="display:none">
+    의뢰 생성 3단계:<br/>
 <form action="/upload/pc_request" method = "post" id = "request_doc"  enctype="multipart/form-data">
     request id to update file<input id="request_upload_id" type="text" name="request_upload_id"/><br>
     request doc (English File Only) <input id="request_file" type="file" name="request_file"/><br>
   <input type="submit" value="submit"/>
-<div id='createR'>의뢰 생성</div>
+  <div id='createR_F'>의뢰 생성 완료</div>
 </div>
+
 
 <hr color="red" width=100%>
 <div>
@@ -115,23 +141,19 @@
        //의뢰 생성 버튼 누르기 및 의뢰 번호 생성
         $('#createRequestB').click(function(){
             $("#insert").show();
-
-            $.ajax({
-                type: 'get',
-                url: '/request_PC/createRID',
-
-                success: function(data) {
-              alert("RID 생성 성공")
-            },
-                error: function(err) {
-                  console.log(err);
-                }
-              });
-
         });
-        var createdRID = "0";
+
+        $('#createR_RL').click(function(){
+            $("#insert_request_skill").show();
+        });
+
+
+        $('#createR_RD').click(function(){
+            $("#insert_request_doc").show();
+        });
+
         //의뢰 만들기
-         $('#createR').click(function(){
+         $('#createR_F').click(function(){
           var v = {
 
           pay: $("#insert #Pay").val(),
@@ -146,6 +168,7 @@
         data: v,
             success: function(data) {
           alert("insert 성공")
+            location.reload();
         },
             error: function(err) {
               console.log(err);
@@ -238,21 +261,27 @@
           //   console.log("라디오 값이 저장됨:"+state);
            if(state == "finish"){
             // console.log("라디오 값이 finish 라면");
-             var v = {
-               rID: RID,
-             }
 
-             $.ajax({
-             type: 'post',
-             url: '/request_PC/changeStateFinish',
-              data: v,
-             success: function(data) {
-               console.log("의뢰 완료를 수락합니다. state 값이 4으로 바뀝니다.");
-             },
-             error: function(err) {
-               console.log("의뢰 완료 수락 변경 실패, 에러");
-               console.log(err);
-             }
+             $("#givePoint").show();
+          $('#sendPoint').click(function(){
+
+                var v = {
+                  rID: RID,
+                  point: $("#givePoint #pointOfFL").val(),
+                }
+                console.log(v.point);
+                $.ajax({
+                  type: 'post',
+                  url: '/request_PC/changeStateFinish',
+                  data: v,
+                  success: function(data) {
+                    console.log("의뢰 완료를 수락합니다. state 값이 4으로 바뀝니다.");
+                  },
+                  error: function(err) {
+                    console.log("의뢰 완료 수락 변경 실패, 에러");
+                    console.log(err);
+                  }
+                });
             });
 
            }
@@ -389,7 +418,24 @@
 	  <!-- 함수2 끝 -->
 */
 
-
+$('#insert_rquest_skill').on('submit', function(){
+  var v = {
+    language: $("#insert_request_skill #language").val(),
+    level: $("#insert_request_skill #level").val(),
+  }
+  $.ajax({
+    type: 'post',
+    url: '/user_information_fix/insert_request_skill',
+    data: v,
+    success: function(data) {
+        alert("request_Lang_insert success");
+    },
+    error: function(err) {
+      // alert("모든 항목을 정확히 채워주세요");
+      // console.log(err);
+    }
+  });
+})
 
 
 
