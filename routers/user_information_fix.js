@@ -121,6 +121,13 @@ router.get('/c_projclient_information', wrapper.asyncMiddleware(async (req, res,
 	// console.log(result);
 	res.json(result);
 }));
+router.get('/c_show_innerportfolio', wrapper.asyncMiddleware(async (req, res, next) =>{
+  const user_id = req.session.user_id;
+  const innerportfolio_sql = `Select * from Request where RID IN (Select RID from InnerPortfolio where FID = '${user_id}')`;
+  var result = await db.getQueryResult(innerportfolio_sql);
+	// console.log(result);
+	res.json(result);
+}));
 router.get('/c_download_file', wrapper.asyncMiddleware(async (req, res, next) =>{
 //working on
   const user_id = req.session.user_id;
