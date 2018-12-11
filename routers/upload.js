@@ -18,6 +18,9 @@ router.use(session({
   saveUninitialized: true,
   store: new FileStore()
 }));
+router.get('/', function (req, res, next) {
+  res.render('upload', { title: "파일 업로드" });
+});
 
 var storage = multer.diskStorage({
   destination: function(req, file, cb){
@@ -30,9 +33,6 @@ var storage = multer.diskStorage({
   }
 });
 var upload = multer({storage: storage});
-router.get('/', function (req, res, next) {
-  res.render('upload', { title: "파일 업로드" });
-});
 
 var storage2 = multer.diskStorage({
   destination: function(req, file, cb){
@@ -45,6 +45,21 @@ var storage2 = multer.diskStorage({
   }
 });
 var upload2 = multer({storage: storage2});
+router.get('/', function (req, res, next) {
+  res.render('upload', { title: "파일 업로드" });
+});
+
+var storage3 = multer.diskStorage({
+  destination: function(req, file, cb){
+    cb(null, "routers/requestUpload/")
+  },
+  filename: function (req, file, cb) {
+    // var fileName = file.originalname;
+    fileName = req.body.projclient_upload_id + req.body.request_upload_id + file.originalname;
+    cb(null, fileName);
+  }
+});
+var upload3 = multer({storage: storage3});
 router.get('/', function (req, res, next) {
   res.render('upload', { title: "파일 업로드" });
 });
@@ -78,5 +93,22 @@ router.post('/update', upload2.single('file'), wrapper.asyncMiddleware(async (re
     res.redirect('http://localhost:3000/admin');
   }
 }));
-
+router.post('/request', upload3.single('request_file'), wrapper.asyncMiddleware(async (req, res, next) =>{
+  var userID = req.body.projclient_upload_id;
+  var requestID = req.body.request_upload_id;
+  var fileName3 = userID +requestID+ fileName;
+  console.log(userID);
+  console.log(requestID);
+  console.log(fileName3);
+  var existfile = await db.getQueryResult(`UPDATE RequestDoc SET DocName = '${fileName}' WHERE RID = '${userID}'`);
+  console.log(existfile);
+  if(existfile.length == 0){//file exist
+    res.json(400, {
+                   error: 1,
+                   msg: "no such file"
+   });
+  }else{
+    res.redirect('http://localhost:3000/admin');
+  }
+}));
 module.exports = router;

@@ -33,6 +33,19 @@
         <tbody>
         </tbody>
       </table>
+      <br>
+      <table id = "projclient_information_table">
+        <thead>
+          <tr>
+            <td>PID</td>
+            <td>CName</td>
+            <td>PhoneNumber</td>
+            <td>GradAver</td>
+          </tr>
+        </thead>
+        <tbody>
+        </tbody>
+      </table>
     <button id="c_download_file">download my outer potopolio</button>
     <button id="c_delete_file">delete my outer potopolio</button>
     <br>
@@ -46,10 +59,6 @@
         age: <input id = "age" type="number" name="age" placeholder="20"/><br>
         career: <input id = "career" type="number" name="career"placeholder="3"/><br>
         major: <input id = "major" type="text" name="major"placeholder="Computer"/><br>
-        <!-- skilledAt: <input id = "skilledAt" type="text" name="skilledAt"/><br>
-        level: <input id = "level" type="number" name="level"/><br> -->
-        <!-- outer portfolio <input id="file" type="file" name="file" -->
-        />
         <br>
         <input type="submit" value="submit" id="c_freelancer"/>
     </form>
@@ -137,7 +146,7 @@
       			major: $("#fix_freelancer #major").val(),
             // skilledAt: $("#fix_freelancer #skilledAt").val(),
             // level: $("#fix_freelancer #level").val(),
-            file: $("#fix_freelancer #file").val(),
+            // file: $("#fix_freelancer #file").val(),
           }
           $.ajax({
             type: 'post',
@@ -172,6 +181,11 @@
           });
         })
         $('#fix_projclient').on('submit',function(){
+          var v = {
+            password: $("#fix_projclient #password").val(),
+            phone: $("#fix_projclient #phone").val(),
+      			name: $("#fix_projclient #name").val(),
+          }
           $.ajax({
               type: 'post',
               url: '/user_information_fix/fix_projclient',
@@ -189,7 +203,7 @@
         $('#c_my_information').click(function(){
             $.ajax({
                type: 'get',
-               url: '/user_information_fix/c_my_information',
+               url: '/user_information_fix/c_freelancer_information',
                success: function(data){
                  $('#freelancer_information_table tbody').html("")
                  //$('#user_list tbody').empty();
@@ -206,7 +220,24 @@
                error: function(err) {
                  console.log(err);
                }
-           });
+            });
+           $.ajax({
+              type: 'get',
+              url: '/user_information_fix/c_projclient_information',
+              success: function(data){
+                $('#projclient_information_table tbody').html("")
+                //$('#user_list tbody').empty();
+                for(var i = 0 ; i < data.length; i ++) {
+                   var will_be_append = $('<tr><td>'+data[i].PID+'</td><td>' + data[i].CName+'</td><td>' +
+                     data[i].PhoneNumber+'</td><td>' + data[i].GradAver+'</td></tr>')
+
+                  $('#projclient_information_table tbody').append(will_be_append)
+                }
+              },
+              error: function(err) {
+                console.log(err);
+              }
+            });
          })
          $('#c_download_file').click(function(){
            var get = 'a ';

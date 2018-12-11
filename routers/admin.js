@@ -70,7 +70,8 @@ router.post('/c_admin_ProjClient_update', wrapper.asyncMiddleware(async (req, re
 }));
 
 router.get('/c_admin_request_manage', wrapper.asyncMiddleware(async (req, res, next) =>{
-	var sql = `SELECT * FROM Request`;
+	var sql = `SELECT a.RID, PID, Pay, StartDate, EndDate, MinCareer, MinNum, MaxNum, CGrade, FGrade, State, DocName FROM Request a LEFT JOIN RequestDoc b ON a.RID = b.RID`;
+	// var sql = 'Select * from Request where RID IN (Select a.RID FROM Request a LEFT JOIN RequestDoc b ON a.RID = b.RID) '
 	const result = await db.getQueryResult(sql);
 	res.json(result);
 }));

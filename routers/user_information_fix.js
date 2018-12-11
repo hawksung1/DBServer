@@ -89,6 +89,7 @@ router.post('/fix_freelancer', wrapper.asyncMiddleware(async (req, res, next) =>
   res.json({success:true});
 }));
 router.post('/fix_projclient', wrapper.asyncMiddleware(async (req, res, next) =>{
+  const user_id = req.session.user_id;
   const newPassword = req.body.password;
   const newName = req.body.name;
   const newPhone = req.body.phone;
@@ -98,10 +99,25 @@ router.post('/fix_projclient', wrapper.asyncMiddleware(async (req, res, next) =>
   if(newPhone) await db.getQueryResult(`UPDATE ProjClient SET PhoneNumber='${newPhone}' WHERE PID='${user_id}'`);
   res.json({success:true});
 }));
-router.get('/c_my_information', wrapper.asyncMiddleware(async (req, res, next) =>{
+router.get('/c_freelancer_information', wrapper.asyncMiddleware(async (req, res, next) =>{
   const user_id = req.session.user_id;
-	const sql = `SELECT * FROM Freelancer a LEFT JOIN OuterPortfolio b ON a.FID=b.FID LEFT JOIN SkilledAt c ON a.FID=c.FID WHERE a.FID='${user_id}' `;
-	const result = await db.getQueryResult(sql);
+	const freelancer_sql = `SELECT * FROM Freelancer a LEFT JOIN OuterPortfolio b ON a.FID=b.FID LEFT JOIN SkilledAt c ON a.FID=c.FID WHERE a.FID='${user_id}' `;
+  const check_freelancer = await db.getQueryResult(`SELECT * FROM Freelancer WHERE FID='${user_id}'`);
+  var result;
+  if(check_freelancer.length >= 1){//is freelancer
+	   result = await db.getQueryResult(freelancer_sql);
+   }
+	// console.log(result);
+	res.json(result);
+}));
+router.get('/c_projclient_information', wrapper.asyncMiddleware(async (req, res, next) =>{
+  const user_id = req.session.user_id;
+  const projclient_sql = `SELECT * FROM ProjClient WHERE PID='${user_id}' `;
+  const check_projclient = await db.getQueryResult(`SELECT * FROM ProjClient WHERE PID='${user_id}'`);
+  var result;
+  if(check_projclient.length >= 1){//is freelancer
+	   result = await db.getQueryResult(projclient_sql);
+   }
 	// console.log(result);
 	res.json(result);
 }));
