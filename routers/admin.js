@@ -12,8 +12,9 @@ router.get('/', (req, res, next) => {
 });
 
 router.get('/c_admin_Freelancer_manage', wrapper.asyncMiddleware(async (req, res, next) =>{
-	var sql = `SELECT * FROM Freelancer a LEFT JOIN SkilledAt b ON a.FID=b.FID LEFT JOIN OuterPortfolio c ON b.FID = c.FID `;
+	var sql = `SELECT * FROM Freelancer a LEFT JOIN OuterPortfolio b ON a.FID=b.FID LEFT JOIN SkilledAt c ON a.FID=c.FID  `;
 	const result = await db.getQueryResult(sql);
+	// console.log(result);
 	res.json(result);
 }));
 router.post('/c_admin_Freelancer_delete', wrapper.asyncMiddleware(async (req, res, next) =>{
@@ -74,12 +75,20 @@ router.get('/c_admin_request_manage', wrapper.asyncMiddleware(async (req, res, n
 	res.json(result);
 }));
 router.post('/c_admin_request_delete', wrapper.asyncMiddleware(async (req, res, next) =>{
-	var rid_delete = req.body.rid;
-	var pid_delete = req.body.pid;
+	var RID = req.body.rid;
+	var PID = req.body.pid;
+	var state = await db.getQueryResult(`SELECT State FROM Request WHERE RID = '${RID}' and PID = '${PID}'`);
 	// console.log(""+rid_delete+" "+pid_delete);
-	var sql = `DELETE FROM Request WHERE PID = '${pid_delete}' and RID = '${rid_delete}'`;
-	const result = await db.getQueryResult(sql);
-	res.json(result);
+	if(state[0].State == 0 || state[0].State == 4){
+		var sql = `DELETE FROM Request WHERE PID = '${PID}' and RID = '${RID}'`;
+		const result = await db.getQueryResult(sql);
+		res.json(result);
+	}else{
+		res.json(400, {
+                   error: 1,
+                   msg: "request running"
+		});
+	}
 }));
 router.post('/c_admin_request_update', wrapper.asyncMiddleware(async (req, res, next) =>{
 	var RID = req.body.rid;
@@ -121,6 +130,7 @@ router.post('/c_admin_team_delete', wrapper.asyncMiddleware(async (req, res, nex
 	var TeamName = req.body.teamname;
 	var check_sql = `SELECT RID FROM Attend WHERE TName = '${TeamName}'`
 	var check = await db.getQueryResult(check_sql);
+
 	if(check.length >= 1){
 		var sql = `DELETE FROM TeamList WHERE TeamName = '${TeamName}'`;
 		const result = await db.getQueryResult(sql);

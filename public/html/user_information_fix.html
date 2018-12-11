@@ -15,11 +15,24 @@
   <body>
     <!-- <button id="c_fix_information">fix my information</button> -->
     <button id="c_my_information">show my information</button>
-      <p id='get_my_information'></p>
-    <button id="c_show_file">show my file</button>
-      <p id='show_my_file'></p>
-    <button id="c_show_skill">show my language skill</button>
-      <p id='show_my_skill'></p>
+      <table id = "freelancer_information_table">
+        <thead>
+          <tr>
+            <td>FID</td>
+            <td>FName</td>
+            <td>Age</td>
+            <td>PhoneNumber</td>
+            <td>Career</td>
+            <td>Major</td>
+            <td>GradAver</td>
+            <td>Language</td>
+            <td>Level</td>
+            <td>DocName</td>
+          </tr>
+        </thead>
+        <tbody>
+        </tbody>
+      </table>
     <button id="c_download_file">download my outer potopolio</button>
     <button id="c_delete_file">delete my outer potopolio</button>
     <br>
@@ -49,7 +62,7 @@
     <form id = "insert_freelancer_skill">
       <p> insert your programming language skills </p>
       language: <input id = "language" type="text" name="language" required/><br>
-      level: <input id = "level" type="number" name="level" required/><br>
+      level: <input id = "level" type="number" name="level" min="0" max="5" required/><br>
       <input type="submit" value="submit"/>
     </form>
 
@@ -174,18 +187,25 @@
           });
         })
         $('#c_my_information').click(function(){
-          var get = 'a ';
-          $.ajax({
-             type: 'get',
-             url: '/user_information_fix/get_my_information',
-             data: {data:get},
-             success: function(result){
-               // alert(JSON.stringify(result));
-               $('#get_my_information').html(JSON.stringify(result.result));
-             },
-             error: function(err){
-               alert(err);
-             }
+            $.ajax({
+               type: 'get',
+               url: '/user_information_fix/c_my_information',
+               success: function(data){
+                 $('#freelancer_information_table tbody').html("")
+                 //$('#user_list tbody').empty();
+                 for(var i = 0 ; i < data.length; i ++) {
+                    var will_be_append = $('<tr><td>'+data[i].FID+'</td><td>' + data[i].FName+'</td><td>' +
+                      data[i].Age+'</td><td>' + data[i].PhoneNumber+'</td><td>' +
+                        data[i].Career+'</td><td>' + data[i].Major+'</td><td>' +
+                          data[i].GradAver+'</td><td>' + data[i].LangName+'</td><td>' +
+                            data[i].Skill+'</td><td>' + data[i].DocName+'</td></tr>')
+
+                   $('#freelancer_information_table tbody').append(will_be_append)
+                 }
+               },
+               error: function(err) {
+                 console.log(err);
+               }
            });
          })
          $('#c_download_file').click(function(){
@@ -202,34 +222,6 @@
               }
             });
           })
-          $('#c_show_file').click(function(){
-            var get = 'a ';
-            $.ajax({
-               type: 'get',
-               url: '/user_information_fix/c_show_file',
-               data: {data:get},
-               success: function(result){
-                 $('#show_my_file').html(JSON.stringify(result.result));
-               },
-               error: function(err){
-                 alert(err);
-               }
-             });
-           })
-           $('#c_show_skill').click(function(){
-             var get = 'a ';
-             $.ajax({
-                type: 'get',
-                url: '/user_information_fix/c_show_skill',
-                data: {data:get},
-                success: function(result){
-                  $('#show_my_skill').html(JSON.stringify(result.result));
-                },
-                error: function(err){
-                  alert(err);
-                }
-              });
-            })
            $('#c_delete_file').click(function(){
              var get = 'a ';
              $.ajax({
