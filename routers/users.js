@@ -27,9 +27,11 @@ router.post('/insert_freelancer', wrapper.asyncMiddleware(async (req, res, next)
   const newPhone = req.body.phone;
   const newCareer = req.body.career;
   const newMajor = req.body.major;
+  const newLanguage = req.body.language;
+  const newLevel = req.body.level;
 
   console.log(await db.getQueryResult(`INSERT INTO Freelancer (FID,FName,Age,PhoneNumber,Career,Major,Pwd) values ('${newId}','${newName}','${newAge}','${newPhone}','${newCareer}','${newMajor}',password('${newPassword}'))`));
-  // console.log(await db.getQueryResult(`INSERT INTO OuterPortfolio (FID, FilePath, DocName) values('${newId}', '${newId}', '${newId}')`));
+  console.log(await db.getQueryResult(`INSERT INTO SkilledAt (FID, LangName, Skill) VALUES ('${newId}','${newLanguage}','${newLevel}')`));
   res.json({success:true});
 }));
 router.post('/insert_projclient', wrapper.asyncMiddleware(async (req, res, next) =>{
