@@ -195,6 +195,7 @@ router.get('/viewreq_applyable', wrapper.asyncMiddleware(async (req, res, next) 
   await db.getQueryResult('drop view minnum_y');
   res.json(request);
 }));
+
 router.get('/orderbydate', wrapper.asyncMiddleware(async (req, res, next) => {
   const request = await db.getQueryResult('SELECT * FROM Request where State = 0 ORDER BY StartDate');
   res.json(request);
@@ -337,13 +338,226 @@ router.post('/complete', wrapper.asyncMiddleware(async (req, res, next) =>{
   res.json({success : "Updated Successfully", status : 200});
 
 }));
-/*
-router.post('/insert', wrapper.asyncMiddleware(async (req, res, next) =>{
-  const newName = req.body.name;
-  const newPhone = req.body.phone;
 
-  console.log(await db.getQueryResult(`INSERT INTO Freelancer (FID, PhoneNumber) values ('${newName}', '${newPhone}')`));
-  res.json({success: true});
+router.post('/doingbyteam', wrapper.asyncMiddleware(async (req, res, next) => {
+  //var user_id = req.session.user_id;
+  var obj = req.body.curl;
+  obj = obj.split("?");
+  obj = obj[1];//TName
+  var tname = obj
+
+  //console.log(tname);
+  //var result = user_id;
+  //res.send({result:result});
+  const request = await db.getQueryResult('Select * '
++'from Request'
++' where State != 4 and RID IN ('
+	+' Select RID'
+	+' from Attend'
+	+' where TName = "'+tname+'")');
+  res.json(request);
 }));
-*/
+
+router.post('/apply_request_byteam', wrapper.asyncMiddleware(async (req, res, next) => {
+  //var user_id = req.session.user_id;
+  var obj = req.body.curl;
+  obj = obj.split("?");
+  obj = obj[1];//TName
+  var tname = obj
+
+  const request = await db.getQueryResult('Select * '
++'from Request'
++' where RID IN ('
+	+' Select RID'
+	+' from Apply'
+	+' where TName  = "'+tname+'")');
+  res.json(request);
+}));
+
+router.post('/comple_request_byteam', wrapper.asyncMiddleware(async (req, res, next) => {
+  //var user_id = req.session.user_id;
+  var obj = req.body.curl;
+  obj = obj.split("?");
+  obj = obj[1];//TName
+  var tname = obj;
+
+  //var result = user_id;
+  //res.send({result:result});
+  const request = await db.getQueryResult('Select * '
++'from Request'
++' where State = 4 and RID IN ('
+	+' Select RID'
+	+' from Attend'
+	+' where TName  = "'+tname+'")');
+  res.json(request);
+}));
+
+router.post('/viewreq_applyable_byteam', wrapper.asyncMiddleware(async (req, res, next) => {
+  //const request = await db.getQueryResult('SELECT * FROM Request where State = 0 ORDER BY StartDate');
+  var user_id = req.session.user_id;
+  var obj = req.body.curl;
+  obj = obj.split("?");
+  obj = obj[1];//TName
+  var tname = obj;
+  tname = req.session.tname;
+  const mincareerInTeam = await db.getQueryResult('Select min(Career) as min '
+  +'from Freelancer '
+  +'where FID IN( '
+  +'select MemberID '
+  +'from TeamMember '
+  +'where TeamName = "'+ tname +'")');
+
+  var mincarInTeam = mincareerInTeam[0].min;
+
+  //console.log(mincarInTeam);
+
+  const tmem = await db.getQueryResult('select MemberID from TeamMember where TeamName = "'+tname+'"');
+
+//해당 의뢰의 최대요구명 수
+  const maxnum_y = await db.getQueryResult('Create view maxnum_y as '
++'select RID '
++'from Request '
++'where MaxNum >= '+tmem.length+';');
+
+//해당 팀의 최소경력자 만족하는 의뢰번호
+  const career_y = await db.getQueryResult('Create view career_y as '
++'select RID '
++'from Request '
++'where MinCareer <= '+ mincarInTeam+';');
+
+var rids = "";
+for(var i=0; i<tmem.length; i++){
+  //console.log(tmem[i].MemberID);
+      //유저가 만족하는 언어수
+      await db.getQueryResult('Create view langcount as '
+    +'Select RID, count(RID) as re '
+    +'from SkilledAt as s, RequireLang as r '
+    +'where FID = "'+tmem[i].MemberID+'" and s.LangName = r.LangName and s.Skill>= r.Skill '
+    +'group by r.RID; ');
+    //해당 의뢰에서 필요한 언어 갯수
+      await db.getQueryResult('Create view Reqcount as '
+    +'Select RID, count(RID) as al '
+    +'from RequireLang '
+    +'group by RID; ');
+
+      //두 갯수가 같으면 일단 의뢰언어는 만족, career_Y와 minnum_y 또한 만족하는것 선택
+      const request = await db.getQueryResult('Select RID '
+    +'from Request '
+    +'where RID IN( '
+    +'Select l.RID '
+    +'from langcount as l,Reqcount as r '
+    +'where l.RID = r.RID and l.re = r.al and State = 0 )'
+    +'and '
+    +'RID IN ( '
+    +'Select RID '
+    +'from career_y ) '
+    +'and '
+    +'RID IN ( '
+    +'select RID '
+    +'from maxnum_y) ');
+      for(var j=0; j<request.length; j++){
+        if(!rids.includes(request[j].RID)){
+          if(rids.length == 0 ) rids += ('"'+request[j].RID+'"');
+          else rids += (', "'+request[j].RID+'"');
+        }
+      }
+    await db.getQueryResult('drop view langcount; ');
+    await db.getQueryResult('drop view Reqcount;');
+  }
+  await db.getQueryResult('drop view career_y;');
+  await db.getQueryResult('drop view maxnum_y');
+  //이제 팀이 만족하는 의뢰 찾음 rids 에 , 로 구분되어있다.
+  //console.log(rids);
+  //var parse = rids.split(",");
+
+  const request = await db.getQueryResult('select * from Request where RID IN ('+rids+')');
+  //console.log(request);
+  /*
+  for(var i=0; i<request.length; i++){
+    console.log(request[i].RID);
+  }
+  */
+  //console.log(request);
+//해당 유저가 해당 의뢰에서 만족하는 언어 갯수
+  res.json(request);
+}));
+
+router.post('/apply_byteam', wrapper.asyncMiddleware(async (req, res, next) =>{//의뢰 지원시 작동
+  //var user_id = req.session.user_id;
+  var rid = req.body.id;
+  var obj = req.body.curl;
+  obj = obj.split("?");
+  obj = obj[1];//TName
+  var tname = obj;
+  tname = req.session.tname;
+  //var client = req.body.cli_id;
+
+  const getcli_id = await db.getQueryResult('select PID from Request where RID = "'+rid+'"');
+  var cli = getcli_id[0].PID;//의뢰자 id 획득
+
+  //팀 중 가장 적은 커리어 뽑음
+  const mincareerInTeam = await db.getQueryResult('Select min(Career) as min '
+  +'from Freelancer '
+  +'where FID IN( '
+  +'select MemberID '
+  +'from TeamMember '
+  +'where TeamName = "'+ tname +'")');
+
+  var mincarInTeam = mincareerInTeam[0].min;
+  //지원자의 경력이 해당 의뢰의 최소필요경력 이상인지.
+  const career_y = await db.getQueryResult('select * '
++'from Request '
++'where RID = "'+ rid+'" and MinCareer <= '+ mincarInTeam+';');
+
+  //tmem.length 는 팀원수
+  const tmem = await db.getQueryResult('select MemberID from TeamMember where TeamName = "'+tname+'"');
+  //minnum_y가 비면 해당 의뢰 최소참여자 만족 안하는것.
+  const maxnum_y = await db.getQueryResult('select RID '
+  +'from Request '
+  +'where MaxNum >= '+tmem.length+' and RID = "'+rid+'"'
+  );
+
+  //career_y maxnum_y 만족여부 조사 후 이제 팀원중 한명이라도 skill 만족하는지
+  var rids = "";
+for(var i=0; i<tmem.length; i++){
+  //console.log(tmem[i].MemberID);
+      //유저가 만족하는 언어수
+      await db.getQueryResult('Create view langcount as '
+    +'Select RID, count(RID) as re '
+    +'from SkilledAt as s, RequireLang as r '
+    +'where FID = "'+tmem[i].MemberID+'" and s.LangName = r.LangName and s.Skill>= r.Skill '
+    +'group by r.RID; ');
+    //해당 의뢰에서 필요한 언어 갯수
+      await db.getQueryResult('Create view Reqcount as '
+    +'Select RID, count(RID) as al '
+    +'from RequireLang '
+    +'group by RID; ');
+
+      //두 갯수가 같으면 일단 의뢰언어는 만족
+      const request = await db.getQueryResult('Select RID '
+    +'from Request '
+    +'where RID IN( '
+    +'Select l.RID '
+    +'from langcount as l,Reqcount as r '
+    +'where l.RID = r.RID and l.re = r.al and State = 0 )');
+      for(var j=0; j<request.length; j++){
+        if(!rids.includes(request[j].RID)){
+          if(rids.length == 0 ) rids += ('"'+request[j].RID+'"');
+          else rids += (', "'+request[j].RID+'"');
+        }
+      }
+    await db.getQueryResult('drop view langcount; ');
+    await db.getQueryResult('drop view Reqcount;');
+  }
+  //rids 에는 팀원이 지원가능한 의뢰번호 들었다.
+  //console.log(rids);
+  if(rids.includes(rid) && career_y.length == 1 && maxnum_y.length == 1 ) {
+    const request = await db.getQueryResult('Insert INTO Apply (TName, PID, RID) values ("'+tname+'", "' + cli +'" , "' + rid + '")');
+  }
+  //location.href="/board/info?"+tname;
+  res.redirect("/board/team?"+tname);
+  //res.json({success : "Updated Successfully", status : 200});
+  //res.json("{\"msg\":\"success\"}");
+  //res.json({success: "true", error: false});
+}));
 module.exports = router;

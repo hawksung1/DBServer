@@ -179,7 +179,6 @@
 
 <form id="apply">
       <input id="applyRID" placeholder="지원할 의뢰번호 입력" type="text">
-      <input id="clientId" placeholder="의뢰자ID 입력" type="text">
       <input type="submit" value="지원하기"/>
 </form>
 
@@ -202,7 +201,9 @@
     $(function() {
       var socket = io();
       var get = 'a';
-
+      var v1 = {
+        curl : document.location.href,
+      };
       $.fn.freeonclick = function(fid){
           location.href="/free/info?"+fid;
 
@@ -228,7 +229,7 @@
       }
       //asd는 모르겟고... 그냥 통신 시작될때 작동하는 함수.
       socket.on('asd', function(msg) {
-        var v1 = {
+         v1 = {
           curl : document.location.href,
         };
 
@@ -301,8 +302,9 @@
         });
 
         $.ajax({
-            type: 'get',
-            url: '/request/doing',
+            type: 'post',
+            url: '/request/doingbyteam',
+            data: v1,
             success: function(data) {
           $('#doing_request tbody').html("")
           //$('#user_list tbody').empty();
@@ -322,8 +324,9 @@
             }
         });
         $.ajax({
-            type: 'get',
-            url: '/request/apply_request',
+            type: 'post',
+            url: '/request/apply_request_byteam',
+            data: v1,
             success: function(data) {
           $('#apply_request tbody').html("")
           //$('#user_list tbody').empty();
@@ -343,8 +346,9 @@
             }
         });
         $.ajax({
-            type: 'get',
-            url: '/request/comple_request',
+            type: 'post',
+            url: '/request/comple_request_byteam',
+            data: v1,
             success: function(data) {
           $('#comple_request tbody').html("")
           //$('#user_list tbody').empty();
@@ -412,8 +416,9 @@
       })
       $('#viewreq_applyable').click('viewreq_applyable', function(){
         $.ajax({
-            type: 'get',
-            url: '/request/viewreq_applyable',
+            type: 'post',
+            url: '/request/viewreq_applyable_byteam',
+            data: v1,
             success: function(data) {
           $('#req_list tbody').html("")
           //$('#user_list tbody').empty();
@@ -467,19 +472,24 @@
       $('#apply').on('submit', function(){
         var v = {
         id: $("#apply #applyRID").val(),
-        cli_id: $("#apply #clientId").val(),
+        curl : document.location.href,
+        //cli_id: $("#apply #clientId").val(),
         }
+        //this.preventDefault();
         $.ajax({
             type: 'post',
-            url: '/request/apply',
+            url: '/request/apply_byteam',
             //dataType: "json",
             data: v,
             success: function(data) {
+              //location.href = v.curl;
               //alert("성공");
-
+              console.log("성공");
             },
             error: function(err) {
+              //location.href = v.curl;
               //alert(err.status);
+              console.log("에러");
               console.log(err);
             }
         });

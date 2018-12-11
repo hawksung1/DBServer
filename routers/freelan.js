@@ -25,8 +25,12 @@ router.post('/cur_log', wrapper.asyncMiddleware(async (req, res, next) => {
   var obj = req.body.curl;
   obj = obj.split("?");
   obj = obj[1];
+  //console.log(obj.length);
+  if(obj.length !=0) req.session.tname = obj;
+  obj = req.session.tname;
+  //req.session.tname = obj;
   //console.log("가능?");
-  console.log(obj);
+  console.log("이름은"+obj);
   //var user_id = req.session.user_id;
   //var result = user_id;
   res.json(obj);
@@ -117,7 +121,7 @@ router.post('/banfree', wrapper.asyncMiddleware(async (req, res, next) => {
   var obj = req.body.teamname;
   obj = obj.split("?");
   obj = obj[1];
-  var tname = obj
+  var tname = obj;
   //console.log("되느냐");
   //console.log(tname);
   const request = await db.getQueryResult('DELETE from TeamMember where MemberID = "'+banid+'" and TeamName = "'+tname+'"');
@@ -130,7 +134,7 @@ router.post('/delteam', wrapper.asyncMiddleware(async (req, res, next) => {
   var obj = req.body.teamname;
   obj = obj.split("?");
   obj = obj[1];
-  var tname = obj
+  var tname = obj;
 
   //console.log("삭제해~");
   //console.log("되느냐");
