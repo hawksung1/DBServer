@@ -7,14 +7,7 @@
     <script src="/js/socket.io.slim.js"></script>
 	<style>
 	td {border: solid 1px #000000}
-	#request {font-size:20px; background-color:#ccd0ce;    width: fit-content ;     cursor: -webkit-grab;}
-  #viewallreq  {font-size:15px; background-color:#ccd0ce;  border:1px solid blue;  width: 110px;     cursor: -webkit-grab;}
-  #orderbydate {font-size:15px; background-color:#ccd0ce;  border:1px solid blue;  width: 110px;     cursor: -webkit-grab;}
-  #orderbypay {font-size:15px; background-color:#ccd0ce;  border:1px solid blue;  width: 110px;     cursor: -webkit-grab;}
-  #viewallreq {font-size:15px; background-color:#ccd0ce;  border:1px solid blue;  width: 110px;     cursor: -webkit-grab;}
-  #viewreq_s_0 {font-size:15px; background-color:#ccd0ce;  border:1px solid blue;  width: 150px;     cursor: -webkit-grab;}
-  #viewreq_applyable {font-size:15px; background-color:#ccd0ce;  border:1px solid blue;  width: 150px;     cursor: -webkit-grab;}
-
+  #buttondel {font-size:15px; background-color:#ccd0ce;  border:1px solid blue;  width: 150px;     cursor: -webkit-grab;}
   </style>
 </head>
 <body>
@@ -41,6 +34,11 @@
     </tbody>
   </table>
   <br>
+  <br>
+  <br>
+  <br>
+
+  <div id = "buttondel" onclick = $(this).teamdelonclick()>팀 해체 <br> 조심해서 눌러주세요</div>
 <script>
     $(function() {
       var socket = io();
@@ -48,6 +46,27 @@
 
       $.fn.freeonclick = function(fid){
           location.href="/free/info?"+fid;
+
+      }
+
+      $.fn.teamdelonclick = function(){
+        var sendteam ={
+          teamname: document.location.href,
+        };
+        $.ajax({
+            type: 'post',
+            url: '/free/delteam',
+            data: sendteam,
+            //data: getid,
+            success: function(data) {
+            location.href="/board";
+          //$('#cur_log').val(data);
+
+          },
+            error: function(err) {
+              console.log(err);
+            }
+        });
 
       }
       $.fn.banonclick = function(fid){
@@ -63,6 +82,7 @@
               //data: getid,
               success: function(data) {
               location.reload();
+              //location.href="/free/info?"+fid;
             //$('#cur_log').val(data);
 
             },

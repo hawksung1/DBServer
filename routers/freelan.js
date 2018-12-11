@@ -86,10 +86,22 @@ router.post('/banfree', wrapper.asyncMiddleware(async (req, res, next) => {
   //console.log("되느냐");
   //console.log(tname);
   const request = await db.getQueryResult('DELETE from TeamMember where MemberID = "'+banid+'" and TeamName = "'+tname+'"');
-  //console.log("url은.."+obj);
-  //const request = await db.getQueryResult('SELECT * FROM SkilledAt where FID = "'+obj+'"');
-  //var user_id = req.session.user_id;
-  //const request = await db.getQueryResult('SELECT * FROM SkilledAt where FID = "'+user_id+'"');
+
+  res.json(request);
+}));
+
+router.post('/delteam', wrapper.asyncMiddleware(async (req, res, next) => {
+
+  var obj = req.body.teamname;
+  obj = obj.split("?");
+  obj = obj[1];
+  var tname = obj
+
+  //console.log("삭제해~");
+  //console.log("되느냐");
+  //console.log(tname);
+  const request = await db.getQueryResult('DELETE from TeamList where TeamName = "'+tname+'"');
+
   res.json(request);
 }));
 
