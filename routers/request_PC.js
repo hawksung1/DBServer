@@ -67,4 +67,21 @@ console.log("의뢰 생성 session id = " + newPID);
   res.json({success: true});
 }));
 
+router.post('/changeStateFinish', wrapper.asyncMiddleware(async (req, res, next) =>{
+const getRID = req.body.rID;
+const getPID = req.session.user_id;
+console.log("의뢰 ID: "+getRID);
+console.log("의뢰자: "+getRID);
+console.log("의뢰 완료 수락 진행중");
+
+  console.log(await db.getQueryResult('UPDATE  Request SET State = "4" WHERE RID = "'+getRID+'" AND PID = "'+getPID+'" '));
+
+  //console.log(await db.getQueryResult(`INSERT INTO Freelancer (FID,FName,Age,PhoneNumber,Career,Major,Pwd) values ('${newId}','${newName}','${newAge}','${newPhone}','${newCareer}','${newMajor}','${newPassword}')`));
+  res.json({success: true});
+  console.log("의뢰 완료 수락 완료");
+}));
+
+
+
+
 module.exports = router;

@@ -7,7 +7,7 @@
     <script src="/js/socket.io.slim.js"></script>
 	<style>
 	td {border: solid 1px #000000}
-	#rejectM {font-size:20px; background-color:#ccd0ce;    width: fit-content ;     cursor: -webkit-grab;}
+  #sendState {font-size:20px; background-color:#ccd0ce;    width: fit-content ;     cursor: -webkit-grab;}
 	#getTeam {font-size:20px; background-color:#ccd0ce;    width: fit-content ;     cursor: -webkit-grab;}
 	#refresh {font-size:20px; background-color:#ccd0ce;    width: fit-content ;     cursor: -webkit-grab;}
 	#request_PC {font-size:20px; background-color:#ccd0ce;    width: fit-content ;     cursor: -webkit-grab;}
@@ -17,62 +17,44 @@
 	</style>
 </head>
 <body>
-<div>
-  <button id="c_session_check">session check</button>
-  <p id='get_output'>  </p>
-<input type='button' value ='페이지 이동' onclick="movepage()"/>
-<script> function movepage(){ location.href="/request_create.js"}</script>
-</div>
 
 <hr color="red" width=100%>
 
-<div id='finishProj'>
+<div id='finishProj' style="display:none">
 
-<form>
-<input type="radio" name="state" value="5" id='finish'>완료하기</div>
-<input type="radio" name="state" value="4" id='reject'>거절하기</div>
-<input type="button" value="전송" id='sendstate'>
-</form>
+의뢰 완료 요청이 들어왔습니다.<br>
+
+<input  type="radio" name="stateRadio" value='finish'>완료하기
+<input  type="radio" name="stateRadio" value='reject'>거절하기
+<div id='sendState'>의뢰 생성</div>
+
 </div>
 
+<hr color="red" width=100% >
 
 
-
-<hr color="red" width=100%>
-
-
-<div id='rejectM'>
+<div id='rejectM'style="display:none">
 
 <div>메세지 ID : <input type='text' id ='mID' name ='mID'></div>
-<div>의뢰번호 : <input type='text' id ='mRID' name ='mRID'></div>
-<div>의뢰자 : <input type='text' id='mPID' name='mPID'></div>
-<div>프리랜서 : <input type='text' id='mFID' name='mFID'></div>
-<form id="mContent">
-<div>거절 메세지 <br><textarea rows="4" cols="50" name="comment" form="mContent"></textarea></div>
-<input type="button" value="보내기" id='sendRejectM'>
-</form>
+<!-- <div>의뢰번호 : <input type='text' id ='mRID' name ='mRID'></div> -->
+<!-- <div>의뢰자 : <input type='text' id='mPID' name='mPID'></div> -->
+<!-- <div>프리랜서 : <input type='text' id='mFID' name='mFID'></div> -->
+<div>메세지 내용 : <input type='text' id ='mContent' name ='mContent'></div>
+<input type="button" value="거절 및 메세지 보내기 버튼입니다" id='sendRejectM'>
+
 </div>
 
-
+<!-- ======의뢰 완료 및 거절 관련 div 모음 ===================== -->
 
 <hr color="red" width=100%>
 
 
-
-
-<div id='team_list_div'>
+<div id='team_list_div' style="display:none">
 <div >팀 목록가져오기</div>
 <table id = "team_list">
-<thead>
-<tr><td>번호</td>
-<td>의뢰번호</td>
-<td>팀이름</td>
-
-</tr>
-</tread>
+<thead><tr><td>번호</td><td>의뢰번호</td><td>팀이름</td></tr></tread>
 <tbody></tbody>
 </table>
-
 </div>
 
 <hr color="red" width=100%>
@@ -103,8 +85,6 @@
 
 <script>
 
-
-
     $(function() {
       var socket = io();
 
@@ -112,34 +92,185 @@
         console.log(msg);
       });
 
-	<!--goto 클릭하면 board 라는 html로 가게 만듦 -->
-	 $('#goto').click(function(){
-		$.ajax({
-        type: 'get',
-        url: '/board',
-        success: function(data) {
-			console.log("함수진입");
-			location.href = "board";
-		}
-		});
-	})
-	  <!-- 여기까지-->
-
     <!-- 세션 체크 -->
     $('#c_session_check').click(function(){
-      var get = 'a ';
-      $.ajax({
-         type: 'get',
-         url: '/users/get_session',
-         data: {data:get},
-         success: function(result){
-           $('#get_output').html(result.result);
+        var get = 'a ';
+        $.ajax({
+           type: 'get',
+           url: '/users/get_session',
+           data: {data:get},
+           success: function(result){
+             $('#get_output').html(result.result);
+           }
+         });
+       })
+       <!-- 세션 체크 끝 -->
+
+
+           //나의 의뢰 목록 보이기
+       	  $('#request_PC').click(function(){
+       		$.ajax({
+               type: 'get',
+               url: '/request_PC/request',
+               success: function(data) {
+       		  $('#user_list tbody').html("")
+       		  for(var i = 0 ; i < data.length; i ++) {
+       			 var tr_num = i+1;
+       		     var will_be_append = $('<tr onclick=$(this).gotoState('+data[i].RID+','+data[i].State+')><td>'+tr_num+'</td>'
+       			 +'<td>'+data[i].RID+'</td><td>' + data[i].PID+'</td>'
+       			 +'<td>' + data[i].Pay+'</td><td>' + data[i].StartDate+'</td>'
+       			 +'<td>' + data[i].EndDate+'</td><td>' + data[i].MinCareer+'</td>'
+       			 +'<td>' + data[i].MinNum+'</td><td>' + data[i].MaxNum+'</td>'
+       			 +'<td>' + data[i].CGrade+'</td><td>' + data[i].FGrade+'</td>'
+       			 +'<td>' + data[i].State+'</td></tr>' )
+                    $('#req_list tbody').append(will_be_append)
+       		  }
+       		},
+               error: function(err) {
+                 console.log(err);
+               }
+             });
+       	  });
+
+//-------------------------------------------------
+       $.fn.gotoState = function(RID,state){
+
+     		console.log(RID);
+        console.log(state);
+
+
+        if(state == 0){
+          // 의뢰 목록 중 하나를 선택, 선택된 의뢰를 신청한팀 목록을 보여준다
+         console.log("의뢰에 신청한 팀 목록을 봅니다");
+         console.log("선택으로 넘어온"+RID);
+           $("#team_list_div").show();
+         var v = {
+           rID: RID,
          }
-       });
-     })
-     <!-- 세션 체크 끝 -->
+              $.ajax({
+              type: 'post',
+              url: '/teamList/getTeam',
+              data: v,
+              success: function(data) {
+           $('#user_list tbody').html("")
+           for(var i = 0 ; i < data.length; i ++) {
+            var tr_num = i+1;
+            var teamN = data[i].TName;
+             var rID = data[i].RID;
+             rID +="";
+
+            console.log(teamN);
+             console.log(rID);
+
+              var will_be_append = $( '<tr ><td>'+tr_num+'</td>'
+            +'<td>'+data[i].RID+'</td>'
+            +'<td onclick=$(this).selectTeam("'+teamN+'","'+rID+'")>'+data[i].TName+'</td></tr>')
+                   $('#team_list tbody').append(will_be_append)
+           }
+          console.log("신청한 팀목록 불러오기 성공");
+              },
+              error: function(err) {
+                console.log(err);
+              }
+            });
+
+        }
+        else if (state == 1) {
+          console.log("의뢰가 진행 중입니다. 의뢰 완료 시 상태가 2로 바뀝니다.");
+        }
+        else if (state == 2) {
+          console.log("의뢰 완료 요청이 온 의뢰입니다. 의뢰 완료 페이지로 넘어갑니다");
+          $("#finishProj").show();
+
+          $('#sendState').click(function(){
+            //console.log("수락 버튼이 눌림");
+           var state = $(":input:radio[name=stateRadio]:checked").val();
+          //   console.log("라디오 값이 저장됨:"+state);
+           if(state == "finish"){
+            // console.log("라디오 값이 finish 라면");
+             var v = {
+               rID: RID,
+             }
+
+             $.ajax({
+             type: 'post',
+             url: '/request_PC/changeStateFinish',
+              data: v,
+             success: function(data) {
+               console.log("의뢰 완료를 수락합니다. state 값이 4으로 바뀝니다.");
+             },
+             error: function(err) {
+               console.log("의뢰 완료 수락 변경 실패, 에러");
+               console.log(err);
+             }
+            });
+
+           }
+           else if(state == "reject"){
+              console.log("라디오 값이 reject 라면");
+
+             $("#rejectM").show();
+
+             //거절메세지 보내기
+            $('#sendRejectM').click(function(){
+
+              var mRID = RID;
+              mRID += "";
+
+              var v = {
+                mRID: mRID, //의뢰 목록에서 가져온 의뢰idea
+                // PID: 의뢰자 ID 는 세션을 통해 전달
+                // FID: 프리랜서 ID는 Attend table 쿼리를 통해 가져오기
+                mID: $("#rejectM #mID").val(),
+                mContent: $("#rejectM #mContent").val(),
+              }
+
+            $.ajax({
+                 type: 'post',
+                 url: '/sendM/sendRejectM',
+                 data: v,
+                 success: function(data) {
+              alert("거절 메세지 보내기 성공")
+            },
+                 error: function(err) {
+                    console.log("거절 메세지 실패");
+                   console.log(err);
+                 }
+               });
+            });
 
 
+
+           }
+           else{
+             console.log("state 전달 에러");
+
+           }
+
+          });
+
+
+        }
+        else if (state == 3) {
+          console.log("의뢰 완료 요청을 거절하고 거절메세지를 보냅니다");
+
+        }
+        else if (state == 4) {
+          console.log("의뢰 완료 요청을 수락합니다");
+        }
+        else if (state == 5) {
+          console.log(" 의뢰 완료로 내부포트폴리오로 저장된 의뢰입니다.");
+        }
+        else{
+
+          console.log("ERROR: OUT of state number");
+        }
+
+           }
+     	  <!-- 함수2 끝 -->
+
+
+//---------------------------------------------------------------
 
 
 	  <!-- 함수3. 선택된 의뢰를 신청한팀 목록에서 팀을 눌러 신청완료 후 의뢰 진행 상태 변경 -->
@@ -152,18 +283,13 @@
 		var v = {
 			teamName: team,
       rID: rid,
-
 		}
-
-
         $.ajax({
         type: 'post',
         url: '/teamList/selectTeam',
 		    data: v,
         success: function(data) {
-
           console.log("팀 선택 완료, 의뢰를 진행합니다.");
-
 		},
         error: function(err) {
 		  console.log("팀 선택 실패, 에러");
@@ -171,8 +297,8 @@
         }
       });
       }
-	  <!-- 함수3 끝 -->
-
+	  <!-- 특정 목록  -->
+/*
 	  <!-- 함수2.의뢰 목록 중 하나를 선택, 선택된 의뢰를 신청한팀 목록을 보여주는 함수 -->
 	$.fn.gotoR = function(RID){
 
@@ -211,146 +337,16 @@
       });
       }
 	  <!-- 함수2 끝 -->
+*/
 
 
 
 
 
-	  $('#sendRejectM').click(function(){
-	    var v = {
-			mID: $("#rejectM #mID").val(),
-			mRID: $("#rejectM #mRID").val(),
-			mPID: $("#rejectM #mPID").val(),
-			mFID: $("#rejectM #mFID").val(),
-			mContent: $("#rejectM #mContent").val(),
 
 
-		}
-		$.ajax({
-        type: 'post',
-        url: '/sendM/sendRejectM',
-		data: v,
-        success: function(data) {
-		  alert("insert 성공")
-		},
-        error: function(err) {
-          console.log(err);
-        }
-      });
-
-	  });
-
-
-
-
-
-	  /*
-	  $('#getTeam').click(function(){
-		$.ajax({
-        type: 'get',
-        url: '/teamList',
-        success: function(data) {
-		  $('#user_list tbody').html("")
-		  for(var i = 0 ; i < data.length; i ++) {
-			 var tr_num = i+1;
-		     var will_be_append = $('<tr id='+tr_num+'><td><a href="#a">'+tr_num+'</a></td><td>'+data[i].TeamName+'</td><td>'+data[i].ProjLeaderID+'</td></tr>' )
-             $('#team_list tbody').append(will_be_append)
-		  }
-		},
-        error: function(err) {
-          console.log(err);
-        }
-      });
-	  });
-	  */
-
-
-
-	  $('#refresh').click(function() {
-			location.reload();
-		});
-
-
-
-
-	  $('#request_PC').click(function(){
-		$.ajax({
-        type: 'get',
-        url: '/request_PC/request',
-        success: function(data) {
-		  $('#user_list tbody').html("")
-		  for(var i = 0 ; i < data.length; i ++) {
-			 var tr_num = i+1;
-		     var will_be_append = $('<tr onclick=$(this).gotoR('+data[i].RID+')><td>'+tr_num+'</td>'
-			 +'<td>'+data[i].RID+'</td><td>' + data[i].PID+'</td>'
-			 +'<td>' + data[i].Pay+'</td><td>' + data[i].StartDate+'</td>'
-			 +'<td>' + data[i].EndDate+'</td><td>' + data[i].MinCareer+'</td>'
-			 +'<td>' + data[i].MinNum+'</td><td>' + data[i].MaxNum+'</td>'
-			 +'<td>' + data[i].CGrade+'</td><td>' + data[i].FGrade+'</td>'
-			 +'<td>' + data[i].State+'</td></tr>' )
-             $('#req_list tbody').append(will_be_append)
-		  }
-		},
-        error: function(err) {
-          console.log(err);
-        }
-      });
-	  });
-
-	 $('#requestDate').click(function(){
-		$.ajax({
-        type: 'get',
-        url: '/request_PC/requestDate',
-        success: function(data) {
-		  $('#user_list tbody').html("")
-		  for(var i = 0 ; i < data.length; i ++) {
-			 var tr_num = i+1;
-		     var will_be_append = $('<tr onclick=$(this).gotoR('+data[i].RID+')><td>'+tr_num+'</td>'
-			 +'<td>'+data[i].RID+'</td><td>' + data[i].PID+'</td>'
-			 +'<td>' + data[i].Pay+'</td><td>' + data[i].StartDate+'</td>'
-			 +'<td>' + data[i].EndDate+'</td><td>' + data[i].MinCareer+'</td>'
-			 +'<td>' + data[i].MinNum+'</td><td>' + data[i].MaxNum+'</td>'
-			 +'<td>' + data[i].CGrade+'</td><td>' + data[i].FGrade+'</td>'
-			 +'<td>' + data[i].State+'</td></tr>' )
-             $('#req_list tbody').append(will_be_append)
-		  }
-		},
-        error: function(err) {
-          console.log(err);
-        }
-      });
-	  });
-
-
-	  $('#requestPay').click(function(){
-		$.ajax({
-        type: 'get',
-        url: '/request_PC/requestPay',
-        success: function(data) {
-		  $('#user_list tbody').html("")
-		  for(var i = 0 ; i < data.length; i ++) {
-			 var tr_num = i+1;
-		     var will_be_append = $('<tr onclick=$(this).gotoR('+data[i].RID+')><td>'+tr_num+'</td>'
-			 +'<td>'+data[i].RID+'</td><td>' + data[i].PID+'</td>'
-			 +'<td>' + data[i].Pay+'</td><td>' + data[i].StartDate+'</td>'
-			 +'<td>' + data[i].EndDate+'</td><td>' + data[i].MinCareer+'</td>'
-			 +'<td>' + data[i].MinNum+'</td><td>' + data[i].MaxNum+'</td>'
-			 +'<td>' + data[i].CGrade+'</td><td>' + data[i].FGrade+'</td>'
-			 +'<td>' + data[i].State+'</td></tr>' )
-             $('#req_list tbody').append(will_be_append)
-		  }
-		},
-        error: function(err) {
-          console.log(err);
-        }
-      });
-	  });
-
-
-
+    //의뢰 만들기
 	   $('#createR').click(function(){
-
-
       var v = {
 			rnum: $("#insert #Rnum").val(),
 			//pID: $("").val(),
@@ -377,7 +373,88 @@
 
 	  });
 
+/*
+    //거절메세지 보내기
+	  $('#sendRejectM').click(function(){
+	    var v = {
+			mID: $("#rejectM #mID").val(),
+			mRID: $("#rejectM #mRID").val(),
+			mPID: $("#rejectM #mPID").val(),
+			mFID: $("#rejectM #mFID").val(),
+			mContent: $("#rejectM #mContent").val(),
+		}
 
+		$.ajax({
+        type: 'post',
+        url: '/sendM/sendRejectM',
+		data: v,
+        success: function(data) {
+		  alert("insert 성공")
+		},
+        error: function(err) {
+          console.log(err);
+        }
+      });
+	  });
+*/
+    //새로고침
+	  $('#refresh').click(function() {
+			location.reload();
+		});
+
+
+
+    /*
+    	 $('#requestDate').click(function(){
+    		$.ajax({
+            type: 'get',
+            url: '/request_PC/requestDate',
+            success: function(data) {
+    		  $('#user_list tbody').html("")
+    		  for(var i = 0 ; i < data.length; i ++) {
+    			 var tr_num = i+1;
+    		     var will_be_append = $('<tr onclick=$(this).gotoR('+data[i].RID+')><td>'+tr_num+'</td>'
+    			 +'<td>'+data[i].RID+'</td><td>' + data[i].PID+'</td>'
+    			 +'<td>' + data[i].Pay+'</td><td>' + data[i].StartDate+'</td>'
+    			 +'<td>' + data[i].EndDate+'</td><td>' + data[i].MinCareer+'</td>'
+    			 +'<td>' + data[i].MinNum+'</td><td>' + data[i].MaxNum+'</td>'
+    			 +'<td>' + data[i].CGrade+'</td><td>' + data[i].FGrade+'</td>'
+    			 +'<td>' + data[i].State+'</td></tr>' )
+                 $('#req_list tbody').append(will_be_append)
+    		  }
+    		},
+            error: function(err) {
+              console.log(err);
+            }
+          });
+    	  });
+
+
+    	  $('#requestPay').click(function(){
+    		$.ajax({
+            type: 'get',
+            url: '/request_PC/requestPay',
+            success: function(data) {
+    		  $('#user_list tbody').html("")
+    		  for(var i = 0 ; i < data.length; i ++) {
+    			 var tr_num = i+1;
+    		     var will_be_append = $('<tr onclick=$(this).gotoR('+data[i].RID+')><td>'+tr_num+'</td>'
+    			 +'<td>'+data[i].RID+'</td><td>' + data[i].PID+'</td>'
+    			 +'<td>' + data[i].Pay+'</td><td>' + data[i].StartDate+'</td>'
+    			 +'<td>' + data[i].EndDate+'</td><td>' + data[i].MinCareer+'</td>'
+    			 +'<td>' + data[i].MinNum+'</td><td>' + data[i].MaxNum+'</td>'
+    			 +'<td>' + data[i].CGrade+'</td><td>' + data[i].FGrade+'</td>'
+    			 +'<td>' + data[i].State+'</td></tr>' )
+                 $('#req_list tbody').append(will_be_append)
+    		  }
+    		},
+            error: function(err) {
+              console.log(err);
+            }
+          });
+    	  });
+
+    */
 
     });
 </script>
