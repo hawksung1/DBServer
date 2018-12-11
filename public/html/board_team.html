@@ -20,7 +20,26 @@
 <body>
   <div> 현재 팀</div>
   <input id="cur_log" type="text" readonly>
+  <div>사용자 정보</div>
+  <input id="cur_free" type="text" readonly>
   <br>
+  <div> 팀원 정보 </div>
+  <div> 항목 클릭시 능숙한 언어 볼수 있다. </div>
+	<table id = "team_free">
+    <thead>
+      <tr>
+        <td>프리랜서 아이디</td>
+        <td>프리랜서 이름</td>
+        <td>나이</td>
+        <td>핸드폰번호</td>
+        <td>경력</td>
+        <td>전공</td>
+        <td>평점</td>
+      </tr>
+    </thead>
+    <tbody>
+    </tbody>
+  </table>
   <br>
   <div> 완료된 의뢰 - 평점을 지정해주세요! </div>
     <div>
@@ -184,6 +203,11 @@
       var socket = io();
       var get = 'a';
 
+      $.fn.freeonclick = function(fid){
+          location.href="/free/info?"+fid;
+
+      }
+
       $.fn.reqonclick = function(rid){
         var v = {
         id: rid,
@@ -207,6 +231,7 @@
         var v1 = {
           curl : document.location.href,
         };
+
         //현재 사용자 출력
         $.ajax({
             type: 'post',
@@ -221,7 +246,37 @@
               console.log(err);
             }
         });
+        $.ajax({
+            type: 'get',
+            url: '/request/cur_log',
+            data: v1,
+            //data: getid,
+            success: function(data) {
+          $('#cur_free').val(data);
 
+          },
+            error: function(err) {
+              console.log(err);
+            }
+        });
+        $.ajax({
+            type: 'post',
+            url: '/free/getfreeteam',
+            data: v1,
+            success: function(data) {
+              //console.log($('#cur_log').val());
+          $('#team_free tbody').html("")
+          //$('#user_list tbody').empty();
+          for(var i = 0 ; i < data.length; i ++) {
+             var will_be_append = $('<tr onclick = $(this).freeonclick("'+data[i].FID+'")><td>' +data[i].FID+'</td><td>' + data[i].FName+'</td><td>' +
+               data[i].Age+'</td><td>' + data[i].PhoneNumber+'</td><td>' +
+                 data[i].Career+'</td><td>' + data[i].Major+'</td><td>' +
+                   data[i].GradeAver+'</td></tr>' )
+
+            $('#team_free tbody').append(will_be_append)
+            }
+          }
+        });
         $.ajax({
             type: 'get',
             url: '/request',

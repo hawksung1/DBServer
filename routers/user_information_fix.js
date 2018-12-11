@@ -89,6 +89,7 @@ router.post('/fix_freelancer', wrapper.asyncMiddleware(async (req, res, next) =>
   res.json({success:true});
 }));
 router.post('/fix_projclient', wrapper.asyncMiddleware(async (req, res, next) =>{
+  const user_id = req.session.user_id;
   const newPassword = req.body.password;
   const newName = req.body.name;
   const newPhone = req.body.phone;
@@ -98,18 +99,34 @@ router.post('/fix_projclient', wrapper.asyncMiddleware(async (req, res, next) =>
   if(newPhone) await db.getQueryResult(`UPDATE ProjClient SET PhoneNumber='${newPhone}' WHERE PID='${user_id}'`);
   res.json({success:true});
 }));
-router.get('/get_my_information', wrapper.asyncMiddleware(async (req, res, next) =>{
+router.get('/c_freelancer_information', wrapper.asyncMiddleware(async (req, res, next) =>{
   const user_id = req.session.user_id;
-  var freelancer_sql = `SELECT * FROM Freelancer where FID = '${user_id}'`;//'${newId}'
-  var projClient_sql = `SELECT * FROM ProjClient where PID = '${user_id}'`;
-  var result  = await db.getQueryResult(freelancer_sql);
-  if(result.length != 0){
-    //is freelancer
-  }else if(result = await db.getQueryResult(projClient_sql)){
-    //is projclient
-  }
-  console.log(result);
-  res.send({result:result});
+	const freelancer_sql = `SELECT * FROM Freelancer a LEFT JOIN OuterPortfolio b ON a.FID=b.FID LEFT JOIN SkilledAt c ON a.FID=c.FID WHERE a.FID='${user_id}' `;
+  const check_freelancer = await db.getQueryResult(`SELECT * FROM Freelancer WHERE FID='${user_id}'`);
+  var result;
+  if(check_freelancer.length >= 1){//is freelancer
+	   result = await db.getQueryResult(freelancer_sql);
+   }
+	// console.log(result);
+	res.json(result);
+}));
+router.get('/c_projclient_information', wrapper.asyncMiddleware(async (req, res, next) =>{
+  const user_id = req.session.user_id;
+  const projclient_sql = `SELECT * FROM ProjClient WHERE PID='${user_id}' `;
+  const check_projclient = await db.getQueryResult(`SELECT * FROM ProjClient WHERE PID='${user_id}'`);
+  var result;
+  if(check_projclient.length >= 1){//is freelancer
+	   result = await db.getQueryResult(projclient_sql);
+   }
+	// console.log(result);
+	res.json(result);
+}));
+router.get('/c_show_innerportfolio', wrapper.asyncMiddleware(async (req, res, next) =>{
+  const user_id = req.session.user_id;
+  const innerportfolio_sql = `Select * from Request where RID IN (Select RID from InnerPortfolio where FID = '${user_id}')`;
+  var result = await db.getQueryResult(innerportfolio_sql);
+	// console.log(result);
+	res.json(result);
 }));
 router.get('/c_download_file', wrapper.asyncMiddleware(async (req, res, next) =>{
 //working on
@@ -125,11 +142,6 @@ router.get('/c_download_file', wrapper.asyncMiddleware(async (req, res, next) =>
 
 }));
 
-router.get('/c_show_file', wrapper.asyncMiddleware(async (req, res, next) =>{
-  const user_id = req.session.user_id;
-  var result = await db.getQueryResult(`SELECT * FROM OuterPortfolio WHERE FID = '${user_id}'`);
-  res.send({result:result});
-}));
 router.get('/c_delete_file', wrapper.asyncMiddleware(async (req, res, next) =>{
   const user_id = req.session.user_id;
   var sql = `DELETE FROM OuterPortfolio WHERE FID  = '${user_id}'`;
@@ -141,11 +153,5 @@ router.get('/c_delete_file', wrapper.asyncMiddleware(async (req, res, next) =>{
                    msg: "already exist file"
    });
   }
-}));
-
-router.get('/c_show_skill', wrapper.asyncMiddleware(async (req, res, next) =>{
-  const user_id = req.session.user_id;
-  var result = await db.getQueryResult(`SELECT * FROM SkilledAt WHERE FID = '${user_id}'`);
-  res.send({result:result});
 }));
 module.exports = router;

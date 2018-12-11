@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Board</title>
+    <script src="/js/jquery-3.2.1.min.js"></script>
+    <script src="/js/socket.io.slim.js"></script>
+	<style>
+	td {border: solid 1px #000000}
+  #buttondel {font-size:15px; background-color:#ccd0ce;  border:1px solid blue;  width: 150px;     cursor: -webkit-grab;}
+  </style>
+</head>
+<body>
+  <div> 현재 팀</div>
+  <input id="cur_log" type="text" readonly>
+  <div>사용자 정보</div>
+  <input id="cur_free" type="text" readonly>
+  <br>
+  <div> 팀원 정보 </div>
+  <div> 아이디 클릭시 능숙한 언어 볼수 있다. </div>
+	<table id = "team_free">
+    <thead>
+      <tr>
+        <td>프리랜서 아이디</td>
+        <td>프리랜서 이름</td>
+        <td>나이</td>
+        <td>핸드폰번호</td>
+        <td>경력</td>
+        <td>전공</td>
+        <td>평점</td>
+      </tr>
+    </thead>
+    <tbody>
+    </tbody>
+  </table>
+  <br>
+  <br>
+  <br>
+  <br>
+
+  <div id = "buttondel" onclick = $(this).teamdelonclick()>팀 해체 <br> 조심해서 눌러주세요</div>
+<script>
+    $(function() {
+      var socket = io();
+      var get = 'a';
+
+      $.fn.freeonclick = function(fid){
+          location.href="/free/info?"+fid;
+
+      }
+
+      $.fn.teamdelonclick = function(){
+        var sendteam ={
+          teamname: document.location.href,
+        };
+        $.ajax({
+            type: 'post',
+            url: '/free/delteam',
+            data: sendteam,
+            //data: getid,
+            success: function(data) {
+            location.href="/board";
+          //$('#cur_log').val(data);
+
+          },
+            error: function(err) {
+              console.log(err);
+            }
+        });
+
+      }
+      $.fn.banonclick = function(fid){
+          //console.log("추방할래"+fid);
+          var sendid ={
+            id : fid,
+            teamname: document.location.href,
+          };
+          $.ajax({
+              type: 'post',
+              url: '/free/banfree',
+              data: sendid,
+              //data: getid,
+              success: function(data) {
+              location.reload();
+              //location.href="/free/info?"+fid;
+            //$('#cur_log').val(data);
+
+            },
+              error: function(err) {
+                console.log(err);
+              }
+          });
+
+      }
+
+
+      //asd는 모르겟고... 그냥 통신 시작될때 작동하는 함수.
+      socket.on('asd', function(msg) {
+        var v1 = {
+          curl : document.location.href,
+        };
+
+        //현재 사용자 출력
+        $.ajax({
+            type: 'post',
+            url: '/free/cur_log',
+            data: v1,
+            //data: getid,
+            success: function(data) {
+          $('#cur_log').val(data);
+
+          },
+            error: function(err) {
+              console.log(err);
+            }
+        });
+        $.ajax({
+            type: 'get',
+            url: '/request/cur_log',
+            data: v1,
+            //data: getid,
+            success: function(data) {
+          $('#cur_free').val(data);
+
+          },
+            error: function(err) {
+              console.log(err);
+            }
+        });
+
+        //id = "1" onclick = $(this).free1onclick("'+data[i].FID+'") >추방</td>
+        $.ajax({
+            type: 'post',
+            url: '/free/getfreeteam',
+            data: v1,
+            success: function(data) {
+              //console.log($('#cur_log').val());
+              $('#team_free tbody').html("")
+              //$('#user_list tbody').empty();
+              for(var i = 0 ; i < data.length; i ++) {
+                 var will_be_append;
+                if(data[i].FID == ($('#cur_free').val())) {
+                  //console.log("팀장임 ㅇㅇ");
+                  will_be_append = $('<tr><td onclick = $(this).freeonclick("'+data[i].FID+'")>' +data[i].FID+'</td><td>' + data[i].FName+'</td><td>' +
+                    data[i].Age+'</td><td>' + data[i].PhoneNumber+'</td><td>' +
+                      data[i].Career+'</td><td>' + data[i].Major+'</td><td>' +
+                        data[i].GradeAver+'</td></tr>' )
+                }
+                else{
+                  will_be_append = $('<tr><td onclick = $(this).freeonclick("'+data[i].FID+'")>' +data[i].FID+'</td><td>' + data[i].FName+'</td><td>' +
+                    data[i].Age+'</td><td>' + data[i].PhoneNumber+'</td><td>' +
+                      data[i].Career+'</td><td>' + data[i].Major+'</td><td>' +
+                        data[i].GradeAver+'</td><td onclick = $(this).banonclick("'+data[i].FID+'")>추방</td></tr>' )
+                }
+                            //if()
+                $('#team_free tbody').append(will_be_append)
+
+                }
+            }
+        });
+
+      })
+
+    });
+</script>
+</body>
+</html>

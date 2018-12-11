@@ -25,6 +25,7 @@
   <div onclick = $(this).teamonclick() id = "teammake">팀 만들러 가기</div>
   <br>
   <div>소속된 팀</div>
+  <div>팀 이름 클릭시 팀 의뢰 페이지로..</div>
   <div>
   	<table id = "belong">
       <thead>
@@ -231,6 +232,12 @@
         console.log(tname);
         location.href="/board/team?"+tname;
 
+      }
+      $.fn.manageonclick = function(tname){
+        //console.log($('#cur_log').val());
+        //console.log(tname);
+        location.href="/board/team_manage?"+tname;
+
 
       }
       //asd는 모르겟고... 그냥 통신 시작될때 작동하는 함수.
@@ -280,8 +287,16 @@
           $('#belong tbody').html("")
           //$('#user_list tbody').empty();
           for(var i = 0 ; i < data.length; i++) {
-             var will_be_append = $( '<tr onclick = $(this).tonclick("'+ data[i].TeamName+'")><td>' +data[i].TeamName+'</td><td>' +data[i].ProjLeaderID+'</td></tr>' )
-
+             var will_be_append = $( '<tr onclick = $(this).tonclick("'+ data[i].TeamName+'") ><td>' +data[i].TeamName+'</td><td>' +data[i].ProjLeaderID+'</td></tr>' );
+             if(data[i].ProjLeaderID == ($('#cur_log').val()) ){
+               console.log("팀장이야");
+               will_be_append = $( '<tr><td onclick = $(this).tonclick("'+ data[i].TeamName+'") >' +data[i].TeamName+'</td><td>' +data[i].ProjLeaderID+'</td><td onclick = $(this).manageonclick("'+ data[i].TeamName+'")>관리</td></tr>' );
+              // will_be_append += $('<td>이야</td></tr>');
+             }
+             else {
+               will_be_append = $( '<tr><td onclick = $(this).tonclick("'+ data[i].TeamName+'") >' +data[i].TeamName+'</td><td>' +data[i].ProjLeaderID+'</td></tr>' );
+               //will_be_append += $('</tr>');
+             }
             $('#belong tbody').append(will_be_append)
           }
         },

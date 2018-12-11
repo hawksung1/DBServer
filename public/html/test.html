@@ -45,6 +45,8 @@
     age: <input id = "age" type="number" name="age" placeholder="20"required/><br>
     career: <input id = "career" type="number" name="career"placeholder="3" required/><br>
     major: <input id = "major" type="text" name="major"placeholder="Computer" required/><br>
+    language:  <input id = "language" type="text" name="language" required/><br>
+    level:  <input id = "level" type="number" name="level" min="0" max="5" required/><br>
     <input type="submit" value="submit" id="c_freelancer"/>
 </form>
 <form action="/upload" method = "post" id = "outerPortofolio"  enctype="multipart/form-data">
@@ -88,6 +90,8 @@
 			phone: $("#insert_freelancer #phone").val(),
       career: $("#insert_freelancer #career").val(),
 			major: $("#insert_freelancer #major").val(),
+      language: $("#insert_freelancer #language").val(),
+			lavel: $("#insert_freelancer #lavel").val(),
 		}
 		$.ajax({
         type: 'post',
