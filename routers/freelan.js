@@ -50,12 +50,44 @@ router.post('/getfree', wrapper.asyncMiddleware(async (req, res, next) => {
   res.json(request);
 }));
 
+router.post('/getfreeteam', wrapper.asyncMiddleware(async (req, res, next) => {
+  var user_id = req.session.user_id;
+  var obj = req.body.curl;
+  obj = obj.split("?");
+  obj = obj[1];
+  var tname = obj;
+
+  const request = await db.getQueryResult('Select * '
++'from Freelancer '
++'where FID IN ( '
++'Select MemberID '
++'from TeamMember '
++'where TeamName = "'+tname+'")');
+  res.json(request);
+}));
+
 router.post('/f_info', wrapper.asyncMiddleware(async (req, res, next) => {
   var obj = req.body.curl;
   obj = obj.split("?");
   obj = obj[1];
   //console.log("url은.."+obj);
   const request = await db.getQueryResult('SELECT * FROM SkilledAt where FID = "'+obj+'"');
+  //var user_id = req.session.user_id;
+  //const request = await db.getQueryResult('SELECT * FROM SkilledAt where FID = "'+user_id+'"');
+  res.json(request);
+}));
+
+router.post('/banfree', wrapper.asyncMiddleware(async (req, res, next) => {
+  var banid = req.body.id;
+  var obj = req.body.teamname;
+  obj = obj.split("?");
+  obj = obj[1];
+  var tname = obj
+  //console.log("되느냐");
+  //console.log(tname);
+  const request = await db.getQueryResult('DELETE from TeamMember where MemberID = "'+banid+'" and TeamName = "'+tname+'"');
+  //console.log("url은.."+obj);
+  //const request = await db.getQueryResult('SELECT * FROM SkilledAt where FID = "'+obj+'"');
   //var user_id = req.session.user_id;
   //const request = await db.getQueryResult('SELECT * FROM SkilledAt where FID = "'+user_id+'"');
   res.json(request);

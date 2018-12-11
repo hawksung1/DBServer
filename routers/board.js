@@ -29,6 +29,12 @@ router.get('/team', (req, res, next) => {
 	//url = url.split('/');
 	//console.log("url은.."+ url);
 });
+router.get('/team_manage', (req, res, next) => {
+	res.type('html').sendFile(path.join(__dirname, '../public/html/team_manage.html'));
+	//var url = req.url;
+	//url = url.split('/');
+	//console.log("url은.."+ url);
+});
 module.exports = router;
 
 
