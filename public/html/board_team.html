@@ -233,7 +233,7 @@
           curl : document.location.href,
         };
 
-        //현재 사용자 출력
+        //현재 팀 출력
         $.ajax({
             type: 'post',
             url: '/free/cur_log',
@@ -420,6 +420,7 @@
             url: '/request/viewreq_applyable_byteam',
             data: v1,
             success: function(data) {
+              //console.log("됨");
           $('#req_list tbody').html("")
           //$('#user_list tbody').empty();
           for(var i = 0 ; i < data.length; i ++) {
@@ -428,7 +429,7 @@
           }
         },
             error: function(err) {
-              console.log(err);
+              console.log("없다");
             }
         });
 

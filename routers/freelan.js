@@ -22,19 +22,10 @@ router.get('/info', (req, res, next) => {
 	//console.log("url은.."+ url);
 });
 router.post('/cur_log', wrapper.asyncMiddleware(async (req, res, next) => {
-  var obj = req.body.curl;
-  obj = obj.split("?");
-  obj = obj[1];
-  //console.log(obj.length);
-  if(obj.length !=0) req.session.tname = obj;
-  obj = req.session.tname;
-  //req.session.tname = obj;
-  //console.log("가능?");
-  console.log("이름은"+obj);
-  //var user_id = req.session.user_id;
-  //var result = user_id;
-  res.json(obj);
-  //res.send({result:result});
+
+  var tname = req.session.tname;
+  res.json(tname);
+
 }));
 
 router.get('/belong', wrapper.asyncMiddleware(async (req, res, next) => {
@@ -74,11 +65,12 @@ router.post('/getfree', wrapper.asyncMiddleware(async (req, res, next) => {
 
 router.post('/getfreeteam', wrapper.asyncMiddleware(async (req, res, next) => {
   var user_id = req.session.user_id;
+  /*
   var obj = req.body.curl;
   obj = obj.split("?");
   obj = obj[1];
-  var tname = obj;
-
+  */
+  var tname = req.session.tname;//obj;
   //평점 업뎃..
     const free_list = await db.getQueryResult('select FID from Freelancer');
     for(var i=0; i<free_list.length; i++){
@@ -150,13 +142,13 @@ router.post('/maketeam', wrapper.asyncMiddleware(async (req, res, next) =>{
   var tname = req.body.tname;
 
   var members = member.split(",");
-  console.log(members.length);
+  //console.log(members.length);
 
   //await db.getQueryResult('Insert INTO TeamList (TeamName, ProjLeaderID) values ("'+name+'" , "'+user_id+'")');
   //TeamMember에 추가
   //await db.getQueryResult('Insert INTO TeamMember (MemberID, TeamName) values ("'+user_id+'" , "'+name+'")');
   //apply 테이블에 이제 추가.
-  if(tname.includes('Single')) console.log("single은 안되느넫");
+  if(tname.includes('Single')) console.log("single은 안되는데");
   else {
     await db.getQueryResult('Insert INTO TeamList (TeamName, ProjLeaderID) values ("'+tname+'" , "'+user_id+'")');
     await db.getQueryResult('Insert INTO TeamMember (MemberID, TeamName) values ("'+user_id+'" , "'+tname+'")');
