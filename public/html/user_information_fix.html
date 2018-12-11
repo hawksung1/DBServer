@@ -46,6 +46,27 @@
         <tbody>
         </tbody>
       </table>
+    <button id="c_show_innerportfolio">show my inner portfolio</button>
+      <table id = "request_information_table">
+        <thead>
+          <tr>
+            <td>의뢰번호</td>
+            <td>의뢰자ID</td>
+            <td>급여</td>
+            <td>시작날짜</td>
+            <td>완료날짜</td>
+            <td>최소경력조건</td>
+            <td>최소참여</td>
+            <td>최대참여</td>
+            <td>의뢰자평점</td>
+            <td>프리랜서평점</td>
+            <td>의뢰상태</td>
+            <td>의뢰문서이름</td>
+          </tr>
+        </thead>
+        <tbody>
+        </tbody>
+      </table>
     <button id="c_download_file">download my outer potopolio</button>
     <button id="c_delete_file">delete my outer potopolio</button>
     <br>
@@ -125,17 +146,6 @@
           socket.on('asd', function(msg) {
             console.log(msg);
           });
-          // $('#c_fix_information').click(function(){
-          //   var get = 'a ';
-          // $.ajax({
-          //      type: 'get',
-          //      url: '/users/get_session',
-          //      data: {data:get},
-          //      success: function(result){
-          //        user_id = result.result;
-          //      }
-          //    });
-          //  })
         $('#fix_freelancer').on('submit',function(){
           var v = {
         		password: $("#fix_freelancer #password").val(),
@@ -239,6 +249,29 @@
               }
             });
          })
+         $('#c_show_innerportfolio').click(function(){
+           $.ajax({
+              type: 'get',
+              url: '/user_information_fix/c_show_innerportfolio',
+              success: function(data){
+                $('#request_information_table tbody').html("")
+                //$('#user_list tbody').empty();
+                for(var i = 0 ; i < data.length; i ++) {
+                  var will_be_append = $('<tr><td>'+data[i].RID+'</td><td>' + data[i].PID+'</td><td>' +
+                    data[i].Pay+'</td><td>' + data[i].StartDate+'</td><td>' +
+                      data[i].EndDate+'</td><td>' + data[i].MinCareer+'</td><td>' +
+                        data[i].MinNum+'</td><td>' + data[i].MaxNum+'</td><td>' +
+                          data[i].CGrade+'</td><td>' + data[i].FGrade+'</td><td>' +
+                            data[i].State+'</td><td>' + data[i].DocName+'</td></tr>' )
+
+                  $('#request_information_table tbody').append(will_be_append)
+                }
+              },
+              error: function(err) {
+                console.log(err);
+              }
+            });
+          })
          $('#c_download_file').click(function(){
            var get = 'a ';
            $.ajax({

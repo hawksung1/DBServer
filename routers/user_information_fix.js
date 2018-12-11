@@ -68,6 +68,17 @@ router.post('/insert_freelancer_skill', wrapper.asyncMiddleware(async(req, res, 
   console.log(await db.getQueryResult(sql));
   res.json({success:true});
 }));
+
+router.post('/insert_request_skill', wrapper.asyncMiddleware(async(req, res, next) =>{
+  const user_id = req.session.user_id;
+  const newLanguage = req.body.language;
+  const newLevel = req.body.level;
+  const sql = `INSERT INTO SkilledAt (FID, LangName, Skill) VALUES ('${user_id}', '${newLanguage}', '${newLevel}')`;
+  console.log(await db.getQueryResult(sql));
+  res.json({success:true});
+}));
+
+
 router.post('/fix_freelancer', wrapper.asyncMiddleware(async (req, res, next) =>{
   const user_id = req.session.user_id;
   const newPassword = req.body.password;
@@ -118,6 +129,13 @@ router.get('/c_projclient_information', wrapper.asyncMiddleware(async (req, res,
   if(check_projclient.length >= 1){//is freelancer
 	   result = await db.getQueryResult(projclient_sql);
    }
+	// console.log(result);
+	res.json(result);
+}));
+router.get('/c_show_innerportfolio', wrapper.asyncMiddleware(async (req, res, next) =>{
+  const user_id = req.session.user_id;
+  const innerportfolio_sql = `Select * from Request where RID IN (Select RID from InnerPortfolio where FID = '${user_id}')`;
+  var result = await db.getQueryResult(innerportfolio_sql);
 	// console.log(result);
 	res.json(result);
 }));
