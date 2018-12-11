@@ -69,21 +69,4 @@ console.log(curdate);
   res.json({success: true});
 }));
 
-/*
-router.post('/insert', wrapper.asyncMiddleware(async (req, res, next) =>{
-  const newRnum = req.body.rnum;
-  const newName = req.body.name;
-  const newPay = req.body.pay;
-  const newMinNum = req.body.minNum;
-  const newMaxNum = req.body.maxNum;
-  const newCyear = req.body.cyear;
-  //var newStartDate = 'SELECT NOW()';
-
-
-  console.log(await db.getQueryResult(`INSERT INTO Request ( RID, PAY, MinCareer, MinNum, MaxNum) values ('${newRnum}','${newPay}','${newCyear}','${newMinNum}','${newMaxNum}' )`));
-
-  //console.log(await db.getQueryResult(`INSERT INTO Freelancer (FID,FName,Age,PhoneNumber,Career,Major,Pwd) values ('${newId}','${newName}','${newAge}','${newPhone}','${newCareer}','${newMajor}','${newPassword}')`));
-  res.json({success: true});
-}));
-*/
 module.exports = router;

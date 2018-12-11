@@ -43,13 +43,24 @@ router.get('/request', wrapper.asyncMiddleware(async (req, res, next) => {
 }));
 
 router.get('/requestDate', wrapper.asyncMiddleware(async (req, res, next) => {
-  const requestDate = await db.getQueryResult('SELECT * FROM Request order by STARTDATE ');
+  var user_id = req.session.user_id;
+  console.log("session id = " + user_id);
+  const requestDate = await db.getQueryResult('SELECT * FROM Request WHERE PID =  "'+user_id+'" order by STARTDATE ');
   res.json(requestDate);
 }));
 
 router.get('/requestPay', wrapper.asyncMiddleware(async (req, res, next) => {
-  const requestPay = await db.getQueryResult('SELECT * FROM Request order by PAY ');
+  var user_id = req.session.user_id;
+  console.log("session id = " + user_id);
+  const requestPay = await db.getQueryResult('SELECT * FROM Request WHERE PID =  "'+user_id+'" order by PAY ');
   res.json(requestPay);
+}));
+
+router.get('/requestStart', wrapper.asyncMiddleware(async (req, res, next) => {
+  var user_id = req.session.user_id;
+  console.log("session id = " + user_id);
+  const requestStart = await db.getQueryResult('SELECT * FROM Request WHERE PID =  "'+user_id+'" AND ( STATE = "1" OR STATE = "2" OR STATE = "3" ) ');
+  res.json(requestStart);
 }));
 
 
