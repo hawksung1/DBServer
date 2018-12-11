@@ -64,6 +64,21 @@ router.get('/', function (req, res, next) {
   res.render('upload', { title: "파일 업로드" });
 });
 
+var storage4 = multer.diskStorage({
+  destination: function(req, file, cb){
+    cb(null, "routers/requestUpload/")
+  },
+  filename: function (req, file, cb) {
+    // var fileName = file.originalname;
+    fileName = req.session.user_id + req.body.request_upload_id + file.originalname;
+    cb(null, fileName);
+  }
+});
+var upload4 = multer({storage: storage3});
+router.get('/', function (req, res, next) {
+  res.render('upload', { title: "파일 업로드" });
+});
+
 router.post('/', upload.single('file'), wrapper.asyncMiddleware(async (req, res, next) =>{
   var userID = req.session.user_id;
   var existfile = await db.getQueryResult(`SELECT FID FROM OuterPortfolio WHERE FID = '${userID}'`);
@@ -109,6 +124,22 @@ router.post('/request', upload3.single('request_file'), wrapper.asyncMiddleware(
    });
   }else{
     res.redirect('http://localhost:3000/admin');
+  }
+}));
+router.post('/pc_request', upload4.single('request_file'), wrapper.asyncMiddleware(async (req, res, next) =>{
+  var userID = req.session.user_id;
+  var requestID = req.body.request_upload_id;
+  var fileName4 = userID +requestID+ fileName;
+
+  var existfile = await db.getQueryResult(`INSERT INTO RequestDoc (RID, DocName) VALUES ('${fileName}', '${userID}')`);
+  console.log(existfile);
+  if(existfile.length == 0){//file exist
+    res.json(400, {
+                   error: 1,
+                   msg: "no such file"
+   });
+  }else{
+    res.redirect('http://localhost:3000/requestpage');
   }
 }));
 module.exports = router;
