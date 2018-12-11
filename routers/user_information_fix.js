@@ -102,11 +102,11 @@ router.get('/get_my_information', wrapper.asyncMiddleware(async (req, res, next)
   const user_id = req.session.user_id;
   var freelancer_sql = `SELECT * FROM Freelancer where FID = '${user_id}'`;//'${newId}'
   var projClient_sql = `SELECT * FROM ProjClient where PID = '${user_id}'`;
-  var result;
-  if(result = await db.getQueryResult(freelancer_sql)){
-
+  var result  = await db.getQueryResult(freelancer_sql);
+  if(result.length != 0){
+    //is freelancer
   }else if(result = await db.getQueryResult(projClient_sql)){
-
+    //is projclient
   }
   console.log(result);
   res.send({result:result});
@@ -143,4 +143,9 @@ router.get('/c_delete_file', wrapper.asyncMiddleware(async (req, res, next) =>{
   }
 }));
 
+router.get('/c_show_skill', wrapper.asyncMiddleware(async (req, res, next) =>{
+  const user_id = req.session.user_id;
+  var result = await db.getQueryResult(`SELECT * FROM SkilledAt WHERE FID = '${user_id}'`);
+  res.send({result:result});
+}));
 module.exports = router;

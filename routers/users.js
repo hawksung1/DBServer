@@ -60,12 +60,12 @@ router.post('/login', wrapper.asyncMiddleware(async (req, res, next) =>{
   var exist_projClient_user = await db.getQueryResult(projClient_login_sql);
   var exist_admin_user = await db.getQueryResult(admin_login_sql);
 
-  freelancer_pass = true;
   if(exist_freelancer_user.length != 0 && exist_freelancer_user[0].FID.toString() == newId){//login success
-  console.log(newId+"freelancer login success");
-  result = "freelancer";
-  req.session.logined = true;
-  req.session.user_id = newId;
+    freelancer_pass = true;
+    console.log(newId+"freelancer login success");
+    result = "freelancer";
+    req.session.logined = true;
+    req.session.user_id = newId;
   }else if(exist_projClient_user.length != 0 && exist_projClient_user[0].PID.toString() == newId){//login success
     projClient_pass = true;
     console.log(newId+"projClient login success");
