@@ -75,12 +75,12 @@ router.get('/c_admin_request_manage', wrapper.asyncMiddleware(async (req, res, n
 	res.json(result);
 }));
 router.post('/c_admin_request_delete', wrapper.asyncMiddleware(async (req, res, next) =>{
-	var rid_delete = req.body.rid;
-	var pid_delete = req.body.pid;
-	var State = await db.getQueryResult(`SELECT State FROM Request WHERE RID = '${RID}' and PID = '${PID}'`);
+	var RID = req.body.rid;
+	var PID = req.body.pid;
+	var state = await db.getQueryResult(`SELECT State FROM Request WHERE RID = '${RID}' and PID = '${PID}'`);
 	// console.log(""+rid_delete+" "+pid_delete);
-	if(State[0].State == 0 || State[0].State == 4){
-		var sql = `DELETE FROM Request WHERE PID = '${pid_delete}' and RID = '${rid_delete}'`;
+	if(state[0].State == 0 || state[0].State == 4){
+		var sql = `DELETE FROM Request WHERE PID = '${PID}' and RID = '${RID}'`;
 		const result = await db.getQueryResult(sql);
 		res.json(result);
 	}else{
