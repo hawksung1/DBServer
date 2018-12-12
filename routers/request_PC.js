@@ -20,11 +20,14 @@ router.use(session({
 
 
 
-router.get('/', (req, res, next) => {
-	//console.log(__dirname, '../public/html/board.html');
+router.get('/', wrapper.asyncMiddleware(async (req, res, next) => {
+    var user_id = req.session.user_id;
+    console.log(await db.getQueryResult('DELETE FROM Request where PID =  "'+user_id+'" AND (P1 = "0" OR P2 ="0" OR P3="0") '));
+	//console.log(__dirname, '../public/html/board.html');const request = await db.getQueryResult('SELECT * FROM Request WHERE PID =  "'+user_id+'" ');
 	res.type('html').sendFile(path.join(__dirname, '../public/html/requestpage.html'));
+
 	//res.sendFile(__dirname+"/../public/html/board.html");
-});
+}));
 
 router.get('/createRID', wrapper.asyncMiddleware(async (req, res, next) => {
   var user_id = req.session.user_id;

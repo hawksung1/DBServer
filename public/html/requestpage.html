@@ -174,99 +174,67 @@
           minNum: $("#insert #MinNum").val(),
           maxNum: $("#insert #MaxNum").val(),
           cyear: $("#insert #Cyear").val(),
-        }
-        $.ajax({
-            type: 'post',
-            url: '/request_PC/insert_P1',
-            data: v,
-            success: function(data) {
-          alert("insert 성공"+data);
-
-
-          $("#insert_request_RL_div").show();
-
-          $('#insert_request_skill').on('submit', function(){
-              alert(data);
-            var v = {
-              language: $("#insert_request_skill #language").val(),
-              level: $("#insert_request_skill #level").val(),
-              rID: data,
-            }
-            $.ajax({
+          }
+          $.ajax({
               type: 'post',
-              url: '/user_information_fix/insert_request_skill',
-             data: v,
+              url: '/request_PC/insert_P1',
+              data: v,
               success: function(data) {
-                 alert("insert success");
-             },
-              error: function(err) {
+                  alert("insert 성공"+data);
+
+
+                  $("#insert_request_RL_div").show();
+
+                  $('#insert_request_skill').on('submit', function(){
+                    alert(data);
+                    var v = {
+                      language: $("#insert_request_skill #language").val(),
+                      level: $("#insert_request_skill #level").val(),
+                      rID: data,
+                    }
+                    $.ajax({
+                      type: 'post',
+                      url: '/user_information_fix/insert_request_skill',
+                      data: v,
+                      success: function(data) {
+                        alert("insert success");
+                      },
+                      error: function(err) {
+                        // alert("모든 항목을 정확히 채워주세요");
+                        // console.log(err);
+                      }
+                    });
+
+                    var t = {
+                      rID: data,
+                    }
+                    $.ajax({
+                      type: 'post',
+                      url: '/request_PC/insert_P2',
+                      data: t,
+                      success: function(data) {
+                        alert("P2 insert success");
+                      },
+                      error: function(err) {
                 // alert("모든 항목을 정확히 채워주세요");
                 // console.log(err);
-              }
-            });
-
-            var t = {
-              rID: data,
-            }
-            $.ajax({
-              type: 'post',
-              url: '/request_PC/insert_P2',
-              data: t,
-              success: function(data) {
-                 alert("P2 insert success");
-             },
-              error: function(err) {
-                // alert("모든 항목을 정확히 채워주세요");
-                // console.log(err);
-              }
-            });
-
-            $('#request_doc').click(function(){
-
-              var k = {
-
-                rID: data,
-              }
-              $.ajax({
-                type: 'post',
-                url: '/upload/pc_request',
-                data: k,
-                success: function(data) {
-                   alert("upload insert success");
-               },
-                error: function(err) {
-                  // alert("모든 항목을 정확히 채워주세요");
-                  // console.log(err);
                 }
               });
 
+              $('#request_doc').click(function(){
+            //  $("input:file").click();
+              var ku={
+                rID: data,
+              }
+
               $.ajax({
                 type: 'post',
-                url: '/upload/pc_request',
-                data: k,
+                url: '/request_PC/insert_P3',
+                data: ku,
                 success: function(data) {
-                   alert("upload insert success");
-
-                   $.ajax({
-                     type: 'post',
-                     url: '/upload/insert_P3',
-                     data: k,
-                     success: function(data) {
-                        alert("P3 & Final insert success");
-                    },
-                     error: function(err) {
-                       // alert("모든 항목을 정확히 채워주세요");
-                       // console.log(err);
-                     }
-                   });
-
-
-
-
-               },
+                  alert("P3 & Final insert success");
+                },
                 error: function(err) {
-                  // alert("모든 항목을 정확히 채워주세요");
-                  // console.log(err);
                 }
               });
 
@@ -274,25 +242,46 @@
 
 
           })
+
+          $('#createR_RD').click(function(){
+              $("#insert_request_doc").show();
+            });
+
+            $('#createR_F').click(function(){
+              var ku={
+                rID: data,
+              }
+
+              $.ajax({
+                type: 'post',
+                url: '/request_PC/insert_P3',
+                data: ku,
+                success: function(data) {
+                  alert("P3 & Final insert success");
+                },
+                error: function(err) {
+                }
+              });
+
+
+
+          });
+
+
+
         },
             error: function(err) {
               console.log(err);
             }
           });
 
-        });
-
-
-
-
-
-
-        $('#createR_RD').click(function(){
-            $("#insert_request_doc").show();
 
 
 
         });
+
+
+
 
 
 

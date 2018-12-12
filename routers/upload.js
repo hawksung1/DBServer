@@ -129,8 +129,10 @@ router.post('/request', upload3.single('request_file'), wrapper.asyncMiddleware(
 router.post('/pc_request', upload4.single('request_file'), wrapper.asyncMiddleware(async (req, res, next) =>{
   var userID = req.session.user_id;
   var getRID = req.body.rID;
+  var filename = req.body.fileName;
   var fileName4 = userID +getRID+ fileName;
   console.log("업로드 중");
+  console.log(fileName);
   var existfile = await db.getQueryResult(`INSERT INTO RequestDoc (RID, DocName) VALUES ('${getRID}', '${fileName}')`);
   console.log(existfile);
   if(existfile.length == 0){//file exist
