@@ -223,6 +223,7 @@
 
               $('#request_doc').click(function(){
             //  $("input:file").click();
+/*
               var ku={
                 rID: data,
               }
@@ -237,7 +238,7 @@
                 error: function(err) {
                 }
               });
-
+*/
             });
 
 
@@ -258,6 +259,7 @@
                 data: ku,
                 success: function(data) {
                   alert("P3 & Final insert success");
+                  location.reload();
                 },
                 error: function(err) {
                 }
@@ -328,6 +330,12 @@
              var stateStr = "";
              var startDate = data[i].StartDate;
              var endDate = data[i].EndDate;
+
+             var cGrade = data[i].CGrade;
+             var fGrade = data[i].FGrade;
+             if(cGrade == null){ cGrade = "-"}
+             if(fGrade == null){ fGrade = "-"}
+
              switch (stateNum) {
                 case 0 : stateStr = "구인 중";  break;
                 case 1 : stateStr = "진행 중";  break;
@@ -348,7 +356,7 @@
        			 +'<td>' + data[i].Pay+'</td><td>' + startDate +'</td>'
        			 +'<td>' + endDate+'</td><td>' + data[i].MinCareer+'</td>'
        			 +'<td>' + data[i].MinNum+'</td><td>' + data[i].MaxNum+'</td>'
-       			 +'<td>' + data[i].CGrade+'</td><td>' + data[i].FGrade+'</td>'
+       			 +'<td>' + cGrade+'</td><td>' + fGrade+'</td>'
        			 +'<td>' + stateStr+'</td></tr>' )
              $('#req_list tbody').append(will_be_append)
        		  }
@@ -372,6 +380,12 @@
              var stateStr = "";
              var startDate = data[i].StartDate;
              var endDate = data[i].EndDate;
+
+             var cGrade = data[i].CGrade;
+             var fGrade = data[i].FGrade;
+             if(cGrade == null){ cGrade = "-"}
+             if(fGrade == null){ fGrade = "-"}
+
              switch (stateNum) {
                 case 0 : stateStr = "구인 중";  break;
                 case 1 : stateStr = "진행 중";  break;
@@ -392,7 +406,7 @@
              +'<td>' + data[i].Pay+'</td><td>' + startDate +'</td>'
              +'<td>' + endDate+'</td><td>' + data[i].MinCareer+'</td>'
              +'<td>' + data[i].MinNum+'</td><td>' + data[i].MaxNum+'</td>'
-             +'<td>' + data[i].CGrade+'</td><td>' + data[i].FGrade+'</td>'
+             +'<td>' + cGrade+'</td><td>' + fGrade+'</td>'
              +'<td>' + stateStr+'</td></tr>' )
              $('#req_list tbody').append(will_be_append)
             }
@@ -417,6 +431,12 @@
              var stateStr = "";
              var startDate = data[i].StartDate;
              var endDate = data[i].EndDate;
+
+             var cGrade = data[i].CGrade;
+             var fGrade = data[i].FGrade;
+             if(cGrade == null){ cGrade = "-"}
+             if(fGrade == null){ fGrade = "-"}
+
              switch (stateNum) {
                 case 0 : stateStr = "구인 중";  break;
                 case 1 : stateStr = "진행 중";  break;
@@ -437,7 +457,7 @@
              +'<td>' + data[i].Pay+'</td><td>' + startDate +'</td>'
              +'<td>' + endDate+'</td><td>' + data[i].MinCareer+'</td>'
              +'<td>' + data[i].MinNum+'</td><td>' + data[i].MaxNum+'</td>'
-             +'<td>' + data[i].CGrade+'</td><td>' + data[i].FGrade+'</td>'
+             +'<td>' + cGrade+'</td><td>' + fGrade+'</td>'
              +'<td>' + stateStr+'</td></tr>' )
              $('#req_list tbody').append(will_be_append)
             }
@@ -461,6 +481,12 @@
              var stateStr = "";
              var startDate = data[i].StartDate;
              var endDate = data[i].EndDate;
+
+             var cGrade = data[i].CGrade;
+             var fGrade = data[i].FGrade;
+             if(cGrade == null){ cGrade = "-"}
+             if(fGrade == null){ fGrade = "-"}
+
              switch (stateNum) {
                 case 0 : stateStr = "구인 중";  break;
                 case 1 : stateStr = "진행 중";  break;
@@ -481,7 +507,7 @@
              +'<td>' + data[i].Pay+'</td><td>' + startDate +'</td>'
              +'<td>' + endDate+'</td><td>' + data[i].MinCareer+'</td>'
              +'<td>' + data[i].MinNum+'</td><td>' + data[i].MaxNum+'</td>'
-             +'<td>' + data[i].CGrade+'</td><td>' + data[i].FGrade+'</td>'
+             +'<td>' + cGrade+'</td><td>' + fGrade+'</td>'
              +'<td>' + stateStr+'</td></tr>' )
              $('#req_list tbody').append(will_be_append)
             }
