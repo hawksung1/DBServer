@@ -72,12 +72,12 @@ router.post('/getfree', wrapper.asyncMiddleware(async (req, res, next) => {
 
 router.post('/getfreeteam', wrapper.asyncMiddleware(async (req, res, next) => {
   var user_id = req.session.user_id;
-  /*
+
   var obj = req.body.curl;
   obj = obj.split("?");
   obj = obj[1];
-  */
-  var tname = req.session.tname;//obj;
+
+  var tname = obj;
   //평점 업뎃..
     const free_list = await db.getQueryResult('select FID from Freelancer');
     for(var i=0; i<free_list.length; i++){
