@@ -111,9 +111,9 @@
 
 <div id = "insert_request_doc" style="display:none">
     의뢰 생성 3단계:<br/>
-<form action="/upload/pc_request" method = "post" id = "request_doc"  enctype="multipart/form-data" >
+<form  id = "request_doc"  enctype="multipart/form-data" >
     request doc (English File Only) <input id="request_file" type="file" name="request_file"/><br>
-  <input type="submit" value="submit"/>
+  <input type="submit" value="submit" />
   <div id='createR_F'>3/3 의뢰 문서 업로드 및 의뢰 생성 완료</div>
 </div>
 
@@ -221,7 +221,39 @@
               }
             });
 
+            $('#request_doc').click(function(){
 
+              var k = {
+
+                rID: data,
+              }
+              $.ajax({
+                type: 'post',
+                url: '/upload/pc_request',
+                data: k,
+                success: function(data) {
+                   alert("upload insert success");
+               },
+                error: function(err) {
+                  // alert("모든 항목을 정확히 채워주세요");
+                  // console.log(err);
+                }
+              });
+
+              $.ajax({
+                type: 'post',
+                url: '/upload/pc_request',
+                data: k,
+                success: function(data) {
+                   alert("upload insert success");
+               },
+                error: function(err) {
+                  // alert("모든 항목을 정확히 채워주세요");
+                  // console.log(err);
+                }
+              });
+
+            });
 
 
           })
@@ -232,6 +264,7 @@
           });
 
         });
+
 
 
 
@@ -248,7 +281,7 @@
 
 
 
-
+/*
         //의뢰 만들기
          $('#createR_F').click(function(){
           var v = {
@@ -271,7 +304,7 @@
           });
 
         });
-
+*/
 
 
 

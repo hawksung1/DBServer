@@ -128,10 +128,10 @@ router.post('/request', upload3.single('request_file'), wrapper.asyncMiddleware(
 }));
 router.post('/pc_request', upload4.single('request_file'), wrapper.asyncMiddleware(async (req, res, next) =>{
   var userID = req.session.user_id;
-  var requestID = req.body.request_upload_id;
-  var fileName4 = userID +requestID+ fileName;
+  var getRID = req.body.rID;
+  var fileName4 = userID +getRID+ fileName;
   console.log("업로드 중");
-  var existfile = await db.getQueryResult(`INSERT INTO RequestDoc (RID, DocName) VALUES ('${userID}', '${fileName}')`);
+  var existfile = await db.getQueryResult(`INSERT INTO RequestDoc (RID, DocName) VALUES ('${getRID}', '${fileName}')`);
   console.log(existfile);
   if(existfile.length == 0){//file exist
     res.json(400, {
