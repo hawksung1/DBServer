@@ -60,9 +60,19 @@
 
 
 <div id='team_list_div' style="display:none">
-<div >팀 목록가져오기</div>
+<div >팀 목록</div>
 <table id = "team_list">
 <thead><tr><td>번호</td><td>의뢰번호</td><td>팀이름</td></tr></tread>
+<tbody></tbody>
+</table>
+</div>
+
+
+<div id='team_list_member_div' style="display:none">
+<div >팀 세부 목록</div>
+<table id = "team_list_member">
+<thead>
+  <tr><td>번호</td><td>프리랜서 ID</td><td>이름</td><td>경력</td><td>평점</td><td>언어</td><td>숙련도</td></tr></tread>
 <tbody></tbody>
 </table>
 </div>
@@ -112,7 +122,7 @@
   <div id = "requestStart">진행 중인 의뢰 리스트 </div>
   <div id = "requestDate">의뢰 리스트 가져오기 날짜</div>
 	<div id = "requestPay">의뢰 리스트 가져오기 금액</div>
-	<table id = "req_list"><thead><tr><td>번호</td><td>의뢰번호</td><td>의뢰자ID</td><td>급여</td><td>시작날짜</td><td>완료날짜</td><td>최소경력조건</td><td>최소참여</td><td>최대참여</td><td>의뢰자평점</td><td>프리랜서평점</td><td>의뢰상태</td></tr></thead><tbody></tbody></table>
+	<table id = "req_list"><thead><tr><td>번호</td><td>의뢰번호</td><td>급여</td><td>시작날짜</td><td>완료날짜</td><td>최소경력조건</td><td>최소참여</td><td>최대참여</td><td>의뢰자평점</td><td>프리랜서평점</td><td>의뢰상태</td></tr></thead><tbody></tbody></table>
 </div>
 
 
@@ -191,6 +201,8 @@
        			 var tr_num = i+1;
              var stateNum = data[i].State;
              var stateStr = "";
+             var startDate = data[i].StartDate;
+             var endDate = data[i].EndDate;
              switch (stateNum) {
                 case 0 : stateStr = "구인 중";  break;
                 case 1 : stateStr = "진행 중";  break;
@@ -199,10 +211,15 @@
                 case 4 : stateStr = "의뢰 완료";  break;
                 case 5 : stateStr = "의뢰 종결";  break;
                 }
+                if(data[i].StartDate =="0000-00-00"){
+                  startDate = "구인중";
+                }else if(data[i].EndDate =="0000-00-00"){
+                  endDate = "의뢰 진행중";
+                }
        		     var will_be_append = $('<tr onclick=$(this).gotoState('+data[i].RID+','+data[i].State+')><td>'+tr_num+'</td>'
-       			 +'<td>'+data[i].RID+'</td><td>' + data[i].PID+'</td>'
-       			 +'<td>' + data[i].Pay+'</td><td>' + data[i].StartDate+'</td>'
-       			 +'<td>' + data[i].EndDate+'</td><td>' + data[i].MinCareer+'</td>'
+       			 +'<td>'+data[i].RID+'</td>'
+       			 +'<td>' + data[i].Pay+'</td><td>' + startDate +'</td>'
+       			 +'<td>' + endDate+'</td><td>' + data[i].MinCareer+'</td>'
        			 +'<td>' + data[i].MinNum+'</td><td>' + data[i].MaxNum+'</td>'
        			 +'<td>' + data[i].CGrade+'</td><td>' + data[i].FGrade+'</td>'
        			 +'<td>' + stateStr+'</td></tr>' )
@@ -247,7 +264,8 @@
 
               var will_be_append = $( '<tr ><td>'+tr_num+'</td>'
             +'<td>'+data[i].RID+'</td>'
-            +'<td onclick=$(this).selectTeam("'+teamN+'","'+rID+'")>'+data[i].TName+'</td></tr>')
+            +'<td onclick=$(this).searchTeamMember("'+teamN+'","'+rID+'")>'+data[i].TName+'</td>'
+            +'<td onclick=$(this).selectTeam("'+teamN+'","'+rID+'")>이 팀으로 선택합니다</td></tr>')
                    $('#team_list tbody').append(will_be_append)
            }
           console.log("신청한 팀목록 불러오기 성공");
@@ -362,29 +380,96 @@
 
 
 	  <!-- 함수3. 선택된 의뢰를 신청한팀 목록에서 팀을 눌러 신청완료 후 의뢰 진행 상태 변경 -->
-	$.fn.selectTeam = function(team, rid){
+	$.fn.searchTeamMember = function(team, rid){
 
 		console.log("넘어온 팀 이름: "+team);
     console.log("넘어온 팀 이름: "+rid);
     rid = Number(rid);
-
+    $("#team_list_member_div").show();
 		var v = {
 			teamName: team,
       rID: rid,
 		}
         $.ajax({
         type: 'post',
-        url: '/teamList/selectTeam',
+        url: '/teamList/searchTeamInfo',
 		    data: v,
         success: function(data) {
-          console.log("팀 선택 완료, 의뢰를 진행합니다.");
-		},
-        error: function(err) {
-		  console.log("팀 선택 실패, 에러");
-          console.log(err);
-        }
-      });
+
+          console.log("팀 선택 완료, 팀 리더 및 팀원 보이기.");
+          $('#team_list_member tbody').html("")
+          var tr_num = 0;
+          var grade;
+            for(var i = 0 ; i < data.length; i ++) {
+
+              if(i==0 || data[i-1].FID != data[i].FID){
+
+                  tr_num+=1;
+                 grade = data[i].GradeAver;
+                if(grade == null){ grade ="없음"}
+                var will_be_append = $( '<tr><td>'+tr_num+'</td>'
+                +'<td>'+data[i].FID+'</td><td>'+data[i].FName+'</td>'
+                +'<td>'+data[i].Career+'</td><td>'+grade+'</td>'
+                +'<td>'+data[i].LangName+'</td><td>'+data[i].Skill+'</td></tr>')
+
+                $('#team_list_member tbody').append(will_be_append)
+
+
+              }else{
+
+                var will_be_append_only_skill = $( '<tr><td></td>'
+                +'<td></td><td></td>'
+                +'<td></td><td></td>'
+                +'<td>'+data[i].LangName+'</td><td>'+data[i].Skill+'</td></tr>')
+                $('#team_list_member tbody').append(will_be_append_only_skill)
+
+              }
+            }
+
+          },
+          error: function(err) {
+            console.log("팀 선택 실패, 에러");
+            console.log(err);
+          }
+        });
+
+
+
+
+
       }
+<!-- 팀 세부 목록 불러오기 끝 -->
+
+
+$.fn.selectTeam = function(team, rid){
+
+  console.log("넘어온 팀 이름: "+team);
+  console.log("넘어온 팀 이름: "+rid);
+  rid = Number(rid);
+  $("#team_list_member_div").show();
+  var v = {
+    teamName: team,
+    rID: rid,
+  }
+      $.ajax({
+      type: 'post',
+      url: '/teamList/selectTeam',
+      data: v,
+      success: function(data) {
+        alert("팀을 선택하였습니다. 의뢰가 시작됩니다.");
+      },
+      error: function(err) {
+        console.log("팀 선택 실패, 에러");
+        console.log(err);
+      }
+    });
+  }
+
+
+
+
+
+
 	  <!-- 특정 목록  -->
 /*
 	  <!-- 함수2.의뢰 목록 중 하나를 선택, 선택된 의뢰를 신청한팀 목록을 보여주는 함수 -->
@@ -475,7 +560,7 @@ $('#insert_rquest_skill').on('submit', function(){
               case 5 : stateStr = "의뢰 종결";  break;
               }
     		     var will_be_append = $('<tr onclick=$(this).gotoState('+data[i].RID+','+data[i].State+')><td>'+tr_num+'</td>'
-    			 +'<td>'+data[i].RID+'</td><td>' + data[i].PID+'</td>'
+    			 +'<td>'+data[i].RID+'</td>'
     			 +'<td>' + data[i].Pay+'</td><td>' + data[i].StartDate+'</td>'
     			 +'<td>' + data[i].EndDate+'</td><td>' + data[i].MinCareer+'</td>'
     			 +'<td>' + data[i].MinNum+'</td><td>' + data[i].MaxNum+'</td>'
@@ -510,7 +595,7 @@ $('#insert_rquest_skill').on('submit', function(){
               case 5 : stateStr = "의뢰 종결";  break;
               }
     		     var will_be_append = $('<tr onclick=$(this).gotoState('+data[i].RID+','+data[i].State+')><td>'+tr_num+'</td>'
-    			 +'<td>'+data[i].RID+'</td><td>' + data[i].PID+'</td>'
+    			 +'<td>'+data[i].RID+'</td>'
     			 +'<td>' + data[i].Pay+'</td><td>' + data[i].StartDate+'</td>'
     			 +'<td>' + data[i].EndDate+'</td><td>' + data[i].MinCareer+'</td>'
     			 +'<td>' + data[i].MinNum+'</td><td>' + data[i].MaxNum+'</td>'
@@ -544,7 +629,7 @@ $('#insert_rquest_skill').on('submit', function(){
               case 5 : stateStr = "의뢰 종결";  break;
               }
             var will_be_append = $('<tr onclick=$(this).gotoState('+data[i].RID+','+data[i].State+')><td>'+tr_num+'</td>'
-          +'<td>'+data[i].RID+'</td><td>' + data[i].PID+'</td>'
+          +'<td>'+data[i].RID+'</td>'
           +'<td>' + data[i].Pay+'</td><td>' + data[i].StartDate+'</td>'
           +'<td>' + data[i].EndDate+'</td><td>' + data[i].MinCareer+'</td>'
           +'<td>' + data[i].MinNum+'</td><td>' + data[i].MaxNum+'</td>'

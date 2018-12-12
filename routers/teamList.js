@@ -32,11 +32,45 @@ router.post('/getTeam', wrapper.asyncMiddleware(async (req, res, next) => {
 
   //console.log(await db.getQueryResult('SELECT * FROM Apply where RID = "'+getRID+'" '));
   const getTeamList = await db.getQueryResult('SELECT * FROM Apply where RID = "'+getRID+'"');
+
   console.log(getTeamList);
 
   res.json(getTeamList);
 }));
 
+router.post('/searchTeamInfo', wrapper.asyncMiddleware(async (req, res, next) => {
+
+  const getRID = req.body.rID; //Attend 에 넣을 의뢰 ID
+  const getTeamName = req.body.teamName; //Attend 에 넣을 팀이름
+
+  const getPID = req.session.user_id; //Attend 에 넘어간 의뢰를 수정하기 위해 필요한 의뢰자 ID
+
+
+  //teamName -> Attend => RID(의뢰 ID), TName(팀 이름)
+  console.log("----------------------------------------팀 선택 세부 목록: ");
+  console.log("팀 이름: "+getTeamName);
+  console.log("의뢰자 ID: "+getPID);
+  console.log("의뢰 ID: "+getRID);
+
+
+  // TeamList Table에서 getTeamName으로 TeamName 통해 ProjLeaderID get
+  const getTeamMemberInfo = await db.getQueryResult(
+
+  'select f.* , s.LangName, s.Skill from Freelancer f inner join SkilledAt s on f.FID = s.FID '
+  +'WHERE EXISTS (select * from TeamMember m WHERE f.FID = m.MemberID AND TeamName = "'+getTeamName+'" )'
+  +'order by f.FID'
+  );
+  console.log(getTeamMemberInfo);
+
+
+  //const getLeaderInfo = await db.getQueryResult('SELECT * FROM Freelancer where FID = "'+getLeaderID+'"');
+
+  res.json(getTeamMemberInfo);
+}));
+
+
+
+//-------------------------------------------------------------------------
 
 router.post('/selectTeam', wrapper.asyncMiddleware(async (req, res, next) => {
 
