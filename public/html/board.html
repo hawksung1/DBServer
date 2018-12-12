@@ -223,14 +223,32 @@
         //console.log(fid.val());
         var v = {
         id: $('#cur_log').val(),
-  		}
+  		  }
         location.href = "/board/teammake";
 
       }
       $.fn.tonclick = function(tname){
+        var v = {
+        teamname: tname,
+  		  }
         //console.log($('#cur_log').val());
-        console.log(tname);
-        location.href="/board/team?"+tname;
+        //console.log(tname);
+        //location.href="/board/team";
+        $.ajax({
+            type: 'post',
+            url: '/request/gototeam',
+            data: v,
+            success: function(data) {
+              location.href="/board/team";
+              //console.log(rid);
+              //location.href="/board/info?"+rid;
+              //console.log(msg2);
+          },
+            error: function(err) {
+              console.log(err);
+            }
+        });
+
 
       }
       $.fn.manageonclick = function(tname){
@@ -419,6 +437,7 @@
             type: 'get',
             url: '/request/viewreq_applyable',
             success: function(data) {
+              
           $('#req_list tbody').html("")
           //$('#user_list tbody').empty();
           for(var i = 0 ; i < data.length; i ++) {
@@ -480,6 +499,7 @@
             data: v,
             //datatype: "json",
             success: function(data) {
+              //location.href="/board/team?"+;
               //alert("성공");
               //console.log("apply성공");
 

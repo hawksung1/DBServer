@@ -131,7 +131,7 @@ router.post('/pc_request', upload4.single('request_file'), wrapper.asyncMiddlewa
   var requestID = req.body.request_upload_id;
   var fileName4 = userID +requestID+ fileName;
 
-  var existfile = await db.getQueryResult(`INSERT INTO RequestDoc (RID, DocName) VALUES ('${fileName}', '${userID}')`);
+  var existfile = await db.getQueryResult(`INSERT INTO RequestDoc (RID, DocName) VALUES ('${userID}', '${fileName}')`);
   console.log(existfile);
   if(existfile.length == 0){//file exist
     res.json(400, {
