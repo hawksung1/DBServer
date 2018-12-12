@@ -22,8 +22,15 @@ router.get('/info', (req, res, next) => {
 	//console.log("url은.."+ url);
 });
 router.post('/cur_log', wrapper.asyncMiddleware(async (req, res, next) => {
-
-  var tname = req.session.tname;
+  //var tname = req.body.teamname;
+  var obj = req.body.curl;
+  obj = obj.split("?");
+  obj = obj[1];
+  var tname = obj;
+  //console.log("출력"+req.body.curl);
+  //console.log("url은.."+obj);
+  req.session.tname = tname;
+  //var tname = req.session.tname;
   res.json(tname);
 
 }));

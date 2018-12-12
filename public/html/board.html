@@ -239,7 +239,7 @@
             url: '/request/gototeam',
             data: v,
             success: function(data) {
-              location.href="/board/team";
+              location.href="/board/team?"+tname;
               //console.log(rid);
               //location.href="/board/info?"+rid;
               //console.log(msg2);
@@ -437,7 +437,7 @@
             type: 'get',
             url: '/request/viewreq_applyable',
             success: function(data) {
-              
+
           $('#req_list tbody').html("")
           //$('#user_list tbody').empty();
           for(var i = 0 ; i < data.length; i ++) {
