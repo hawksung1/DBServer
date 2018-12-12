@@ -106,11 +106,23 @@ console.log("의뢰 생성 session id = " + newPID);
     console.log("변경된 의뢰 ID: "+newRID);
   }
 
-  console.log(await db.getQueryResult(`INSERT INTO Request (PID, RID, PAY, MinCareer, MinNum, MaxNum) values ('${newPID}', '${newRID}','${newPay}','${newCyear}','${newMinNum}','${newMaxNum}' )`));
+  console.log(await db.getQueryResult(`INSERT INTO Request (PID, RID, PAY, MinCareer, MinNum, MaxNum, P1) values ('${newPID}', '${newRID}','${newPay}','${newCyear}','${newMinNum}','${newMaxNum}','1' )`));
 
   //console.log(await db.getQueryResult(`INSERT INTO Freelancer (FID,FName,Age,PhoneNumber,Career,Major,Pwd) values ('${newId}','${newName}','${newAge}','${newPhone}','${newCareer}','${newMajor}','${newPassword}')`));
   res.json(newRID);
 }));
+//--------------------P1 End ------------
+
+//--------------------P2 ------------
+router.post('/insert_P2', wrapper.asyncMiddleware(async (req, res, next) =>{
+
+    const getRID = req.body.rID;
+    console.log(await db.getQueryResult('UPDATE  Request SET P2 = "1" WHERE RID = "'+getRID+'" '));
+
+    //console.log(await db.getQueryResult(`INSERT INTO Freelancer (FID,FName,Age,PhoneNumber,Career,Major,Pwd) values ('${newId}','${newName}','${newAge}','${newPhone}','${newCareer}','${newMajor}','${newPassword}')`));
+    res.json({success: true});
+  }));
+
 
 router.post('/insert', wrapper.asyncMiddleware(async (req, res, next) =>{
   //const newRID = req.body.rnum;
