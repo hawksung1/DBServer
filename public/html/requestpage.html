@@ -246,6 +246,23 @@
                 data: k,
                 success: function(data) {
                    alert("upload insert success");
+
+                   $.ajax({
+                     type: 'post',
+                     url: '/upload/insert_P3',
+                     data: k,
+                     success: function(data) {
+                        alert("P3 & Final insert success");
+                    },
+                     error: function(err) {
+                       // alert("모든 항목을 정확히 채워주세요");
+                       // console.log(err);
+                     }
+                   });
+
+
+
+
                },
                 error: function(err) {
                   // alert("모든 항목을 정확히 채워주세요");

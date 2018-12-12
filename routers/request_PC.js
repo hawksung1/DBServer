@@ -122,7 +122,17 @@ router.post('/insert_P2', wrapper.asyncMiddleware(async (req, res, next) =>{
     //console.log(await db.getQueryResult(`INSERT INTO Freelancer (FID,FName,Age,PhoneNumber,Career,Major,Pwd) values ('${newId}','${newName}','${newAge}','${newPhone}','${newCareer}','${newMajor}','${newPassword}')`));
     res.json({success: true});
   }));
+  //--------------------P2 End ------------
 
+  //--------------------P3 ------------
+  router.post('/insert_P3', wrapper.asyncMiddleware(async (req, res, next) =>{
+
+      const getRID = req.body.rID;
+      console.log(await db.getQueryResult('UPDATE  Request SET P3 = "1" WHERE RID = "'+getRID+'" '));
+
+      //console.log(await db.getQueryResult(`INSERT INTO Freelancer (FID,FName,Age,PhoneNumber,Career,Major,Pwd) values ('${newId}','${newName}','${newAge}','${newPhone}','${newCareer}','${newMajor}','${newPassword}')`));
+      res.json({success: true});
+    }));
 
 router.post('/insert', wrapper.asyncMiddleware(async (req, res, next) =>{
   //const newRID = req.body.rnum;
