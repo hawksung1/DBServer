@@ -70,10 +70,10 @@ router.post('/insert_freelancer_skill', wrapper.asyncMiddleware(async(req, res, 
 }));
 
 router.post('/insert_request_skill', wrapper.asyncMiddleware(async(req, res, next) =>{
-  const user_id = req.session.user_id;
+  const getRID = req.body.rID;
   const newLanguage = req.body.language;
   const newLevel = req.body.level;
-  const sql = `INSERT INTO SkilledAt (FID, LangName, Skill) VALUES ('${user_id}', '${newLanguage}', '${newLevel}')`;
+  const sql = `INSERT INTO RequireLang (RID, LangName, Skill) VALUES ('${getRID}', '${newLanguage}', '${newLevel}')`;
   console.log(await db.getQueryResult(sql));
   res.json({success:true});
 }));

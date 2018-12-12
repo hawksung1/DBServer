@@ -93,16 +93,20 @@
 <div>최소 경력 년수 : <input type='text' id ='Cyear' name ='Cyear'></div>
 <div>최소 인원수 : <input type='text' id ='MinNum' name ='MinNum'></div>
 <div>최대 인원수 : <input type='text' id ='MaxNum' name ='MaxNum'></div>
-<div id='createR_RL'>기초 의뢰 생성</div>
+<div id='createR_RL'>1/3. 기초 의뢰 생성</div>
 </div>
 
-<div id = "insert_request_skill" style="display:none">
-    의뢰 생성 2단계:<br/>
-  <p> insert your programming language skills </p>
-  language: <input id = "language" type="text" name="language" required/><br>
-  level: <input id = "level" type="number" name="level" min="0" max="5" required/><br>
-  <input type="submit" value="submit"/>
-  <div id='createR_RD'>언어 입력 완료</div>
+<div id = "insert_request_RL_div" style="display:none">
+  의뢰 생성 2단계:
+  <form id = "insert_request_skill" onsubmit="return false;">
+    <p> insert your programming language skills </p>
+    language: <input id = "language" type="text" name="language" required/><br>
+    level: <input id = "level" type="number" name="level" min="0" max="5" required/><br>
+    <input type="submit" value="submit"/>
+  </form>
+
+  <div id='createR_RD'>2/3. 언어 입력 완료</div>
+
 </div>
 
 <div id = "insert_request_doc" style="display:none">
@@ -111,7 +115,7 @@
     request id to update file<input id="request_upload_id" type="text" name="request_upload_id"/><br>
     request doc (English File Only) <input id="request_file" type="file" name="request_file"/><br>
   <input type="submit" value="submit"/>
-  <div id='createR_F'>의뢰 생성 완료</div>
+  <div id='createR_F'>3/3 의뢰 문서 업로드 및 의뢰 생성 완료</div>
 </div>
 
 
@@ -153,20 +157,78 @@
        })
        <!-- 세션 체크 끝 -->
 
+
+
+
+
+
        //의뢰 생성 버튼 누르기 및 의뢰 번호 생성
         $('#createRequestB').click(function(){
+
             $("#insert").show();
         });
 
         $('#createR_RL').click(function(){
-          
-            $("#insert_request_skill").show();
+
+          var v = {
+          pay: $("#insert #Pay").val(),
+          minNum: $("#insert #MinNum").val(),
+          maxNum: $("#insert #MaxNum").val(),
+          cyear: $("#insert #Cyear").val(),
+        }
+        $.ajax({
+            type: 'post',
+            url: '/request_PC/insert_P1',
+            data: v,
+            success: function(data) {
+          alert("insert 성공"+data);
+
+
+          $("#insert_request_RL_div").show();
+
+          $('#insert_request_skill').on('submit', function(){
+              alert(data);
+            var v = {
+              language: $("#insert_request_skill #language").val(),
+              level: $("#insert_request_skill #level").val(),
+              rID: data,
+            }
+            $.ajax({
+              type: 'post',
+              url: '/user_information_fix/insert_request_skill',
+             data: v,
+              success: function(data) {
+                 alert("insert success");
+             },
+              error: function(err) {
+                // alert("모든 항목을 정확히 채워주세요");
+                // console.log(err);
+              }
+            });
+          })
+        },
+            error: function(err) {
+              console.log(err);
+            }
+          });
+
         });
+
+
+
 
 
         $('#createR_RD').click(function(){
             $("#insert_request_doc").show();
+
+
+
         });
+
+
+
+
+
 
         //의뢰 만들기
          $('#createR_F').click(function(){
