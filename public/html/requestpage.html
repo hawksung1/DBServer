@@ -13,6 +13,8 @@
 	#request_PC {font-size:20px; background-color:#ccd0ce;    width: fit-content ;     cursor: -webkit-grab;}
   #requestDate {font-size:20px; background-color:#ccd0ce;    width: fit-content ;     cursor: -webkit-grab;}
 	#requestStart {font-size:20px; background-color:#ccd0ce;    width: fit-content ;     cursor: -webkit-grab;}
+  #requestDateDESC {font-size:20px; background-color:#ccd0ce;    width: fit-content ;     cursor: -webkit-grab;}
+	#requestStartDESC {font-size:20px; background-color:#ccd0ce;    width: fit-content ;     cursor: -webkit-grab;}
 	#requestPay {font-size:20px; background-color:#ccd0ce;    width: fit-content ;     cursor: -webkit-grab;}
   #createRequestB{font-size:20px; background-color:#ccd0ce;    width: fit-content ;     cursor: -webkit-grab;}
 #createR_RL{font-size:20px; background-color:#ccd0ce;    width: fit-content ;     cursor: -webkit-grab;}
@@ -58,6 +60,10 @@
 
 <hr color="red" width=100%>
 
+<div id='team_list_no' style="display:none">
+<div >신청한 팀이 없습니다</div>
+</div>
+
 
 <div id='team_list_div' style="display:none">
 <div >팀 목록</div>
@@ -83,13 +89,7 @@
 
 <div id='insert' style="display:none">
   의뢰 생성 1단계:<br/>
-<<<<<<< HEAD
-<div>의뢰금액 : <input type='text' id ='Pay' name ='Pay'></div>
-=======
-<!-- <div>의뢰번호 : <input type='text' id ='Rnum' name ='Rnum'></div> -->
-<!--  <div>의뢰자 : <input type='text' id='Name' name='Name'></div> -->
 <div>의뢰금액 : <input type='text' id ='Pay' name ='Pay' required></div>
->>>>>>> 44e45ef237649193bf04de3fd22bdaf5996108d6
 <div>최소 경력 년수 : <input type='text' id ='Cyear' name ='Cyear'></div>
 <div>최소 인원수 : <input type='text' id ='MinNum' name ='MinNum'></div>
 <div>최대 인원수 : <input type='text' id ='MaxNum' name ='MaxNum'></div>
@@ -116,13 +116,16 @@
 
 
 <hr color="red" width=100%>
-<div>
-	<div id = "refresh">새로고침</div>
-	<div id = "request_PC">전체 의뢰 리스트 </div>
-  <div id = "requestStart">진행 중인 의뢰 리스트 </div>
-  <div id = "requestDate">의뢰 리스트 가져오기 날짜</div>
-	<div id = "requestPay">의뢰 리스트 가져오기 금액</div>
-	<table id = "req_list"><thead><tr><td>번호</td><td>의뢰번호</td><td>급여</td><td>시작날짜</td><td>완료날짜</td><td>최소경력조건</td><td>최소참여</td><td>최대참여</td><td>의뢰자평점</td><td>프리랜서평점</td><td>의뢰상태</td></tr></thead><tbody></tbody></table>
+<div style="position:static; bottom:10px;">
+	<div id = "refresh" style="float:left; margin-right:10px;">새로고침</div>
+	<div id = "request_PC" style="float:left; margin-right:10px;">전체 의뢰 리스트 </div>
+  <div id = "requestStart" style="float:left; margin-right:10px;">진행 중인 의뢰 리스트 </div>
+  <div id = "requestDate" style="float:left; margin-right:10px;">날짜 순</div>
+  <div id = "requestPay" style="float:left; margin-right:10px;">금액 순</div>
+</div>
+<hr color="red" width=100%>
+<div id = "request_table_div" style="position:static; display:none;">
+<table id = "req_list" ><thead><tr><td>번호</td><td>의뢰번호</td><td>급여</td><td>시작날짜</td><td>완료날짜</td><td>최소경력조건</td><td>최소참여</td><td>최대참여</td><td>의뢰자평점</td><td>프리랜서평점</td><td>의뢰상태</td></tr></thead><tbody></tbody></table>
 </div>
 
 
@@ -156,6 +159,7 @@
         });
 
         $('#createR_RL').click(function(){
+          
             $("#insert_request_skill").show();
         });
 
@@ -190,8 +194,9 @@
 
 
 
-           //나의 의뢰 목록 보이기
+           //나의 전체 의뢰 목록 보이기
        	  $('#request_PC').click(function(){
+              $("#request_table_div").show();
        		$.ajax({
                type: 'get',
                url: '/request_PC/request',
@@ -213,9 +218,11 @@
                 }
                 if(data[i].StartDate =="0000-00-00"){
                   startDate = "구인중";
+                  endDate = "구인중";
                 }else if(data[i].EndDate =="0000-00-00"){
                   endDate = "의뢰 진행중";
                 }
+
        		     var will_be_append = $('<tr onclick=$(this).gotoState('+data[i].RID+','+data[i].State+')><td>'+tr_num+'</td>'
        			 +'<td>'+data[i].RID+'</td>'
        			 +'<td>' + data[i].Pay+'</td><td>' + startDate +'</td>'
@@ -231,19 +238,159 @@
                }
              });
        	  });
+//---------------- 나의 진행중인 의뢰 목록 --------------------
+          $('#requestStart').click(function(){
+              $("#request_table_div").show();
+          $.ajax({
+               type: 'get',
+               url: '/request_PC/requestStart',
+               success: function(data) {
+            $('#req_list tbody').html("")
+            for(var i = 0 ; i < data.length; i ++) {
+             var tr_num = i+1;
+             var stateNum = data[i].State;
+             var stateStr = "";
+             var startDate = data[i].StartDate;
+             var endDate = data[i].EndDate;
+             switch (stateNum) {
+                case 0 : stateStr = "구인 중";  break;
+                case 1 : stateStr = "진행 중";  break;
+                case 2 : stateStr = "의뢰 완료 요청 중";  break;
+                case 3 : stateStr = "의뢰 거절 중";  break;
+                case 4 : stateStr = "의뢰 완료";  break;
+                case 5 : stateStr = "의뢰 종결";  break;
+                }
+                if(data[i].StartDate =="0000-00-00"){
+                  startDate = "구인중";
+                  endDate = "구인중";
+                }else if(data[i].EndDate =="0000-00-00"){
+                  endDate = "의뢰 진행중";
+                }
 
-//-------------------------------------------------
+               var will_be_append = $('<tr onclick=$(this).gotoState('+data[i].RID+','+data[i].State+')><td>'+tr_num+'</td>'
+             +'<td>'+data[i].RID+'</td>'
+             +'<td>' + data[i].Pay+'</td><td>' + startDate +'</td>'
+             +'<td>' + endDate+'</td><td>' + data[i].MinCareer+'</td>'
+             +'<td>' + data[i].MinNum+'</td><td>' + data[i].MaxNum+'</td>'
+             +'<td>' + data[i].CGrade+'</td><td>' + data[i].FGrade+'</td>'
+             +'<td>' + stateStr+'</td></tr>' )
+             $('#req_list tbody').append(will_be_append)
+            }
+          },
+               error: function(err) {
+                 console.log(err);
+               }
+             });
+          });
+
+//의뢰 시작 날짜 순 함수----------------------------------------
+          $('#requestDate').click(function(){
+              $("#request_table_div").show();
+          $.ajax({
+               type: 'get',
+               url: '/request_PC/requestDate',
+               success: function(data) {
+            $('#req_list tbody').html("")
+            for(var i = 0 ; i < data.length; i ++) {
+             var tr_num = i+1;
+             var stateNum = data[i].State;
+             var stateStr = "";
+             var startDate = data[i].StartDate;
+             var endDate = data[i].EndDate;
+             switch (stateNum) {
+                case 0 : stateStr = "구인 중";  break;
+                case 1 : stateStr = "진행 중";  break;
+                case 2 : stateStr = "의뢰 완료 요청 중";  break;
+                case 3 : stateStr = "의뢰 거절 중";  break;
+                case 4 : stateStr = "의뢰 완료";  break;
+                case 5 : stateStr = "의뢰 종결";  break;
+                }
+                if(data[i].StartDate =="0000-00-00"){
+                  startDate = "구인중";
+                  endDate = "구인중";
+                }else if(data[i].EndDate =="0000-00-00"){
+                  endDate = "의뢰 진행중";
+                }
+
+               var will_be_append = $('<tr onclick=$(this).gotoState('+data[i].RID+','+data[i].State+')><td>'+tr_num+'</td>'
+             +'<td>'+data[i].RID+'</td>'
+             +'<td>' + data[i].Pay+'</td><td>' + startDate +'</td>'
+             +'<td>' + endDate+'</td><td>' + data[i].MinCareer+'</td>'
+             +'<td>' + data[i].MinNum+'</td><td>' + data[i].MaxNum+'</td>'
+             +'<td>' + data[i].CGrade+'</td><td>' + data[i].FGrade+'</td>'
+             +'<td>' + stateStr+'</td></tr>' )
+             $('#req_list tbody').append(will_be_append)
+            }
+          },
+               error: function(err) {
+                 console.log(err);
+               }
+             });
+          });
+//의뢰 금액 순 함수----------------------------------------
+          $('#requestPay').click(function(){
+              $("#request_table_div").show();
+          $.ajax({
+               type: 'get',
+               url: '/request_PC/requestPay',
+               success: function(data) {
+            $('#req_list tbody').html("")
+            for(var i = 0 ; i < data.length; i ++) {
+             var tr_num = i+1;
+             var stateNum = data[i].State;
+             var stateStr = "";
+             var startDate = data[i].StartDate;
+             var endDate = data[i].EndDate;
+             switch (stateNum) {
+                case 0 : stateStr = "구인 중";  break;
+                case 1 : stateStr = "진행 중";  break;
+                case 2 : stateStr = "의뢰 완료 요청 중";  break;
+                case 3 : stateStr = "의뢰 거절 중";  break;
+                case 4 : stateStr = "의뢰 완료";  break;
+                case 5 : stateStr = "의뢰 종결";  break;
+                }
+                if(data[i].StartDate =="0000-00-00"){
+                  startDate = "구인중";
+                  endDate = "구인중";
+                }else if(data[i].EndDate =="0000-00-00"){
+                  endDate = "의뢰 진행중";
+                }
+
+               var will_be_append = $('<tr onclick=$(this).gotoState('+data[i].RID+','+data[i].State+')><td>'+tr_num+'</td>'
+             +'<td>'+data[i].RID+'</td>'
+             +'<td>' + data[i].Pay+'</td><td>' + startDate +'</td>'
+             +'<td>' + endDate+'</td><td>' + data[i].MinCareer+'</td>'
+             +'<td>' + data[i].MinNum+'</td><td>' + data[i].MaxNum+'</td>'
+             +'<td>' + data[i].CGrade+'</td><td>' + data[i].FGrade+'</td>'
+             +'<td>' + stateStr+'</td></tr>' )
+             $('#req_list tbody').append(will_be_append)
+            }
+          },
+               error: function(err) {
+                 console.log(err);
+               }
+             });
+          });
+
+
+
+//의뢰 목록 선택 함수-------------------------------------------------
        $.fn.gotoState = function(RID,state){
+
+         $("#team_list_div").hide();
+         $("#team_list_no").hide();
 
      		console.log(RID);
         console.log(state);
 
 
         if(state == 0){
+//상태0- 구인중-------------------------------------
+
           // 의뢰 목록 중 하나를 선택, 선택된 의뢰를 신청한팀 목록을 보여준다
          console.log("의뢰에 신청한 팀 목록을 봅니다");
          console.log("선택으로 넘어온"+RID);
-           $("#team_list_div").show();
+
          var v = {
            rID: RID,
          }
@@ -252,23 +399,34 @@
               url: '/teamList/getTeam',
               data: v,
               success: function(data) {
-           $('#team_list tbody').html("")
-           for(var i = 0 ; i < data.length; i ++) {
-            var tr_num = i+1;
-            var teamN = data[i].TName;
-             var rID = data[i].RID;
-             rID +="";
 
-            console.log(teamN);
-             console.log(rID);
+                if(data.length != 0){
+                   $("#team_list_no").hide();
+                  $("#team_list_div").show();
 
-              var will_be_append = $( '<tr ><td>'+tr_num+'</td>'
-            +'<td>'+data[i].RID+'</td>'
-            +'<td onclick=$(this).searchTeamMember("'+teamN+'","'+rID+'")>'+data[i].TName+'</td>'
-            +'<td onclick=$(this).selectTeam("'+teamN+'","'+rID+'")>이 팀으로 선택합니다</td></tr>')
+                  $('#team_list tbody').html("")
+                  for(var i = 0 ; i < data.length; i ++) {
+                    var tr_num = i+1;
+                    var teamN = data[i].TName;
+                    var rID = data[i].RID;
+                    rID +="";
+
+                    console.log(teamN);
+                    console.log(rID);
+
+                    var will_be_append = $( '<tr ><td>'+tr_num+'</td>'
+                    +'<td>'+data[i].RID+'</td>'
+                    +'<td onclick=$(this).searchTeamMember("'+teamN+'","'+rID+'")>'+data[i].TName+'</td>'
+                    +'<td onclick=$(this).selectTeam("'+teamN+'","'+rID+'")>이 팀으로 선택합니다</td></tr>')
                    $('#team_list tbody').append(will_be_append)
-           }
-          console.log("신청한 팀목록 불러오기 성공");
+                 }
+
+               }else{
+                 $("#team_list_div").hide();
+                 $("#team_list_no").show();
+               }
+
+               console.log("신청한 팀목록 불러오기 성공");
               },
               error: function(err) {
                 console.log(err);
@@ -277,16 +435,22 @@
 
         }
         else if (state == 1) {
+//상태1 ------------------------------------------
           console.log("의뢰가 진행 중입니다. 의뢰 완료 시 상태가 2로 바뀝니다.");
+          $("#team_list_div").hide();
         }
         else if (state == 2) {
-          console.log("의뢰 완료 요청이 온 의뢰입니다. 의뢰 완료 페이지로 넘어갑니다");
+//상태2 ------------------------------------------
+          console.log("의뢰 완료 요청이 온 의뢰입니다. 의뢰 완료 페이지로 넘어갑니다")
           $("#finishProj").show();
-
+//-------------------------완료 상태 변화 함수 -------------
           $('#sendState').click(function(){
             //console.log("수락 버튼이 눌림");
            var state = $(":input:radio[name=stateRadio]:checked").val();
           //   console.log("라디오 값이 저장됨:"+state);
+
+
+           //---------------라디오 버튼 수락 체크 시 --------------
            if(state == "finish"){
             // console.log("라디오 값이 finish 라면");
 
@@ -304,6 +468,8 @@
                   data: v,
                   success: function(data) {
                     console.log("의뢰 완료를 수락합니다. state 값이 4으로 바뀝니다.");
+                    alert("완료를 수락했습니다. 새로고침합니다.");
+                    location.reload();
                   },
                   error: function(err) {
                     console.log("의뢰 완료 수락 변경 실패, 에러");
@@ -313,12 +479,13 @@
             });
 
            }
+           //---------------라디오 버튼 거절 체크 시 --------------
            else if(state == "reject"){
               console.log("라디오 값이 reject 라면");
 
              $("#rejectM").show();
 
-             //거절메세지 보내기
+             //-----------------------거절메세지 보내기
             $('#sendRejectM').click(function(){
 
               var mRID = RID;
@@ -337,7 +504,8 @@
                  url: '/sendM/sendRejectM',
                  data: v,
                  success: function(data) {
-              alert("거절 메세지 보내기 성공")
+              alert("거절 메세지 보내기 성공. 새로고침합니다.");
+              location.reload();
             },
                  error: function(err) {
                     console.log("거절 메세지 실패");
@@ -345,41 +513,39 @@
                  }
                });
             });
-
-
-
            }
            else{
              console.log("state 전달 에러");
-
            }
 
           });
 
         }
         else if (state == 3) {
+//상태3 ------------------------------------------
           console.log("의뢰 완료 요청을 거절하고 거절메세지를 보냅니다");
-
         }
         else if (state == 4) {
+//상태4 ------------------------------------------
           console.log("의뢰 완료 요청을 수락합니다");
         }
         else if (state == 5) {
+//상태5 ------------------------------------------
           console.log(" 의뢰 완료로 내부포트폴리오로 저장된 의뢰입니다.");
         }
         else{
-
+//상태 에러 ------------------------------------------
           console.log("ERROR: OUT of state number");
         }
 
            }
-     	  <!-- 함수2 끝 -->
+//--     	  <!-- 함수2 끝 -->
 
 
 //---------------------------------------------------------------
 
 
-	  <!-- 함수3. 선택된 의뢰를 신청한팀 목록에서 팀을 눌러 신청완료 후 의뢰 진행 상태 변경 -->
+//--	  <!-- 함수3. 선택된 의뢰를 신청한팀 목록에서 팀을 눌러 신청완료 후 의뢰 진행 상태 변경 -->
 	$.fn.searchTeamMember = function(team, rid){
 
 		console.log("넘어온 팀 이름: "+team);
@@ -433,14 +599,12 @@
           }
         });
 
-
-
-
-
       }
-<!-- 팀 세부 목록 불러오기 끝 -->
+//-------------<!-- 팀 세부 목록 불러오기 끝 -->
 
 
+
+//---------------- 팀 선택 완료 함수 ----------------
 $.fn.selectTeam = function(team, rid){
 
   console.log("넘어온 팀 이름: "+team);
@@ -456,7 +620,8 @@ $.fn.selectTeam = function(team, rid){
       url: '/teamList/selectTeam',
       data: v,
       success: function(data) {
-        alert("팀을 선택하였습니다. 의뢰가 시작됩니다.");
+        alert("팀을 선택하였습니다. 의뢰가 시작됩니다. 새로고침합니다.");
+        location.reload();
       },
       error: function(err) {
         console.log("팀 선택 실패, 에러");
@@ -465,184 +630,11 @@ $.fn.selectTeam = function(team, rid){
     });
   }
 
-
-
-
-
-
-	  <!-- 특정 목록  -->
-/*
-	  <!-- 함수2.의뢰 목록 중 하나를 선택, 선택된 의뢰를 신청한팀 목록을 보여주는 함수 -->
-	$.fn.gotoR = function(RID){
-
-		console.log(RID);
-
-		var v = {
-			rID: RID,
-		}
-
-
-        $.ajax({
-        type: 'post',
-        url: '/teamList/getTeam',
-		data: v,
-        success: function(data) {
-		  $('#user_list tbody').html("")
-		  for(var i = 0 ; i < data.length; i ++) {
-			 var tr_num = i+1;
-			 var teamN = data[i].TName;
-       var rID = data[i].RID;
-       rID +="";
-
-			 console.log(teamN);
-       console.log(rID);
-
-		     var will_be_append = $( '<tr ><td>'+tr_num+'</td>'
-			 +'<td>'+data[i].RID+'</td>'
-			 +'<td onclick=$(this).selectTeam("'+teamN+'","'+rID+'")>'+data[i].TName+'</td></tr>')
-             $('#team_list tbody').append(will_be_append)
-		  }
-		 console.log("신청한 팀목록 불러오기 성공");
-        },
-        error: function(err) {
-          console.log(err);
-        }
-      });
-      }
-	  <!-- 함수2 끝 -->
-*/
-
-$('#insert_rquest_skill').on('submit', function(){
-  var v = {
-    language: $("#insert_request_skill #language").val(),
-    level: $("#insert_request_skill #level").val(),
-  }
-  $.ajax({
-    type: 'post',
-    url: '/user_information_fix/insert_request_skill',
-    data: v,
-    success: function(data) {
-        alert("request_Lang_insert success");
-    },
-    error: function(err) {
-      // alert("모든 항목을 정확히 채워주세요");
-      // console.log(err);
-    }
-  });
-})
-
-
-
     //새로고침
 	  $('#refresh').click(function() {
 			location.reload();
 		});
 
-
-
-
-    	 $('#requestDate').click(function(){
-    		$.ajax({
-            type: 'get',
-            url: '/request_PC/requestDate',
-            success: function(data) {
-    		  $('#req_list tbody').html("")
-    		  for(var i = 0 ; i < data.length; i ++) {
-    			 var tr_num = i+1;
-           var stateNum = data[i].State;
-           var stateStr = "";
-           switch (stateNum) {
-              case 0 : stateStr = "구인 중";  break;
-              case 1 : stateStr = "진행 중";  break;
-              case 2 : stateStr = "의뢰 완료 요청 중";  break;
-              case 3 : stateStr = "의뢰 거절 중";  break;
-              case 4 : stateStr = "의뢰 완료";  break;
-              case 5 : stateStr = "의뢰 종결";  break;
-              }
-    		     var will_be_append = $('<tr onclick=$(this).gotoState('+data[i].RID+','+data[i].State+')><td>'+tr_num+'</td>'
-    			 +'<td>'+data[i].RID+'</td>'
-    			 +'<td>' + data[i].Pay+'</td><td>' + data[i].StartDate+'</td>'
-    			 +'<td>' + data[i].EndDate+'</td><td>' + data[i].MinCareer+'</td>'
-    			 +'<td>' + data[i].MinNum+'</td><td>' + data[i].MaxNum+'</td>'
-    			 +'<td>' + data[i].CGrade+'</td><td>' + data[i].FGrade+'</td>'
-    			 +'<td>' + stateStr+'</td></tr>' )
-                 $('#req_list tbody').append(will_be_append)
-    		  }
-    		},
-            error: function(err) {
-              console.log(err);
-            }
-          });
-    	  });
-
-
-    	  $('#requestPay').click(function(){
-    		$.ajax({
-            type: 'get',
-            url: '/request_PC/requestPay',
-            success: function(data) {
-    		  $('#req_list tbody').html("")
-    		  for(var i = 0 ; i < data.length; i ++) {
-    			 var tr_num = i+1;
-           var stateNum = data[i].State;
-           var stateStr = "";
-           switch (stateNum) {
-              case 0 : stateStr = "구인 중";  break;
-              case 1 : stateStr = "진행 중";  break;
-              case 2 : stateStr = "의뢰 완료 요청 중";  break;
-              case 3 : stateStr = "의뢰 거절 중";  break;
-              case 4 : stateStr = "의뢰 완료";  break;
-              case 5 : stateStr = "의뢰 종결";  break;
-              }
-    		     var will_be_append = $('<tr onclick=$(this).gotoState('+data[i].RID+','+data[i].State+')><td>'+tr_num+'</td>'
-    			 +'<td>'+data[i].RID+'</td>'
-    			 +'<td>' + data[i].Pay+'</td><td>' + data[i].StartDate+'</td>'
-    			 +'<td>' + data[i].EndDate+'</td><td>' + data[i].MinCareer+'</td>'
-    			 +'<td>' + data[i].MinNum+'</td><td>' + data[i].MaxNum+'</td>'
-    			 +'<td>' + data[i].CGrade+'</td><td>' + data[i].FGrade+'</td>'
-    			 +'<td>' + stateStr+'</td></tr>' )
-                 $('#req_list tbody').append(will_be_append)
-    		  }
-    		},
-            error: function(err) {
-              console.log(err);
-            }
-          });
-    	  });
-
-        $('#requestStart').click(function(){
-       $.ajax({
-            type: 'get',
-            url: '/request_PC/requestStart',
-            success: function(data) {
-         $('#req_list tbody').html("")
-         for(var i = 0 ; i < data.length; i ++) {
-          var tr_num = i+1;
-           var stateNum = data[i].State;
-           var stateStr = "";
-           switch (stateNum) {
-              case 0 : stateStr = "구인 중";  break;
-              case 1 : stateStr = "진행 중";  break;
-              case 2 : stateStr = "의뢰 완료 요청 중";  break;
-              case 3 : stateStr = "의뢰 거절 중";  break;
-              case 4 : stateStr = "의뢰 완료";  break;
-              case 5 : stateStr = "의뢰 종결";  break;
-              }
-            var will_be_append = $('<tr onclick=$(this).gotoState('+data[i].RID+','+data[i].State+')><td>'+tr_num+'</td>'
-          +'<td>'+data[i].RID+'</td>'
-          +'<td>' + data[i].Pay+'</td><td>' + data[i].StartDate+'</td>'
-          +'<td>' + data[i].EndDate+'</td><td>' + data[i].MinCareer+'</td>'
-          +'<td>' + data[i].MinNum+'</td><td>' + data[i].MaxNum+'</td>'
-          +'<td>' + data[i].CGrade+'</td><td>' + data[i].FGrade+'</td>'
-          +'<td>' + stateStr+'</td></tr>' )
-                 $('#req_list tbody').append(will_be_append)
-         }
-       },
-            error: function(err) {
-              console.log(err);
-            }
-          });
-       });
 
 
     });
