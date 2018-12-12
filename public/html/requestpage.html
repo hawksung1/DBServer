@@ -109,7 +109,7 @@
 	<table id = "req_list"><thead><tr><td>번호</td><td>의뢰번호</td><td>의뢰자ID</td><td>급여</td><td>시작날짜</td><td>완료날짜</td><td>최소경력조건</td><td>최소참여</td><td>최대참여</td><td>의뢰자평점</td><td>프리랜서평점</td><td>의뢰상태</td></tr></thead><tbody></tbody></table>
 </div>
 
-<div id="a">a</div>
+
 
 <script>
 
@@ -151,12 +151,10 @@
         //의뢰 만들기
          $('#createR_F').click(function(){
           var v = {
-
           pay: $("#insert #Pay").val(),
           minNum: $("#insert #MinNum").val(),
           maxNum: $("#insert #MaxNum").val(),
           cyear: $("#insert #Cyear").val(),
-
         }
         $.ajax({
             type: 'post',
@@ -333,7 +331,6 @@
            }
 
           });
-
 
         }
         else if (state == 3) {
